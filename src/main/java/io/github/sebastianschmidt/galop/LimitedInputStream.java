@@ -23,6 +23,14 @@ public class LimitedInputStream extends InputStream {
 
     }
 
+    public long getBytesLimit() {
+        return bytesLimit;
+    }
+
+    public long getTotalNumberOfBytesRead() {
+        return totalNumberOfBytesRead;
+    }
+
     @Override
     public int read() throws IOException {
 
@@ -59,7 +67,7 @@ public class LimitedInputStream extends InputStream {
         totalNumberOfBytesRead += numberOfBytes;
 
         if (totalNumberOfBytesRead > bytesLimit) {
-            throw new IOException("The limit of read bytes was exceeded.");
+            throw new ByteLimitExceededException();
         }
 
     }

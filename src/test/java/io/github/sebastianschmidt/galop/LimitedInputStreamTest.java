@@ -18,7 +18,6 @@ import static org.mockito.Mockito.when;
  */
 public class LimitedInputStreamTest {
 
-    private String exampleString;
     private byte[] exampleBytes;
     private LimitedInputStream limitedInputStream;
     private LimitedInputStream limitedInputStreamLimitToLow;
@@ -26,7 +25,7 @@ public class LimitedInputStreamTest {
     @Before
     public void setUp() {
 
-        exampleString = "Hello, world!";
+        final String exampleString = "Hello, world!";
         exampleBytes = exampleString.getBytes(Charset.defaultCharset());
 
         limitedInputStream = new LimitedInputStream(
@@ -48,13 +47,28 @@ public class LimitedInputStreamTest {
     }
 
     @Test
+    public void getBytesLimit_returnsSpecifiedBytesLimit() {
+        assertEquals(exampleBytes.length, limitedInputStream.getBytesLimit());
+        assertEquals(exampleBytes.length - 1, limitedInputStreamLimitToLow.getBytesLimit());
+    }
+
+    @Test
+    public void getTotalNumberOfBytesRead_returnsCurrentNumberOfBytesRead() throws IOException {
+        assertEquals(0, limitedInputStream.getTotalNumberOfBytesRead());
+        limitedInputStream.read();
+        assertEquals(1, limitedInputStream.getTotalNumberOfBytesRead());
+        limitedInputStream.read();
+        assertEquals(2, limitedInputStream.getTotalNumberOfBytesRead());
+    }
+
+    @Test
     public void read_whenBytesLimitWasNotExceeded_returnsNextByte() throws IOException {
         assertEquals(exampleBytes[0], limitedInputStream.read());
         assertEquals(exampleBytes[1], limitedInputStream.read());
     }
 
-    @Test(expected = IOException.class)
-    public void read_whenBytesLimitWasExceeded_throwsIOException() throws IOException {
+    @Test(expected = ByteLimitExceededException.class)
+    public void read_whenBytesLimitWasExceeded_throwsByteLimitExceededException() throws IOException {
         while (limitedInputStreamLimitToLow.read() != -1);
     }
 
@@ -66,8 +80,8 @@ public class LimitedInputStreamTest {
         assertEquals(exampleBytes[1], bytes[1]);
     }
 
-    @Test(expected = IOException.class)
-    public void readMultipleBytes_whenBytesLimitWasExceeded_throwsIOException() throws IOException {
+    @Test(expected = ByteLimitExceededException.class)
+    public void readMultipleBytes_whenBytesLimitWasExceeded_throwsByteLimitExceededException() throws IOException {
         while (limitedInputStreamLimitToLow.read(new byte[2]) != -1);
     }
 
