@@ -55,9 +55,9 @@ public class LimitedInputStreamTest {
     @Test
     public void getTotalNumberOfBytesRead_returnsCurrentNumberOfBytesRead() throws IOException {
         assertEquals(0, limitedInputStream.getTotalNumberOfBytesRead());
-        limitedInputStream.read();
+        assertEquals(exampleBytes[0],limitedInputStream.read());
         assertEquals(1, limitedInputStream.getTotalNumberOfBytesRead());
-        limitedInputStream.read();
+        assertEquals(exampleBytes[1],limitedInputStream.read());
         assertEquals(2, limitedInputStream.getTotalNumberOfBytesRead());
     }
 
@@ -75,7 +75,7 @@ public class LimitedInputStreamTest {
     @Test
     public void readMultipleBytes_whenBytesLimitWasNotExceeded_writesNextBytesToArray() throws IOException {
         final byte[] bytes = new byte[2];
-        limitedInputStream.read(bytes);
+        assertEquals(2, limitedInputStream.read(bytes));
         assertEquals(exampleBytes[0], bytes[0]);
         assertEquals(exampleBytes[1], bytes[1]);
     }
@@ -93,7 +93,6 @@ public class LimitedInputStreamTest {
 
         final LimitedInputStream limitedInputStream = new LimitedInputStream(inputStream, 1);
         assertEquals(123, limitedInputStream.available());
-        verify(inputStream).available();
 
     }
 

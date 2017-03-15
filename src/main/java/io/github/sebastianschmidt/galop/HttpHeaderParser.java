@@ -5,9 +5,6 @@ import java.nio.charset.Charset;
 
 import static java.util.Objects.requireNonNull;
 
-/**
- *
- */
 public class HttpHeaderParser {
 
     private static final Charset HTTP_HEADER_CHARSET = Charset.forName("ASCII");
@@ -38,14 +35,11 @@ public class HttpHeaderParser {
         }
 
         final LimitedInputStream limitedInputStream = new LimitedInputStream(inputStream, headerSizeLimit);
-
         inputStream.mark(headerSizeLimit);
 
-        try {
-            return parseRequest(limitedInputStream);
-        } finally {
-            inputStream.reset();
-        }
+        final long calculatedLength = parseRequest(limitedInputStream);
+        inputStream.reset();
+        return calculatedLength;
 
     }
 
