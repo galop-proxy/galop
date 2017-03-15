@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 
+import static io.github.sebastianschmidt.galop.HttpTestUtils.createHttpRequest;
+import static io.github.sebastianschmidt.galop.HttpTestUtils.createHttpResponse;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
@@ -15,8 +17,6 @@ import static org.mockito.Mockito.*;
  * Tests the class {@link HttpHeaderParser}.
  */
 public class HttpHeaderParserTest {
-
-    private static final String NEW_LINE = "\r\n";
 
     private HttpHeaderParser parser;
 
@@ -32,38 +32,19 @@ public class HttpHeaderParserTest {
 
         parser = new HttpHeaderParser(255);
 
-        httpGetRequest = "GET /hello-world.html HTTP/1.1" + NEW_LINE
-                + "Host: www.example.com" + NEW_LINE
-                + NEW_LINE;
-        httpGetRequestLength = getBytesLength(httpGetRequest);
+        httpGetRequest = createHttpRequest();
+        httpGetRequestLength = httpGetRequest.length();
         httpGetRequestInputStream = createInputStream(httpGetRequest);
 
         final String httpResponseContent = "<h1>Hello, world!</h1>";
-        final String httpResponse = createHttpResponse(httpResponseContent, getBytesLength(httpResponseContent));
-        httpResponseLength = getBytesLength(httpResponse);
+        final String httpResponse = createHttpResponse(httpResponseContent);
+        httpResponseLength = httpResponse.getBytes().length;
         httpResponseInputStream = createInputStream(httpResponse);
 
     }
 
     private InputStream createInputStream(final String message) {
         return spy(IOUtils.toInputStream(message, Charset.defaultCharset()));
-    }
-
-    private int getBytesLength(final String messages) {
-        return messages.getBytes(Charset.defaultCharset()).length;
-    }
-
-    private String createHttpResponse(final String content, final String contentLength) {
-        return "HTTP/1.1 200 OK" + NEW_LINE
-                + "Server: Test/1.0" + NEW_LINE
-                + "Content-Length: " + contentLength + NEW_LINE
-                + "Content-Type: text/html" + NEW_LINE
-                + NEW_LINE
-                + content;
-    }
-
-    private String createHttpResponse(final String content, final int contentLength) {
-        return createHttpResponse(content, contentLength + "");
     }
 
     @Test
