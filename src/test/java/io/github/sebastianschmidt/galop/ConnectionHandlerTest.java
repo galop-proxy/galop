@@ -7,7 +7,6 @@ import java.io.*;
 import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 import static io.github.sebastianschmidt.galop.HttpTestUtils.createHttpRequest;
 import static io.github.sebastianschmidt.galop.HttpTestUtils.createHttpResponse;
@@ -19,11 +18,7 @@ import static org.mockito.Mockito.*;
  */
 public class ConnectionHandlerTest {
 
-    private static final long TERMINATION_TIMEOUT = 30000;
-
-    private ExecutorService executorService;
     private HttpHeaderParser httpHeaderParser;
-
     private Socket source;
     private Socket target;
 
@@ -32,7 +27,6 @@ public class ConnectionHandlerTest {
     @Before
     public void setUp() throws IOException {
 
-        executorService = Executors.newCachedThreadPool();
         httpHeaderParser = new HttpHeaderParser(255);
 
         source = mock(Socket.class);
@@ -73,10 +67,9 @@ public class ConnectionHandlerTest {
 
         final String request = createHttpRequest();
         setInputContent(request, source);
-
         when(source.isClosed()).thenReturn(false).thenReturn(true);
-        executorService.execute(connectionHandler);
-        awaitTermination();
+
+        connectionHandler.run();
 
         assertEquals(request, getOutputContent(target));
 
@@ -88,10 +81,9 @@ public class ConnectionHandlerTest {
         final String responseContent = "<h1>Hello, world!</h1>";
         final String response = createHttpResponse(responseContent);
         setInputContent(response, target);
-
         when(source.isClosed()).thenReturn(false).thenReturn(true);
-        executorService.execute(connectionHandler);
-        awaitTermination();
+
+        connectionHandler.run();
 
         assertEquals(response, getOutputContent(source));
 
@@ -104,10 +96,10 @@ public class ConnectionHandlerTest {
         connectionHandler = new ConnectionHandler(httpHeaderParser, source, target);
         doThrow(IOException.class).when(httpHeaderParser).calculateRequestLength(any());
 
-        executorService.execute(connectionHandler);
+        connectionHandler.run();
 
-        verify(source, timeout(TERMINATION_TIMEOUT)).close();
-        verify(target, timeout(TERMINATION_TIMEOUT)).close();
+        verify(source).close();
+        verify(target).close();
 
     }
 
@@ -119,10 +111,9 @@ public class ConnectionHandlerTest {
         final String request1 = createHttpRequest();
         final String request2 = createHttpRequest();
         setInputContent(request1 + request2, source);
-
         when(source.isClosed()).thenReturn(false).thenReturn(false).thenReturn(true);
-        executorService.execute(connectionHandler);
-        awaitTermination();
+
+        connectionHandler.run();
 
         assertEquals(request1 + request2, getOutputContent(target));
 
@@ -135,10 +126,9 @@ public class ConnectionHandlerTest {
         final String response1 = createHttpResponse(responseContent);
         final String response2 = createHttpResponse(responseContent);
         setInputContent(response1 + response2, target);
-
         when(source.isClosed()).thenReturn(false).thenReturn(false).thenReturn(true);
-        executorService.execute(connectionHandler);
-        awaitTermination();
+
+        connectionHandler.run();
 
         assertEquals(response1 + response2, getOutputContent(source));
 
@@ -149,25 +139,31 @@ public class ConnectionHandlerTest {
     @Test
     public void run_whenSourceSocketIsClosed_closesTargetSocketAndTerminates() throws Exception {
         when(source.isClosed()).thenReturn(true);
-        executorService.execute(connectionHandler);
-        verify(target, timeout(TERMINATION_TIMEOUT)).close();
+        connectionHandler.run();
+        verify(target).close();
     }
 
     @Test
     public void run_whenTargetSocketIsClosed_closesSourceSocketAndTerminates() throws Exception {
         when(target.isClosed()).thenReturn(true);
-        executorService.execute(connectionHandler);
-        verify(source, timeout(TERMINATION_TIMEOUT)).close();
+        connectionHandler.run();
+        verify(source).close();
     }
 
     // Interrupted execution:
 
     @Test
     public void run_whenThreadIsInterrupted_closesSourceAndTargetSocketAndTerminates() throws Exception {
+
+        final int terminationTimeout = 30000;
+        final ExecutorService executorService = Executors.newSingleThreadExecutor();
+
         executorService.execute(connectionHandler);
         executorService.shutdownNow();
-        verify(source, timeout(TERMINATION_TIMEOUT)).close();
-        verify(target, timeout(TERMINATION_TIMEOUT)).close();
+
+        verify(source, timeout(terminationTimeout)).close();
+        verify(target, timeout(terminationTimeout)).close();
+
     }
 
     // Helper methods:
@@ -180,11 +176,6 @@ public class ConnectionHandlerTest {
 
     private String getOutputContent(final Socket socket) throws IOException {
         return socket.getOutputStream().toString();
-    }
-
-    private void awaitTermination() throws InterruptedException {
-        executorService.shutdown();
-        executorService.awaitTermination(TERMINATION_TIMEOUT, TimeUnit.MILLISECONDS);
     }
 
 }
