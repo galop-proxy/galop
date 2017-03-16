@@ -1,5 +1,6 @@
 package io.github.sebastianschmidt.galop.proxy;
 
+import io.github.sebastianschmidt.galop.configuration.Configuration;
 import io.github.sebastianschmidt.galop.parser.HttpTestUtils;
 import io.github.sebastianschmidt.galop.parser.HttpHeaderParser;
 import org.junit.Before;
@@ -12,6 +13,7 @@ import java.util.concurrent.Executors;
 
 import static io.github.sebastianschmidt.galop.parser.HttpTestUtils.createGetRequest;
 import static org.junit.Assert.assertEquals;
+import static org.mockito.AdditionalMatchers.not;
 import static org.mockito.Mockito.*;
 
 /**
@@ -19,6 +21,7 @@ import static org.mockito.Mockito.*;
  */
 public class ConnectionHandlerTest {
 
+    private Configuration configuration;
     private HttpHeaderParser httpHeaderParser;
     private Socket source;
     private Socket target;
@@ -27,6 +30,9 @@ public class ConnectionHandlerTest {
 
     @Before
     public void setUp() throws IOException {
+
+        configuration = mock(Configuration.class);
+        when(configuration.getMaxHttpHeaderSize()).thenReturn(1024);
 
         httpHeaderParser = mock(HttpHeaderParser.class);
 
@@ -40,25 +46,30 @@ public class ConnectionHandlerTest {
         when(target.getOutputStream()).thenReturn(new ByteArrayOutputStream());
         setInputContent("", target);
 
-        connectionHandler = new ConnectionHandler(httpHeaderParser, source, target);
+        connectionHandler = new ConnectionHandler(configuration, httpHeaderParser, source, target);
 
     }
 
-    // constructor:
+    // Constructor:
+
+    @Test(expected = NullPointerException.class)
+    public void constructor_withoutConfiguration_throwsNullPointerException() {
+        new ConnectionHandler(null, httpHeaderParser, source, target);
+    }
 
     @Test(expected = NullPointerException.class)
     public void constructor_withoutHttpHeaderParser_throwsNullPointerException() {
-        new ConnectionHandler(null, source, target);
+        new ConnectionHandler(configuration, null, source, target);
     }
 
     @Test(expected = NullPointerException.class)
     public void constructor_withoutSourceSocket_throwsNullPointerException() {
-        new ConnectionHandler(httpHeaderParser, null, target);
+        new ConnectionHandler(configuration, httpHeaderParser, null, target);
     }
 
     @Test(expected = NullPointerException.class)
     public void constructor_withoutTargetSocket_throwsNullPointerException() {
-        new ConnectionHandler(httpHeaderParser, source, null);
+        new ConnectionHandler(configuration, httpHeaderParser, source, null);
     }
 
     // Handle one request and response:
@@ -93,7 +104,6 @@ public class ConnectionHandlerTest {
     @Test
     public void run_whenHandleRequestAndResponseThrowsIOException_closesSocketsAndTerminates() throws Exception {
 
-        connectionHandler = new ConnectionHandler(httpHeaderParser, source, target);
         doThrow(IOException.class).when(httpHeaderParser).calculateTotalLength(any(), anyInt());
 
         connectionHandler.run();
@@ -164,6 +174,16 @@ public class ConnectionHandlerTest {
         verify(source, timeout(terminationTimeout)).close();
         verify(target, timeout(terminationTimeout)).close();
 
+    }
+
+    // Configuration:
+
+    @Test
+    public void run_whenParsingHttpHeader_passesConfiguredMaxHttpHeaderSizeToParser() throws IOException {
+        when(source.isClosed()).thenReturn(false).thenReturn(true);
+        connectionHandler.run();
+        verify(httpHeaderParser, atLeastOnce()).calculateTotalLength(any(), eq(1024));
+        verify(httpHeaderParser, never()).calculateTotalLength(any(), not(eq(1024)));
     }
 
     // Helper methods:
