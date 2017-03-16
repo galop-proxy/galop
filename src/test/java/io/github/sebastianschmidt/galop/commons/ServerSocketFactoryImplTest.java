@@ -1,6 +1,6 @@
-package io.github.sebastianschmidt.galop.proxy;
+package io.github.sebastianschmidt.galop.commons;
 
-import io.github.sebastianschmidt.galop.proxy.ServerSocketFactory;
+import io.github.sebastianschmidt.galop.commons.ServerSocketFactoryImpl;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -9,14 +9,14 @@ import java.net.ServerSocket;
 import static org.junit.Assert.assertNotNull;
 
 /**
- * Tests the class {@link ServerSocketFactory}.
+ * Tests the class {@link ServerSocketFactoryImpl}.
  */
-public class ServerSocketFactoryTest {
+public class ServerSocketFactoryImplTest {
 
     @Test
     public void create_createsServerSocketAndBindsItToTheSpecifiedLocalPortNumber() throws IOException {
 
-        final ServerSocketFactory factory = new ServerSocketFactory();
+        final ServerSocketFactoryImpl factory = new ServerSocketFactoryImpl();
 
         try (final ServerSocket serverSocket = factory.create(0)) {
             assertNotNull(serverSocket);

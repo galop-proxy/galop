@@ -10,6 +10,8 @@ import static java.util.Objects.requireNonNull;
 
 public class ConnectionHandler implements Runnable {
 
+    private static final int MAX_HTTP_HEADER_SIZE = 255;
+
     private final HttpHeaderParser httpHeaderParser;
     private final Socket source;
     private final Socket target;
@@ -44,12 +46,12 @@ public class ConnectionHandler implements Runnable {
     }
 
     private void handleRequest() throws IOException {
-        final long requestLength = httpHeaderParser.calculateTotalLength(source.getInputStream());
+        final long requestLength = httpHeaderParser.calculateTotalLength(source.getInputStream(), MAX_HTTP_HEADER_SIZE);
         IOUtils.copyLarge(source.getInputStream(), target.getOutputStream(), 0, requestLength);
     }
 
     private void handleResponse() throws IOException {
-        final long responseLength = httpHeaderParser.calculateTotalLength(target.getInputStream());
+        final long responseLength = httpHeaderParser.calculateTotalLength(target.getInputStream(), MAX_HTTP_HEADER_SIZE);
         IOUtils.copyLarge(target.getInputStream(), source.getOutputStream(), 0, responseLength);
     }
 

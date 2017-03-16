@@ -1,7 +1,7 @@
-package io.github.sebastianschmidt.galop.proxy;
+package io.github.sebastianschmidt.galop.commons;
 
-import io.github.sebastianschmidt.galop.proxy.ServerSocketFactory;
-import io.github.sebastianschmidt.galop.proxy.SocketFactory;
+import io.github.sebastianschmidt.galop.commons.ServerSocketFactoryImpl;
+import io.github.sebastianschmidt.galop.commons.SocketFactoryImpl;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -12,16 +12,16 @@ import java.net.Socket;
 import static org.junit.Assert.assertNotNull;
 
 /**
- * Tests the class {@link SocketFactory}.
+ * Tests the class {@link SocketFactoryImpl}.
  */
-public class SocketFactoryTest {
+public class SocketFactoryImplTest {
 
     @Test
     public void create_createsSocketAndConnectsItToTheSpecifiedPortNumberAtTheSpecifiedIPAddress()
             throws IOException {
 
-        final ServerSocketFactory serverSocketFactory = new ServerSocketFactory();
-        final SocketFactory socketFactory = new SocketFactory();
+        final ServerSocketFactoryImpl serverSocketFactory = new ServerSocketFactoryImpl();
+        final SocketFactoryImpl socketFactory = new SocketFactoryImpl();
 
         try (final ServerSocket serverSocket = serverSocketFactory.create(0)) {
 

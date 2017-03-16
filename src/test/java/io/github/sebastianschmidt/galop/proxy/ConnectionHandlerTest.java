@@ -28,7 +28,7 @@ public class ConnectionHandlerTest {
     @Before
     public void setUp() throws IOException {
 
-        httpHeaderParser = new HttpHeaderParser(255);
+        httpHeaderParser = mock(HttpHeaderParser.class);
 
         source = mock(Socket.class);
         when(source.isClosed()).thenReturn(false);
@@ -93,9 +93,8 @@ public class ConnectionHandlerTest {
     @Test
     public void run_whenHandleRequestAndResponseThrowsIOException_closesSocketsAndTerminates() throws Exception {
 
-        httpHeaderParser = mock(HttpHeaderParser.class);
         connectionHandler = new ConnectionHandler(httpHeaderParser, source, target);
-        doThrow(IOException.class).when(httpHeaderParser).calculateTotalLength(any());
+        doThrow(IOException.class).when(httpHeaderParser).calculateTotalLength(any(), anyInt());
 
         connectionHandler.run();
 
@@ -173,6 +172,7 @@ public class ConnectionHandlerTest {
         final byte[] contentBytes = content.getBytes();
         final InputStream inputStream = new ByteArrayInputStream(contentBytes);
         when(socket.getInputStream()).thenReturn(inputStream);
+        when(httpHeaderParser.calculateTotalLength(any(), anyInt())).thenReturn((long) content.getBytes().length);
     }
 
     private String getOutputContent(final Socket socket) throws IOException {
