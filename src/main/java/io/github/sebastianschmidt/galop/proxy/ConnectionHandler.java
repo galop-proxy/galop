@@ -1,4 +1,4 @@
-package io.github.sebastianschmidt.galop;
+package io.github.sebastianschmidt.galop.proxy;
 
 import io.github.sebastianschmidt.galop.parser.HttpHeaderParser;
 import org.apache.commons.io.IOUtils;

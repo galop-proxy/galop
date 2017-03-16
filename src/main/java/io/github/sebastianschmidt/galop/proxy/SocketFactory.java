@@ -1,4 +1,4 @@
-package io.github.sebastianschmidt.galop;
+package io.github.sebastianschmidt.galop.proxy;
 
 import java.io.IOException;
 import java.net.InetAddress;

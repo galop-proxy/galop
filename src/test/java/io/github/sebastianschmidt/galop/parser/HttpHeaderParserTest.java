@@ -8,8 +8,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 
-import static io.github.sebastianschmidt.galop.HttpTestUtils.createGetRequest;
-import static io.github.sebastianschmidt.galop.HttpTestUtils.createResponse;
+import static io.github.sebastianschmidt.galop.parser.HttpTestUtils.createGetRequest;
+import static io.github.sebastianschmidt.galop.parser.HttpTestUtils.createResponse;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 

@@ -1,5 +1,7 @@
-package io.github.sebastianschmidt.galop;
+package io.github.sebastianschmidt.galop.proxy;
 
+import io.github.sebastianschmidt.galop.proxy.ServerSocketFactory;
+import io.github.sebastianschmidt.galop.proxy.SocketFactory;
 import org.junit.Test;
 
 import java.io.IOException;

@@ -1,4 +1,4 @@
-package io.github.sebastianschmidt.galop;
+package io.github.sebastianschmidt.galop.parser;
 
 public class HttpTestUtils {
 

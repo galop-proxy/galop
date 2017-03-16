@@ -1,6 +1,6 @@
 package io.github.sebastianschmidt.galop.parser;
 
-import io.github.sebastianschmidt.galop.LimitedInputStream;
+import io.github.sebastianschmidt.galop.commons.LimitedInputStream;
 
 import java.io.*;
 import java.nio.charset.Charset;

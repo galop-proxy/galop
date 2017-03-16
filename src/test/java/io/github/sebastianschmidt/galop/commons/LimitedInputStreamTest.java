@@ -1,5 +1,7 @@
-package io.github.sebastianschmidt.galop;
+package io.github.sebastianschmidt.galop.commons;
 
+import io.github.sebastianschmidt.galop.commons.ByteLimitExceededException;
+import io.github.sebastianschmidt.galop.commons.LimitedInputStream;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;

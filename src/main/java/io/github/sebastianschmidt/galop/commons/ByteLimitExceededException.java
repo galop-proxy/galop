@@ -1,4 +1,4 @@
-package io.github.sebastianschmidt.galop;
+package io.github.sebastianschmidt.galop.commons;
 
 import java.io.IOException;
 
