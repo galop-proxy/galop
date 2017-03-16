@@ -1,5 +1,6 @@
 package io.github.sebastianschmidt.galop;
 
+import io.github.sebastianschmidt.galop.parser.HttpHeaderParser;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -8,8 +9,7 @@ import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import static io.github.sebastianschmidt.galop.HttpTestUtils.createHttpRequest;
-import static io.github.sebastianschmidt.galop.HttpTestUtils.createHttpResponse;
+import static io.github.sebastianschmidt.galop.HttpTestUtils.createGetRequest;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
@@ -65,7 +65,7 @@ public class ConnectionHandlerTest {
     @Test
     public void run_withOneRequest_copiesRequestToRequestTarget() throws Exception {
 
-        final String request = createHttpRequest();
+        final String request = createGetRequest();
         setInputContent(request, source);
         when(source.isClosed()).thenReturn(false).thenReturn(true);
 
@@ -79,7 +79,7 @@ public class ConnectionHandlerTest {
     public void run_withOneResponse_copiesResponseToRequestSource() throws Exception {
 
         final String responseContent = "<h1>Hello, world!</h1>";
-        final String response = createHttpResponse(responseContent);
+        final String response = HttpTestUtils.createResponse(responseContent);
         setInputContent(response, target);
         when(source.isClosed()).thenReturn(false).thenReturn(true);
 
@@ -94,7 +94,7 @@ public class ConnectionHandlerTest {
 
         httpHeaderParser = mock(HttpHeaderParser.class);
         connectionHandler = new ConnectionHandler(httpHeaderParser, source, target);
-        doThrow(IOException.class).when(httpHeaderParser).calculateRequestLength(any());
+        doThrow(IOException.class).when(httpHeaderParser).calculateTotalLength(any());
 
         connectionHandler.run();
 
@@ -108,8 +108,8 @@ public class ConnectionHandlerTest {
     @Test
     public void run_withMultipleRequests_copiesRequestsToRequestTarget() throws Exception {
 
-        final String request1 = createHttpRequest();
-        final String request2 = createHttpRequest();
+        final String request1 = createGetRequest();
+        final String request2 = createGetRequest();
         setInputContent(request1 + request2, source);
         when(source.isClosed()).thenReturn(false).thenReturn(false).thenReturn(true);
 
@@ -123,8 +123,8 @@ public class ConnectionHandlerTest {
     public void run_withMultipleResponses_copiesResponsesToRequestSource() throws Exception {
 
         final String responseContent = "<h1>Hello, world!</h1>";
-        final String response1 = createHttpResponse(responseContent);
-        final String response2 = createHttpResponse(responseContent);
+        final String response1 = HttpTestUtils.createResponse(responseContent);
+        final String response2 = HttpTestUtils.createResponse(responseContent);
         setInputContent(response1 + response2, target);
         when(source.isClosed()).thenReturn(false).thenReturn(false).thenReturn(true);
 

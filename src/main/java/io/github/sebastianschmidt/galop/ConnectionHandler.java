@@ -1,5 +1,6 @@
 package io.github.sebastianschmidt.galop;
 
+import io.github.sebastianschmidt.galop.parser.HttpHeaderParser;
 import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
@@ -43,12 +44,12 @@ public class ConnectionHandler implements Runnable {
     }
 
     private void handleRequest() throws IOException {
-        final long requestLength = httpHeaderParser.calculateRequestLength(source.getInputStream());
+        final long requestLength = httpHeaderParser.calculateTotalLength(source.getInputStream());
         IOUtils.copyLarge(source.getInputStream(), target.getOutputStream(), 0, requestLength);
     }
 
     private void handleResponse() throws IOException {
-        final long responseLength = httpHeaderParser.calculateRequestLength(target.getInputStream());
+        final long responseLength = httpHeaderParser.calculateTotalLength(target.getInputStream());
         IOUtils.copyLarge(target.getInputStream(), source.getOutputStream(), 0, responseLength);
     }
 
