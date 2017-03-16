@@ -14,20 +14,20 @@ public class HttpHeaderParser {
     private static final String HEADER_TRANSFER_ENCODING_PREFIX = "Transfer-Encoding:";
     private static final String IDENTITY_TRANSFER_ENCODING = "identity";
 
-    private final int headerSizeLimit;
+    private final int maxHttpHeaderSize;
 
-    public HttpHeaderParser(final int headerSizeLimit) {
+    public HttpHeaderParser(final int maxHttpHeaderSize) {
 
-        if (headerSizeLimit < 255) {
-            throw new IllegalArgumentException("headerSizeLimit must be at least 255 bytes.");
+        if (maxHttpHeaderSize < 255) {
+            throw new IllegalArgumentException("maxHttpHeaderSize must be at least 255 bytes.");
         }
 
-        this.headerSizeLimit = headerSizeLimit;
+        this.maxHttpHeaderSize = maxHttpHeaderSize;
 
     }
 
-    public int getHeaderSizeLimit() {
-        return headerSizeLimit;
+    public int getMaxHttpHeaderSize() {
+        return maxHttpHeaderSize;
     }
 
     public long calculateTotalLength(final InputStream inputStream) throws IOException {
@@ -38,8 +38,8 @@ public class HttpHeaderParser {
             throw new IllegalArgumentException("InputStream must support mark.");
         }
 
-        final LimitedInputStream limitedInputStream = new LimitedInputStream(inputStream, headerSizeLimit);
-        inputStream.mark(headerSizeLimit);
+        final LimitedInputStream limitedInputStream = new LimitedInputStream(inputStream, maxHttpHeaderSize);
+        inputStream.mark(maxHttpHeaderSize);
 
         final long calculatedLength = parseRequest(limitedInputStream);
         inputStream.reset();
@@ -49,7 +49,7 @@ public class HttpHeaderParser {
 
     private long parseRequest(final LimitedInputStream limitedInputStream) throws IOException {
 
-        byte[] bytes = new byte[headerSizeLimit];
+        byte[] bytes = new byte[maxHttpHeaderSize];
         int currentByteIndex = 0;
         int currentByte;
 

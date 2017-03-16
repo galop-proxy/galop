@@ -123,23 +123,23 @@ public class HttpHeaderParserTest {
     // constructor:
 
     @Test
-    public void constructor_withHeaderSizeLimitEqual255_returnsParserWithGivenHeaderSizeLimit() {
-        assertEquals(255, parser.getHeaderSizeLimit());
+    public void constructor_withMaxHttpHeaderSizeEqual255_returnsParserWithGivenHeaderSizeLimit() {
+        assertEquals(255, parser.getMaxHttpHeaderSize());
     }
 
     @Test
-    public void constructor_withHeaderSizeLimitGreaterThan255_returnsParserWithGivenHeaderSizeLimit() {
+    public void constructor_withMaxHttpHeaderSizeGreaterThan255_returnsParserWithGivenHeaderSizeLimit() {
         final HttpHeaderParser parser = new HttpHeaderParser(256);
-        assertEquals(256, parser.getHeaderSizeLimit());
+        assertEquals(256, parser.getMaxHttpHeaderSize());
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void constructor_withHeaderSizeLimitLessThan255_throwsIllegalArgumentException() {
+    public void constructor_withMaxHttpHeaderSizeLessThan255_throwsIllegalArgumentException() {
         new HttpHeaderParser(254);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void constructor_withNegativeHeaderSizeLimit_throwsIllegalArgumentException() {
+    public void constructor_withNegativeMaxHttpHeaderSize_throwsIllegalArgumentException() {
         new HttpHeaderParser(-1);
     }
 
