@@ -9,6 +9,7 @@ public class CommonsModule extends AbstractModule {
     protected void configure() {
         bind(SocketFactory.class).to(SocketFactoryImpl.class).in(Singleton.class);
         bind(ServerSocketFactory.class).to(ServerSocketFactoryImpl.class).in(Singleton.class);
+        bind(InetAddressFactory.class).to(InetAddressFactoryImpl.class).in(Singleton.class);
     }
 
 }

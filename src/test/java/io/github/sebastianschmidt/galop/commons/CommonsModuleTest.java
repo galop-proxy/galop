@@ -29,4 +29,9 @@ public class CommonsModuleTest {
         assertNotNull(injector.getInstance(ServerSocketFactory.class));
     }
 
+    @Test
+    public void configure_bindsInetAddressFactory() {
+        assertNotNull(injector.getInstance(InetAddressFactory.class));
+    }
+
 }
