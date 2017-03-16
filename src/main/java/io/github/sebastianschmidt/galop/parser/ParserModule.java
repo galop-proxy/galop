@@ -3,7 +3,7 @@ package io.github.sebastianschmidt.galop.parser;
 import com.google.inject.AbstractModule;
 import com.google.inject.Singleton;
 
-public class ParserModule extends AbstractModule {
+public final class ParserModule extends AbstractModule {
 
     @Override
     protected void configure() {

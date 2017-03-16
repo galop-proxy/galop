@@ -4,7 +4,7 @@ import com.google.inject.AbstractModule;
 import io.github.sebastianschmidt.galop.commons.CommonsModule;
 import io.github.sebastianschmidt.galop.parser.ParserModule;
 
-public class GalopModule extends AbstractModule {
+public final class GalopModule extends AbstractModule {
 
     @Override
     protected void configure() {

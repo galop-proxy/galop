@@ -6,6 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
 
 /**
  * Tests the class {@link ParserModule}.
@@ -22,6 +23,11 @@ public class ParserModuleTest {
     @Test
     public void configure_bindsHttpHeaderParser() {
         assertNotNull(injector.getInstance(HttpHeaderParser.class));
+    }
+
+    @Test
+    public void configure_bindsHttpHeaderParserAsSingleton() {
+        assertSame(injector.getInstance(HttpHeaderParser.class), injector.getInstance(HttpHeaderParser.class));
     }
 
 }

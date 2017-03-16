@@ -3,7 +3,7 @@ package io.github.sebastianschmidt.galop.commons;
 import com.google.inject.AbstractModule;
 import com.google.inject.Singleton;
 
-public class CommonsModule extends AbstractModule {
+public final class CommonsModule extends AbstractModule {
 
     @Override
     protected void configure() {
