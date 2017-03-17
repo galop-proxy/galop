@@ -2,8 +2,11 @@ package io.github.sebastianschmidt.galop;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+import io.github.sebastianschmidt.galop.administration.MonitorFactory;
 import io.github.sebastianschmidt.galop.commons.ServerSocketFactory;
+import io.github.sebastianschmidt.galop.configuration.ConfigurationFileLoader;
 import io.github.sebastianschmidt.galop.parser.HttpHeaderParser;
+import io.github.sebastianschmidt.galop.proxy.ServerFactory;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -27,8 +30,23 @@ public class GalopModuleTest {
     }
 
     @Test
+    public void configure_installsConfigurationModule() {
+        assertNotNull(injector.getInstance(ConfigurationFileLoader.class));
+    }
+
+    @Test
     public void configure_installsParserModule() {
         assertNotNull(injector.getInstance(HttpHeaderParser.class));
+    }
+
+    @Test
+    public void configure_installsProxyModule() {
+        assertNotNull(injector.getInstance(ServerFactory.class));
+    }
+
+    @Test
+    public void configure_installsAdministrationModule() {
+        assertNotNull(injector.getInstance(MonitorFactory.class));
     }
 
 }
