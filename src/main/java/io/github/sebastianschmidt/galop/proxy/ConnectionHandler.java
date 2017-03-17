@@ -4,7 +4,9 @@ import io.github.sebastianschmidt.galop.configuration.Configuration;
 import io.github.sebastianschmidt.galop.parser.HttpHeaderParser;
 import org.apache.commons.io.IOUtils;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.Socket;
 
 import static java.util.Objects.requireNonNull;
@@ -48,15 +50,17 @@ final class ConnectionHandler implements Runnable {
     }
 
     private void handleRequest() throws IOException {
-        final long requestLength = httpHeaderParser.calculateTotalLength(
-                source.getInputStream(), configuration.getMaxHttpHeaderSize());
-        IOUtils.copyLarge(source.getInputStream(), target.getOutputStream(), 0, requestLength);
+        final InputStream sourceInputStream = new BufferedInputStream(source.getInputStream());
+        final long requestLength = httpHeaderParser.calculateTotalLength(sourceInputStream,
+                configuration.getMaxHttpHeaderSize());
+        IOUtils.copyLarge(sourceInputStream, target.getOutputStream(), 0, requestLength);
     }
 
     private void handleResponse() throws IOException {
+        final InputStream targetInputStream = new BufferedInputStream(target.getInputStream());
         final long responseLength = httpHeaderParser.calculateTotalLength(
-                target.getInputStream(), configuration.getMaxHttpHeaderSize());
-        IOUtils.copyLarge(target.getInputStream(), source.getOutputStream(), 0, responseLength);
+                targetInputStream, configuration.getMaxHttpHeaderSize());
+        IOUtils.copyLarge(targetInputStream, source.getOutputStream(), 0, responseLength);
     }
 
 }

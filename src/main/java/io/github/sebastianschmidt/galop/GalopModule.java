@@ -7,7 +7,7 @@ import io.github.sebastianschmidt.galop.configuration.ConfigurationModule;
 import io.github.sebastianschmidt.galop.parser.ParserModule;
 import io.github.sebastianschmidt.galop.proxy.ProxyModule;
 
-public final class GalopModule extends AbstractModule {
+final class GalopModule extends AbstractModule {
 
     @Override
     protected void configure() {
@@ -16,6 +16,7 @@ public final class GalopModule extends AbstractModule {
         install(new ParserModule());
         install(new ProxyModule());
         install(new AdministrationModule());
+        bind(Starter.class);
     }
 
 }

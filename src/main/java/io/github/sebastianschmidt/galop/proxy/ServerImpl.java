@@ -43,7 +43,7 @@ final class ServerImpl implements Server {
         try {
             serverSocket = serverSocketFactory.create(configuration.getProxyPort().getValue());
         } catch (final IOException ex) {
-            throw new RuntimeException("Could not create server socket.", ex);
+            throw new RuntimeException("Could not create server socket: " + ex.getMessage(), ex);
         }
 
         while (!serverSocket.isClosed()) {

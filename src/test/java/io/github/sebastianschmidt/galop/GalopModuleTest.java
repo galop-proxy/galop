@@ -49,4 +49,9 @@ public class GalopModuleTest {
         assertNotNull(injector.getInstance(MonitorFactory.class));
     }
 
+    @Test
+    public void configure_bindsStarter() {
+        assertNotNull(injector.getInstance(Starter.class));
+    }
+
 }

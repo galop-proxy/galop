@@ -23,6 +23,11 @@ public class CommonsModuleTest {
     }
 
     @Test
+    public void configure_bindsCurrentRuntime() {
+        assertSame(Runtime.getRuntime(), injector.getInstance(Runtime.class));
+    }
+
+    @Test
     public void configure_bindsSocketFactory() {
         assertNotNull(injector.getInstance(SocketFactory.class));
     }

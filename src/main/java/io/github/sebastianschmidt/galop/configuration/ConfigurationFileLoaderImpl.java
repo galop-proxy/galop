@@ -107,7 +107,7 @@ final class ConfigurationFileLoaderImpl implements ConfigurationFileLoader {
             address = inetAddressFactory.createByName(addressAsString);
         } catch (final Exception ex) {
             throw new InvalidConfigurationException("Property " + TARGET_ADDRESS
-                    + " is not a valid IP address or hostname: " + addressAsString);
+                    + " is not a valid IP address or hostname: " + ex.getMessage());
         }
 
         return address;

@@ -8,16 +8,32 @@
     <artifactId>galop</artifactId>
     <version>0.1.0-SNAPSHOT</version>
 
-    <properties>
+    <url>https://github.com/SebastianSchmidt/galop</url>
+    <licenses>
+        <license>
+            <name>MIT License</name>
+            <url>https://opensource.org/licenses/MIT</url>
+        </license>
+    </licenses>
+    <developers>
+        <developer>
+            <name>Sebastian Schmidt</name>
+            <email>email@sebastian-schmidt.info</email>
+        </developer>
+    </developers>
+    <issueManagement>
+        <system>GitHub Issues</system>
+        <url>https://github.com/SebastianSchmidt/galop/issues</url>
+    </issueManagement>
 
+    <properties>
         <encoding>UTF-8</encoding>
         <project.build.sourceEncoding>${encoding}</project.build.sourceEncoding>
         <project.reporting.outputEncoding>${encoding}</project.reporting.outputEncoding>
-
         <java.version>1.8</java.version>
         <java.version.source>${java.version}</java.version.source>
         <java.version.target>${java.version}</java.version.target>
-
+        <main_class>io.github.sebastianschmidt.galop.EntryPoint</main_class>
     </properties>
 
     <dependencies>
@@ -160,6 +176,45 @@
                             <dataFile>${project.build.directory}/coverage-reports/jacoco.exec</dataFile>
                             <outputDirectory>${project.reporting.outputDirectory}/jacoco</outputDirectory>
                         </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Distribution -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.0.2</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                            <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+                        </manifest>
+                        <manifestEntries>
+                            <Specification-Vendor>${project.developers[0].name}</Specification-Vendor>
+                            <Implementation-Vendor>${project.developers[0].name}</Implementation-Vendor>
+                            <Built-By /><!-- Do not write the local user name into the manifest. -->
+                            <Main-Class>${main_class}</Main-Class>
+                            <X-Compile-Source-JDK>${java.version}</X-Compile-Source-JDK>
+                            <X-Compile-Target-JDK>${java.version}</X-Compile-Target-JDK>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>2.4.3</version>
+                <configuration>
+                    <dependencyReducedPomLocation>${project.build.directory}/dependency-reduced-pom.xml</dependencyReducedPomLocation>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
                     </execution>
                 </executions>
             </plugin>

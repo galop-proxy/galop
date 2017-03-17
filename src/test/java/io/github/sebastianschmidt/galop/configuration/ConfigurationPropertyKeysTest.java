@@ -10,7 +10,7 @@ import java.lang.reflect.Constructor;
 public class ConfigurationPropertyKeysTest {
 
     @Test(expected = Exception.class)
-    public void construct_throwsException() throws Exception {
+    public void constructor_throwsException() throws Exception {
         final Constructor<ConfigurationPropertyKeys> constructor = ConfigurationPropertyKeys.class.getDeclaredConstructor();
         constructor.setAccessible(true);
         constructor.newInstance();
