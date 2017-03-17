@@ -3,5 +3,9 @@ language: java
 jdk:
   - oraclejdk8
   - openjdk8
+cache:
+  directories:
+  - $HOME/.m2
+install: mvn dependency:resolve -B
 script: mvn verify -B
 after_success: mvn coveralls:report -B
