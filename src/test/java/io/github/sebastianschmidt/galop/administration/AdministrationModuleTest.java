@@ -32,4 +32,15 @@ public class AdministrationModuleTest {
                 injector.getInstance(MonitorFactory.class));
     }
 
+    @Test
+    public void configure_bindsShutdownHandlerFactory() {
+        assertNotNull(injector.getInstance(ShutdownHandlerFactory.class));
+    }
+
+    @Test
+    public void configure_bindsShutdownHandlerFactoryAsSingleton() {
+        assertSame(injector.getInstance(ShutdownHandlerFactory.class),
+                injector.getInstance(ShutdownHandlerFactory.class));
+    }
+
 }

@@ -21,7 +21,7 @@ final class ShutdownHandler extends Thread {
     private final ExecutorService executorService;
     private final Thread monitor;
 
-    ShutdownHandler(final Configuration configuration ,final Server server, final ExecutorService executorService,
+    ShutdownHandler(final Configuration configuration, final Server server, final ExecutorService executorService,
                     final Thread monitor) {
         this.configuration = requireNonNull(configuration, "configuration must not be null.");
         this.server = requireNonNull(server, "server must not be null.");
