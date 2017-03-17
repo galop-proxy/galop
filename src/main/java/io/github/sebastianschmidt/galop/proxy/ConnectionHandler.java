@@ -9,7 +9,7 @@ import java.net.Socket;
 
 import static java.util.Objects.requireNonNull;
 
-public class ConnectionHandler implements Runnable {
+final class ConnectionHandler implements Runnable {
 
     private final Configuration configuration;
     private final HttpHeaderParser httpHeaderParser;
