@@ -27,7 +27,7 @@ final class Monitor extends Thread {
         }
 
         this.threadPool = (ThreadPoolExecutor) executorService;
-        this.logInterval = configuration.getActiveConnectionHandlersLogInterval();
+        this.logInterval = configuration.getConnectionHandlersLogInterval();
 
         setName("Monitor");
 

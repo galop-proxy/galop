@@ -21,16 +21,19 @@ final class ConfigurationFileLoaderImpl implements ConfigurationFileLoader {
         private final InetAddress inetAddress;
         private final PortNumber portNumber;
         private final int maxHttpHeaderSize;
-        private final long activeConnectionHandlersLogInterval;
+        private final long connectionHandlersLogInterval;
+        private final long connectionHandlersTerminationTimeout;
 
         private ConfigurationImpl(final PortNumber proxyPort, final InetAddress inetAddress,
                                   final PortNumber portNumber, final int maxHttpHeaderSize,
-                                  final long activeConnectionHandlersLogInterval) {
+                                  final long connectionHandlersLogInterval,
+                                  final long connectionHandlersTerminationTimeout) {
             this.proxyPort = requireNonNull(proxyPort, "proxyPort must not be null.");
             this.inetAddress = requireNonNull(inetAddress, "inetAddress must not be null.");
             this.portNumber = requireNonNull(portNumber, "portNumber must not be null.");
             this.maxHttpHeaderSize = maxHttpHeaderSize;
-            this.activeConnectionHandlersLogInterval = activeConnectionHandlersLogInterval;
+            this.connectionHandlersLogInterval = connectionHandlersLogInterval;
+            this.connectionHandlersTerminationTimeout = connectionHandlersTerminationTimeout;
         }
 
         @Override
@@ -54,8 +57,13 @@ final class ConfigurationFileLoaderImpl implements ConfigurationFileLoader {
         }
 
         @Override
-        public long getActiveConnectionHandlersLogInterval() {
-            return activeConnectionHandlersLogInterval;
+        public long getConnectionHandlersLogInterval() {
+            return connectionHandlersLogInterval;
+        }
+
+        @Override
+        public long getConnectionHandlersTerminationTimeout() {
+            return connectionHandlersTerminationTimeout;
         }
 
     }
@@ -77,10 +85,11 @@ final class ConfigurationFileLoaderImpl implements ConfigurationFileLoader {
         final InetAddress targetAddress = parseTargetAddress(properties);
         final PortNumber targetPort = parseTargetPortNumber(properties);
         final int maxHttpHeaderSize = parseMaxHttpHeaderSize(properties);
-        final long activeConnectionHandlersLogInterval = parseActiveConnectionHandlersLogInterval(properties);
+        final long connectionHandlersLogInterval = parseConnectionHandlersLogInterval(properties);
+        final long connectionHandlersTerminationTimeout = parseConnectionHandlersTerminationTimeout(properties);
 
         return new ConfigurationImpl(proxyPortNumber, targetAddress, targetPort, maxHttpHeaderSize,
-                activeConnectionHandlersLogInterval);
+                connectionHandlersLogInterval, connectionHandlersTerminationTimeout);
 
     }
 
@@ -156,27 +165,52 @@ final class ConfigurationFileLoaderImpl implements ConfigurationFileLoader {
 
     }
 
-    private long parseActiveConnectionHandlersLogInterval(final Properties properties)
+    private long parseConnectionHandlersLogInterval(final Properties properties)
             throws InvalidConfigurationException {
 
-        final String intervalAsString = properties.getProperty(ACTIVE_CONNECTION_HANDLERS_LOG_INTERVAL,
-                Long.toString(ConfigurationDefaults.ACTIVE_CONNECTION_HANDLERS_LOG_INTERVAL));
+        final String intervalAsString = properties.getProperty(CONNECTION_HANDLERS_LOG_INTERVAL,
+                Long.toString(ConfigurationDefaults.CONNECTION_HANDLERS_LOG_INTERVAL));
 
         final long interval;
 
         try {
             interval = Long.parseLong(intervalAsString);
         } catch (final NumberFormatException ex) {
-            throw new InvalidConfigurationException("Property " + ACTIVE_CONNECTION_HANDLERS_LOG_INTERVAL
+            throw new InvalidConfigurationException("Property " + CONNECTION_HANDLERS_LOG_INTERVAL
                     + " is not a valid number: " + intervalAsString);
         }
 
         if (interval < 0) {
-            throw new InvalidConfigurationException("Property " + ACTIVE_CONNECTION_HANDLERS_LOG_INTERVAL
+            throw new InvalidConfigurationException("Property " + CONNECTION_HANDLERS_LOG_INTERVAL
                     + " must be at least zero: " + interval);
         }
 
         return interval;
+
+    }
+
+
+    private long parseConnectionHandlersTerminationTimeout(final Properties properties)
+            throws InvalidConfigurationException {
+
+        final String timeoutAsString = properties.getProperty(CONNECTION_HANDLERS_TERMINATION_TIMEOUT,
+                Long.toString(ConfigurationDefaults.CONNECTION_HANDLERS_TERMINATION_TIMEOUT));
+
+        final long timeout;
+
+        try {
+            timeout = Long.parseLong(timeoutAsString);
+        } catch (final NumberFormatException ex) {
+            throw new InvalidConfigurationException("Property " + CONNECTION_HANDLERS_TERMINATION_TIMEOUT
+                    + " is not a valid number: " + timeoutAsString);
+        }
+
+        if (timeout < 0) {
+            throw new InvalidConfigurationException("Property " + CONNECTION_HANDLERS_TERMINATION_TIMEOUT
+                    + " must be at least zero: " + timeout);
+        }
+
+        return timeout;
 
     }
 

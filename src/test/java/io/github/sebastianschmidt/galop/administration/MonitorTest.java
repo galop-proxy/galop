@@ -23,7 +23,7 @@ public class MonitorTest {
     @Before
     public void setUp() {
         configuration = mock(Configuration.class);
-        when(configuration.getActiveConnectionHandlersLogInterval()).thenReturn(10000L);
+        when(configuration.getConnectionHandlersLogInterval()).thenReturn(10000L);
         executorService = spy(Executors.newCachedThreadPool());
         monitor = new Monitor(configuration, executorService);
     }

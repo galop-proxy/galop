@@ -26,7 +26,7 @@ public class MonitorFactoryImplTest {
         final ExecutorService executorService = Executors.newCachedThreadPool();
         factory = new MonitorFactoryImpl(executorService);
         configuration = mock(Configuration.class);
-        when(configuration.getActiveConnectionHandlersLogInterval()).thenReturn(10000L);
+        when(configuration.getConnectionHandlersLogInterval()).thenReturn(10000L);
     }
 
     @Test(expected = NullPointerException.class)

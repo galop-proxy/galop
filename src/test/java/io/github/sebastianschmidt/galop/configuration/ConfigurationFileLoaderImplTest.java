@@ -46,10 +46,23 @@ public class ConfigurationFileLoaderImplTest {
     // Valid configuration files:
 
     @Test
+    public void load_withValidFileWithOverwrittenDefaults_returnsSpecifiedConfiguration() throws Exception {
+
+        final Configuration configuration = load("valid-configuration-with-all-overwritten-defaults.properties");
+
+        assertEquals(80, configuration.getProxyPort().getValue());
+        assertEquals("localhost", configuration.getTargetAddress().getHostName());
+        assertEquals(8080, configuration.getTargetPort().getValue());
+        assertEquals(255, configuration.getMaxHttpHeaderSize());
+        assertEquals(30000, configuration.getConnectionHandlersLogInterval());
+        assertEquals(15000, configuration.getConnectionHandlersTerminationTimeout());
+
+    }
+
+    @Test
     public void load_withValidFileWithMaxHttpHeaderSize_returnsSpecifiedConfiguration() throws Exception {
 
-        final Path path = getConfigurationPath("valid-configuration-with-max-http-header-size.properties");
-        final Configuration configuration = loader.load(path);
+        final Configuration configuration = load("valid-configuration-with-max-http-header-size.properties");
 
         assertEquals(80, configuration.getProxyPort().getValue());
         assertEquals("localhost", configuration.getTargetAddress().getHostName());
@@ -62,7 +75,7 @@ public class ConfigurationFileLoaderImplTest {
     public void load_withValidFileWithoutMaxHttpHeaderSize_returnsConfigurationWithDefaultMaxHttpHeaderSize()
             throws Exception {
 
-        final Configuration configuration = load("valid-configuration-without-max-http-header-size.properties");
+        final Configuration configuration = load("valid-configuration-without-overwritten-defaults.properties");
 
         assertEquals(80, configuration.getProxyPort().getValue());
         assertEquals("localhost", configuration.getTargetAddress().getHostName());
@@ -73,18 +86,33 @@ public class ConfigurationFileLoaderImplTest {
 
 
     @Test
-    public void load_withValidFileWithActiveConnectionHandlersLogInterval_returnsSpecifiedConfiguration()
+    public void load_withValidFileWithConnectionHandlersLogInterval_returnsSpecifiedConfiguration()
             throws Exception {
         final Configuration configuration = load("valid-configuration-with-log-interval.properties");
-        assertEquals(10000, configuration.getActiveConnectionHandlersLogInterval());
+        assertEquals(10000, configuration.getConnectionHandlersLogInterval());
     }
 
     @Test
-    public void load_withValidFileWithoutActiveConnectionHandlersLogInterval_returnsConfigurationWithDefaultInterval()
+    public void load_withValidFileWithoutConnectionHandlersLogInterval_returnsConfigurationWithDefaultInterval()
             throws Exception {
-        final Configuration configuration = load("valid-configuration-without-log-interval.properties");
-        assertEquals(ConfigurationDefaults.ACTIVE_CONNECTION_HANDLERS_LOG_INTERVAL,
-                configuration.getActiveConnectionHandlersLogInterval());
+        final Configuration configuration = load("valid-configuration-without-overwritten-defaults.properties");
+        assertEquals(ConfigurationDefaults.CONNECTION_HANDLERS_LOG_INTERVAL,
+                configuration.getConnectionHandlersLogInterval());
+    }
+
+    @Test
+    public void load_withValidFileWithConnectionHandlerTerminationTimeout_returnsSpecifiedConfiguration()
+            throws Exception {
+        final Configuration configuration = load("valid-configuration-with-termination-timeout.properties");
+        assertEquals(120000, configuration.getConnectionHandlersTerminationTimeout());
+    }
+
+    @Test
+    public void load_withValidFileWithoutConnectionHandlersTerminationTimeout_returnsConfigurationWithDefaultTimeout()
+            throws Exception {
+        final Configuration configuration = load("valid-configuration-without-overwritten-defaults.properties");
+        assertEquals(ConfigurationDefaults.CONNECTION_HANDLERS_TERMINATION_TIMEOUT,
+                configuration.getConnectionHandlersTerminationTimeout());
     }
 
     // Invalid configuration files:
@@ -130,15 +158,27 @@ public class ConfigurationFileLoaderImplTest {
     }
 
     @Test(expected = InvalidConfigurationException.class)
-    public void load_withInvalidActiveConnectionHandlersLogInterval_throwsInvalidConfigurationException()
+    public void load_withInvalidConnectionHandlersLogInterval_throwsInvalidConfigurationException()
             throws Exception {
         load("invalid-configuration-with-invalid-log-interval.properties");
     }
 
     @Test(expected = InvalidConfigurationException.class)
-    public void load_withTooLowTActiveConnectionHandlersLogInterval_throwsInvalidConfigurationException()
+    public void load_withTooLowConnectionHandlersLogInterval_throwsInvalidConfigurationException()
             throws Exception {
         load("invalid-configuration-with-too-low-log-interval.properties");
+    }
+
+    @Test(expected = InvalidConfigurationException.class)
+    public void load_withInvalidConnectionHandlersTerminationTimeout_throwsInvalidConfigurationException()
+            throws Exception {
+        load("invalid-configuration-with-invalid-termination-timeout.properties");
+    }
+
+    @Test(expected = InvalidConfigurationException.class)
+    public void load_withTooLowConnectionHandlersTerminationTimeout_throwsInvalidConfigurationException()
+            throws Exception {
+        load("invalid-configuration-with-too-low-termination-timeout.properties");
     }
 
     // Helper methods:
