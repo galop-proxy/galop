@@ -6,6 +6,6 @@ import java.net.Socket;
 
 public interface ConnectionHandlerFactory {
 
-    Runnable create(Configuration configuration, Socket source, Socket target);
+    ConnectionHandler create(Configuration configuration, Socket source, Socket target);
 
 }

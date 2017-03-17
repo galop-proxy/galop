@@ -1,5 +1,6 @@
 package io.github.sebastianschmidt.galop.proxy;
 
+import com.google.common.collect.MapMaker;
 import io.github.sebastianschmidt.galop.commons.ServerSocketFactory;
 import io.github.sebastianschmidt.galop.commons.SocketFactory;
 import io.github.sebastianschmidt.galop.configuration.Configuration;
@@ -10,7 +11,7 @@ import org.apache.logging.log4j.Logger;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Objects;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutorService;
 
 import static java.util.Objects.requireNonNull;
@@ -24,6 +25,7 @@ final class ServerImpl implements Server {
     private final SocketFactory socketFactory;
     private final ConnectionHandlerFactory connectionHandlerFactory;
     private final ExecutorService executorService;
+    private final ConcurrentMap<ConnectionHandler, Long> connectionHandlers;
 
     private ServerSocket serverSocket;
 
@@ -36,6 +38,7 @@ final class ServerImpl implements Server {
         this.connectionHandlerFactory = requireNonNull(connectionHandlerFactory,
                 "connectionHandlerFactory must not be null.");
         this.executorService = requireNonNull(executorService, "executorService must not be null.");
+        this.connectionHandlers = new MapMaker().weakKeys().makeMap();
     }
 
     @Override
@@ -58,7 +61,9 @@ final class ServerImpl implements Server {
                 target = socketFactory.create(configuration.getTargetAddress(),
                         configuration.getTargetPort().getValue());
 
-                executorService.execute(connectionHandlerFactory.create(configuration, source, target));
+                final ConnectionHandler handler = connectionHandlerFactory.create(configuration, source, target);
+                connectionHandlers.put(handler, System.currentTimeMillis());
+                executorService.execute(handler);
 
             } catch (final Exception ex) {
 
@@ -78,6 +83,7 @@ final class ServerImpl implements Server {
     @Override
     public void close() throws IOException {
         IOUtils.closeQuietly(serverSocket);
+        connectionHandlers.keySet().forEach(IOUtils::closeQuietly);
     }
 
 }

@@ -3,6 +3,7 @@ package io.github.sebastianschmidt.galop.proxy;
 import io.github.sebastianschmidt.galop.configuration.Configuration;
 import io.github.sebastianschmidt.galop.parser.HttpTestUtils;
 import io.github.sebastianschmidt.galop.parser.HttpHeaderParser;
+import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -17,16 +18,16 @@ import static org.mockito.AdditionalMatchers.not;
 import static org.mockito.Mockito.*;
 
 /**
- * Tests the class {@link ConnectionHandler}.
+ * Tests the class {@link ConnectionHandlerImpl}.
  */
-public class ConnectionHandlerTest {
+public class ConnectionHandlerImplTest {
 
     private Configuration configuration;
     private HttpHeaderParser httpHeaderParser;
     private Socket source;
     private Socket target;
 
-    private ConnectionHandler connectionHandler;
+    private ConnectionHandlerImpl connectionHandler;
 
     @Before
     public void setUp() throws IOException {
@@ -46,7 +47,7 @@ public class ConnectionHandlerTest {
         when(target.getOutputStream()).thenReturn(new ByteArrayOutputStream());
         setInputContent("", target);
 
-        connectionHandler = new ConnectionHandler(configuration, httpHeaderParser, source, target);
+        connectionHandler = new ConnectionHandlerImpl(configuration, httpHeaderParser, source, target);
 
     }
 
@@ -54,22 +55,22 @@ public class ConnectionHandlerTest {
 
     @Test(expected = NullPointerException.class)
     public void constructor_withoutConfiguration_throwsNullPointerException() {
-        new ConnectionHandler(null, httpHeaderParser, source, target);
+        new ConnectionHandlerImpl(null, httpHeaderParser, source, target);
     }
 
     @Test(expected = NullPointerException.class)
     public void constructor_withoutHttpHeaderParser_throwsNullPointerException() {
-        new ConnectionHandler(configuration, null, source, target);
+        new ConnectionHandlerImpl(configuration, null, source, target);
     }
 
     @Test(expected = NullPointerException.class)
     public void constructor_withoutSourceSocket_throwsNullPointerException() {
-        new ConnectionHandler(configuration, httpHeaderParser, null, target);
+        new ConnectionHandlerImpl(configuration, httpHeaderParser, null, target);
     }
 
     @Test(expected = NullPointerException.class)
     public void constructor_withoutTargetSocket_throwsNullPointerException() {
-        new ConnectionHandler(configuration, httpHeaderParser, source, null);
+        new ConnectionHandlerImpl(configuration, httpHeaderParser, source, null);
     }
 
     // Handle one request and response:
@@ -176,6 +177,24 @@ public class ConnectionHandlerTest {
 
     }
 
+    // Connection should be closed:
+
+    @Test
+    public void run_whenConnectionShouldBeClosed_closesSourceAndTargetSocketAndTerminatesAfterHandlingCurrentRequest()
+            throws IOException {
+
+        final String request = createGetRequest();
+        setInputContent(request, source, () -> IOUtils.closeQuietly(connectionHandler));
+        when(source.isClosed()).thenReturn(false);
+
+        connectionHandler.run();
+
+        assertEquals(request, getOutputContent(target));
+        verify(source, atLeastOnce()).close();
+        verify(target, atLeastOnce()).close();
+
+    }
+
     // Configuration:
 
     @Test
@@ -189,10 +208,38 @@ public class ConnectionHandlerTest {
     // Helper methods:
 
     private void setInputContent(final String content, final Socket socket) throws IOException {
+        setInputContent(content, socket, null);
+    }
+
+    private void setInputContent(final String content, final Socket socket, final Runnable callbackAfterCallback)
+            throws IOException {
+
         final byte[] contentBytes = content.getBytes();
+
         final InputStream inputStream = new ByteArrayInputStream(contentBytes);
         when(socket.getInputStream()).thenReturn(inputStream);
-        when(httpHeaderParser.calculateTotalLength(any(), anyInt())).thenReturn((long) content.getBytes().length);
+
+        final long totalLength = (long) content.getBytes().length;
+
+        when(httpHeaderParser.calculateTotalLength(any(), anyInt())).thenReturn(totalLength);
+
+        when(httpHeaderParser.calculateTotalLength(any(), anyInt(), any())).thenAnswer((invocation) -> {
+
+            final Runnable callback = (Runnable) invocation.getArguments()[2];
+
+            if (callback != null) {
+                callback.run();
+            }
+
+            if (callbackAfterCallback != null) {
+                callbackAfterCallback.run();
+            }
+
+            return totalLength;
+
+        });
+
+
     }
 
     private String getOutputContent(final Socket socket) throws IOException {

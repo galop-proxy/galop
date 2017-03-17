@@ -16,6 +16,12 @@ final class HttpHeaderParserImpl implements HttpHeaderParser {
 
     @Override
     public long calculateTotalLength(final InputStream inputStream, final int maxHttpHeaderSize) throws IOException {
+        return calculateTotalLength(inputStream, maxHttpHeaderSize, null);
+    }
+
+    @Override
+    public long calculateTotalLength(final InputStream inputStream, final int maxHttpHeaderSize,
+                                     final Runnable startParsingCallback) throws IOException {
 
         requireNonNull(inputStream, "inputStream must not be null.");
 
@@ -26,13 +32,16 @@ final class HttpHeaderParserImpl implements HttpHeaderParser {
         final LimitedInputStream limitedInputStream = new LimitedInputStream(inputStream, maxHttpHeaderSize);
         inputStream.mark(maxHttpHeaderSize);
 
-        final long calculatedLength = parseRequest(limitedInputStream, maxHttpHeaderSize);
+        final long calculatedLength = parseRequest(limitedInputStream, maxHttpHeaderSize, startParsingCallback);
         inputStream.reset();
         return calculatedLength;
 
     }
 
-    private long parseRequest(final LimitedInputStream limitedInputStream, final int maxHttpHeaderSize) throws IOException {
+    private long parseRequest(final LimitedInputStream limitedInputStream, final int maxHttpHeaderSize,
+                              final Runnable startParsingCallback) throws IOException {
+
+        boolean firstByte = true;
 
         byte[] bytes = new byte[maxHttpHeaderSize];
         int currentByteIndex = 0;
@@ -41,6 +50,16 @@ final class HttpHeaderParserImpl implements HttpHeaderParser {
         long contentLength = 0;
 
         while ((currentByte = limitedInputStream.read()) > -1) {
+
+            if (firstByte) {
+
+                firstByte = false;
+
+                if (startParsingCallback != null) {
+                    startParsingCallback.run();
+                }
+
+            }
 
             char currentChar = (char) currentByte;
 

@@ -18,8 +18,8 @@ final class ConnectionHandlerFactoryImpl implements ConnectionHandlerFactory {
     }
 
     @Override
-    public Runnable create(final Configuration configuration, final Socket source, final Socket target) {
-        return new ConnectionHandler(configuration, httpHeaderParser, source, target);
+    public ConnectionHandler create(final Configuration configuration, final Socket source, final Socket target) {
+        return new ConnectionHandlerImpl(configuration, httpHeaderParser, source, target);
     }
 
 }

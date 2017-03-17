@@ -39,7 +39,7 @@ final class ShutdownHandler extends Thread {
 
     private void terminateServer() {
         try {
-            LOGGER.info("Terminate server...");
+            LOGGER.info("Terminate server and notify connection handlers to terminate as soon as possible...");
             server.close();
             LOGGER.info("Server terminated.");
         } catch (final Exception ex) {
@@ -51,16 +51,16 @@ final class ShutdownHandler extends Thread {
         try {
 
             final long terminationTimeout = configuration.getConnectionHandlersTerminationTimeout();
-            LOGGER.info("Terminate connection handlers... (Timeout: " + terminationTimeout + ")");
+            LOGGER.info("Wait for the connection handlers to terminate... (Timeout: " + terminationTimeout + ")");
 
             executorService.shutdownNow();
 
             final boolean timeout = !executorService.awaitTermination(terminationTimeout, TimeUnit.MILLISECONDS);
 
             if (!timeout) {
-                LOGGER.info("Connection handlers terminated.");
+                LOGGER.info("All connection handlers gracefully terminated.");
             } else {
-                LOGGER.warn("Timeout while terminating connection handlers. "
+                LOGGER.warn("Timeout while waiting for connection handlers to terminate. "
                         + "Not all connection handlers could be gracefully terminated.");
             }
 

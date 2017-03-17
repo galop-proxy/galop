@@ -3,6 +3,7 @@ package io.github.sebastianschmidt.galop.parser;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.InOrder;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -88,6 +89,22 @@ public class HttpHeaderParserImplTest {
         final String response = createResponse("<h1>Invalid Content-Length</h1>", "-1");
         final InputStream responseInputStream = createInputStream(response);
         parser.calculateTotalLength(responseInputStream, MAX_HTTP_HEADER_SIZE);
+    }
+
+    // Callback:
+
+    @Test
+    public void calculateTotalLength_withCallback_callsCallbackAsSoonAsTheFirstByteWasRead() throws IOException {
+
+        final Runnable callback = mock(Runnable.class);
+
+        parser.calculateTotalLength(httpGetRequestInputStream, MAX_HTTP_HEADER_SIZE, callback);
+
+        final InOrder inOrder = inOrder(httpGetRequestInputStream, callback);
+        inOrder.verify(httpGetRequestInputStream).read();
+        inOrder.verify(callback).run();
+        inOrder.verify(httpGetRequestInputStream, atLeastOnce()).read();
+
     }
 
     // Transfer-Encodings:
