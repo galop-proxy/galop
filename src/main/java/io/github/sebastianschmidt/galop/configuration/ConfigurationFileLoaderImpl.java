@@ -21,13 +21,16 @@ final class ConfigurationFileLoaderImpl implements ConfigurationFileLoader {
         private final InetAddress inetAddress;
         private final PortNumber portNumber;
         private final int maxHttpHeaderSize;
+        private final long activeConnectionHandlersLogInterval;
 
         private ConfigurationImpl(final PortNumber proxyPort, final InetAddress inetAddress,
-                                  final PortNumber portNumber, final int maxHttpHeaderSize) {
+                                  final PortNumber portNumber, final int maxHttpHeaderSize,
+                                  final long activeConnectionHandlersLogInterval) {
             this.proxyPort = requireNonNull(proxyPort, "proxyPort must not be null.");
             this.inetAddress = requireNonNull(inetAddress, "inetAddress must not be null.");
             this.portNumber = requireNonNull(portNumber, "portNumber must not be null.");
             this.maxHttpHeaderSize = maxHttpHeaderSize;
+            this.activeConnectionHandlersLogInterval = activeConnectionHandlersLogInterval;
         }
 
         @Override
@@ -50,6 +53,11 @@ final class ConfigurationFileLoaderImpl implements ConfigurationFileLoader {
             return maxHttpHeaderSize;
         }
 
+        @Override
+        public long getActiveConnectionHandlersLogInterval() {
+            return activeConnectionHandlersLogInterval;
+        }
+
     }
 
     private final InetAddressFactory inetAddressFactory;
@@ -69,8 +77,10 @@ final class ConfigurationFileLoaderImpl implements ConfigurationFileLoader {
         final InetAddress targetAddress = parseTargetAddress(properties);
         final PortNumber targetPort = parseTargetPortNumber(properties);
         final int maxHttpHeaderSize = parseMaxHttpHeaderSize(properties);
+        final long activeConnectionHandlersLogInterval = parseActiveConnectionHandlersLogInterval(properties);
 
-        return new ConfigurationImpl(proxyPortNumber, targetAddress, targetPort, maxHttpHeaderSize);
+        return new ConfigurationImpl(proxyPortNumber, targetAddress, targetPort, maxHttpHeaderSize,
+                activeConnectionHandlersLogInterval);
 
     }
 
@@ -143,6 +153,30 @@ final class ConfigurationFileLoaderImpl implements ConfigurationFileLoader {
         }
 
         return maxHttpHeaderSize;
+
+    }
+
+    private long parseActiveConnectionHandlersLogInterval(final Properties properties)
+            throws InvalidConfigurationException {
+
+        final String intervalAsString = properties.getProperty(ACTIVE_CONNECTION_HANDLERS_LOG_INTERVAL,
+                Long.toString(ConfigurationDefaults.ACTIVE_CONNECTION_HANDLERS_LOG_INTERVAL));
+
+        final long interval;
+
+        try {
+            interval = Long.parseLong(intervalAsString);
+        } catch (final NumberFormatException ex) {
+            throw new InvalidConfigurationException("Property " + ACTIVE_CONNECTION_HANDLERS_LOG_INTERVAL
+                    + " is not a valid number: " + intervalAsString);
+        }
+
+        if (interval < 0) {
+            throw new InvalidConfigurationException("Property " + ACTIVE_CONNECTION_HANDLERS_LOG_INTERVAL
+                    + " must be at least zero: " + interval);
+        }
+
+        return interval;
 
     }
 

@@ -6,6 +6,7 @@ final class ConfigurationPropertyKeys {
     static final String TARGET_ADDRESS = "target_address";
     static final String TARGET_PORT = "target_port";
     static final String MAX_HTTP_HEADER_SIZE = "max_http_header_size";
+    static final String ACTIVE_CONNECTION_HANDLERS_LOG_INTERVAL = "active_connection_handlers_log_interval";
 
     private ConfigurationPropertyKeys() {
         throw new AssertionError("No instances");

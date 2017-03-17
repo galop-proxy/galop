@@ -71,6 +71,22 @@ public class ConfigurationFileLoaderImplTest {
 
     }
 
+
+    @Test
+    public void load_withValidFileWithActiveConnectionHandlersLogInterval_returnsSpecifiedConfiguration()
+            throws Exception {
+        final Configuration configuration = load("valid-configuration-with-log-interval.properties");
+        assertEquals(10000, configuration.getActiveConnectionHandlersLogInterval());
+    }
+
+    @Test
+    public void load_withValidFileWithoutActiveConnectionHandlersLogInterval_returnsConfigurationWithDefaultInterval()
+            throws Exception {
+        final Configuration configuration = load("valid-configuration-without-log-interval.properties");
+        assertEquals(ConfigurationDefaults.ACTIVE_CONNECTION_HANDLERS_LOG_INTERVAL,
+                configuration.getActiveConnectionHandlersLogInterval());
+    }
+
     // Invalid configuration files:
 
     @Test(expected = InvalidConfigurationException.class)
@@ -111,6 +127,18 @@ public class ConfigurationFileLoaderImplTest {
     @Test(expected = InvalidConfigurationException.class)
     public void load_withTooLowMaxHttpHeaderSize_throwsInvalidConfigurationException() throws Exception {
         load("invalid-configuration-with-too-low-max-http-header-size.properties");
+    }
+
+    @Test(expected = InvalidConfigurationException.class)
+    public void load_withInvalidActiveConnectionHandlersLogInterval_throwsInvalidConfigurationException()
+            throws Exception {
+        load("invalid-configuration-with-invalid-log-interval.properties");
+    }
+
+    @Test(expected = InvalidConfigurationException.class)
+    public void load_withTooLowTActiveConnectionHandlersLogInterval_throwsInvalidConfigurationException()
+            throws Exception {
+        load("invalid-configuration-with-too-low-log-interval.properties");
     }
 
     // Helper methods:

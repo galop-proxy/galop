@@ -14,4 +14,6 @@ public interface Configuration {
 
     int getMaxHttpHeaderSize();
 
+    long getActiveConnectionHandlersLogInterval();
+
 }
