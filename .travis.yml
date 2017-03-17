@@ -6,6 +6,6 @@ jdk:
 cache:
   directories:
   - $HOME/.m2
-install: mvn dependency:resolve -B
+install: true
 script: mvn verify -B
 after_success: mvn coveralls:report -B
