@@ -30,6 +30,7 @@ public class PortNumberTest {
     @Test
     public void parsePortNumber_withString_returnsPortNumber() {
         final PortNumber portNumber = PortNumber.parsePortNumber("443");
+        assertNotNull(portNumber);
         assertEquals(443, portNumber.getValue());
     }
 
