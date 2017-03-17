@@ -23,7 +23,7 @@ public class MonitorTest {
     @Before
     public void setUp() {
         configuration = mock(Configuration.class);
-        when(configuration.getConnectionHandlersLogInterval()).thenReturn(10000L);
+        when(configuration.getConnectionHandlersLogInterval()).thenReturn(100L);
         executorService = spy(Executors.newCachedThreadPool());
         monitor = new Monitor(configuration, executorService);
     }
@@ -31,7 +31,7 @@ public class MonitorTest {
     @Test
     public void start_logsCurrentNumberOfActiveConnectionHandlers() {
         monitor.start();
-        verify(((ThreadPoolExecutor) executorService), timeout(10000).atLeastOnce()).getActiveCount();
+        verify(((ThreadPoolExecutor) executorService), timeout(10000).atLeast(2)).getActiveCount();
         monitor.interrupt();
     }
 

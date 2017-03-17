@@ -4,7 +4,7 @@ import io.github.sebastianschmidt.galop.configuration.Configuration;
 
 import java.net.Socket;
 
-public interface ConnectionHandlerFactory {
+interface ConnectionHandlerFactory {
 
     ConnectionHandler create(Configuration configuration, Socket source, Socket target);
 

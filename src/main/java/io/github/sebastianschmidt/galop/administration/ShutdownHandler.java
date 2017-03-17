@@ -31,13 +31,13 @@ final class ShutdownHandler extends Thread {
 
     @Override
     public void run() {
-        terminateServer();
-        terminateConnectionHandler();
+        terminateServerAndConnectionHandlers();
+        waitForConnectionHandlersToTerminate();
         terminateMonitor();
         terminateLogging();
     }
 
-    private void terminateServer() {
+    private void terminateServerAndConnectionHandlers() {
         try {
             LOGGER.info("Terminate server and notify connection handlers to terminate as soon as possible...");
             server.close();
@@ -47,7 +47,7 @@ final class ShutdownHandler extends Thread {
         }
     }
 
-    private void terminateConnectionHandler() {
+    private void waitForConnectionHandlersToTerminate() {
         try {
 
             final long terminationTimeout = configuration.getConnectionHandlersTerminationTimeout();
