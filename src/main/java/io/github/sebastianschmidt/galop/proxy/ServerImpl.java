@@ -10,6 +10,7 @@ import org.apache.logging.log4j.Logger;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 
 import static java.util.Objects.requireNonNull;
@@ -61,7 +62,7 @@ final class ServerImpl implements Server {
 
             } catch (final Exception ex) {
 
-                if (!"socket closed".equals(ex.getMessage())) {
+                if (!"socket closed".equals(String.valueOf(ex.getMessage()).toLowerCase())) {
                     LOGGER.error("An error occurred while processing a new connection.", ex);
                 }
 
