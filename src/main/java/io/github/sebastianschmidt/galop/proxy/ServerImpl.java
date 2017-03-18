@@ -20,7 +20,7 @@ final class ServerImpl implements Server {
 
     private static final Logger LOGGER = LogManager.getLogger(Server.class);
 
-    private final Configuration configuration;
+    private final Configuration config;
     private final ServerSocketFactory serverSocketFactory;
     private final SocketFactory socketFactory;
     private final ConnectionHandlerFactory connectionHandlerFactory;
@@ -32,7 +32,7 @@ final class ServerImpl implements Server {
     ServerImpl(final Configuration configuration, final ServerSocketFactory serverSocketFactory,
                final SocketFactory socketFactory, final ConnectionHandlerFactory connectionHandlerFactory,
                final ExecutorService executorService) {
-        this.configuration = requireNonNull(configuration, "configuration must not be null.");
+        this.config = requireNonNull(configuration, "configuration must not be null.");
         this.serverSocketFactory = requireNonNull(serverSocketFactory, "serverSocketFactory must not be null.");
         this.socketFactory = requireNonNull(socketFactory, "socketFactory must not be null.");
         this.connectionHandlerFactory = requireNonNull(connectionHandlerFactory,
@@ -44,11 +44,7 @@ final class ServerImpl implements Server {
     @Override
     public void run() {
 
-        try {
-            serverSocket = serverSocketFactory.create(configuration.getProxyPort().getValue());
-        } catch (final IOException ex) {
-            throw new RuntimeException("Could not create server socket: " + ex.getMessage(), ex);
-        }
+        initServerSocket();
 
         while (!serverSocket.isClosed()) {
 
@@ -58,12 +54,9 @@ final class ServerImpl implements Server {
             try {
 
                 source = serverSocket.accept();
-                target = socketFactory.create(configuration.getTargetAddress(),
-                        configuration.getTargetPort().getValue());
+                target = socketFactory.create(config.getTargetAddress(), config.getTargetPort().getValue());
 
-                final ConnectionHandler handler = connectionHandlerFactory.create(configuration, source, target);
-                connectionHandlers.put(handler, System.currentTimeMillis());
-                executorService.execute(handler);
+                handleNewConnection(source, target);
 
             } catch (final Exception ex) {
 
@@ -78,6 +71,20 @@ final class ServerImpl implements Server {
 
         }
 
+    }
+
+    private void initServerSocket() {
+        try {
+            serverSocket = serverSocketFactory.create(config.getProxyPort().getValue());
+        } catch (final IOException ex) {
+            throw new RuntimeException("Could not create server socket: " + ex.getMessage(), ex);
+        }
+    }
+
+    private void handleNewConnection(final Socket source, final Socket target) {
+        final ConnectionHandler handler = connectionHandlerFactory.create(config, source, target);
+        connectionHandlers.put(handler, System.currentTimeMillis());
+        executorService.execute(handler);
     }
 
     @Override
