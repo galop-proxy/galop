@@ -7,6 +7,11 @@
 GALOP (**G**raceful **A**pp**l**icati**o**n **P**roxy) is a simple reverse
 proxy that accepts HTTP requests from clients and passes them to a server.
 When shutting down, the proxy processes open HTTP requests before the
-connections are closed. A persistent connection (HTTP keep-alive) is closed
-after the current HTTP request has been answered. After this, the actual server
-can be shut down without interrupting open HTTP requests.
+connections are closed. A persistent connection (keep-alive) is closed after
+the current HTTP request has been answered. After this, the actual server can
+be shut down without interrupting open HTTP requests.
+
+
+## License
+
+GALOP is licensed under [The MIT License](https://opensource.org/licenses/MIT).
