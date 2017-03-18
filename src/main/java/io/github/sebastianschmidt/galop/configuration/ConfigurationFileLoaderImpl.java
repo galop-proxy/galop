@@ -28,20 +28,20 @@ final class ConfigurationFileLoaderImpl implements ConfigurationFileLoader {
         final Properties properties = new Properties();
         properties.load(new FileInputStream(path.toFile()));
 
-        final ConfigurationBuilder builder = new ConfigurationBuilder();
+        final ConfigurationImpl configuration = new ConfigurationImpl();
 
-        parseProxyPortNumber(properties, builder);
-        parseTargetAddress(properties, builder);
-        parseTargetPortNumber(properties, builder);
-        parseMaxHttpHeaderSize(properties, builder);
-        parseConnectionHandlersLogInterval(properties, builder);
-        parseConnectionHandlersTerminationTimeout(properties, builder);
+        parseProxyPortNumber(properties, configuration);
+        parseTargetAddress(properties, configuration);
+        parseTargetPortNumber(properties, configuration);
+        parseMaxHttpHeaderSize(properties, configuration);
+        parseConnectionHandlersLogInterval(properties, configuration);
+        parseConnectionHandlersTerminationTimeout(properties, configuration);
 
-        return builder.build();
+        return configuration;
 
     }
 
-    private void parseTargetAddress(final Properties properties, final ConfigurationBuilder builder)
+    private void parseTargetAddress(final Properties properties, final ConfigurationImpl configuration)
             throws InvalidConfigurationException {
 
         final String addressAsString = properties.getProperty(TARGET_ADDRESS);
@@ -59,18 +59,18 @@ final class ConfigurationFileLoaderImpl implements ConfigurationFileLoader {
                     + " is not a valid IP address or hostname: " + ex.getMessage());
         }
 
-        builder.setTargetAddress(address);
+        configuration.setTargetAddress(address);
 
     }
 
-    private void parseProxyPortNumber(final Properties properties, final ConfigurationBuilder builder)
+    private void parseProxyPortNumber(final Properties properties, final ConfigurationImpl configuration)
             throws InvalidConfigurationException {
-        builder.setProxyPort(parsePortNumber(properties, PROXY_PORT));
+        configuration.setProxyPort(parsePortNumber(properties, PROXY_PORT));
     }
 
-    private void parseTargetPortNumber(final Properties properties, final ConfigurationBuilder builder)
+    private void parseTargetPortNumber(final Properties properties, final ConfigurationImpl configuration)
             throws InvalidConfigurationException {
-        builder.setTargetPort(parsePortNumber(properties, TARGET_PORT));
+        configuration.setTargetPort(parsePortNumber(properties, TARGET_PORT));
     }
 
     private PortNumber parsePortNumber(final Properties properties, final String propertyKey)
@@ -93,7 +93,7 @@ final class ConfigurationFileLoaderImpl implements ConfigurationFileLoader {
 
     }
 
-    private void parseMaxHttpHeaderSize(final Properties properties, final ConfigurationBuilder builder)
+    private void parseMaxHttpHeaderSize(final Properties properties, final ConfigurationImpl configuration)
             throws InvalidConfigurationException {
 
         final String maxHttpHeaderSizeAsString = properties.getProperty(MAX_HTTP_HEADER_SIZE,
@@ -113,11 +113,11 @@ final class ConfigurationFileLoaderImpl implements ConfigurationFileLoader {
                     + maxHttpHeaderSize);
         }
 
-        builder.setMaxHttpHeaderSize(maxHttpHeaderSize);
+        configuration.setMaxHttpHeaderSize(maxHttpHeaderSize);
 
     }
 
-    private void parseConnectionHandlersLogInterval(final Properties properties, final ConfigurationBuilder builder)
+    private void parseConnectionHandlersLogInterval(final Properties properties, final ConfigurationImpl configuration)
             throws InvalidConfigurationException {
 
         final String intervalAsString = properties.getProperty(CONNECTION_HANDLERS_LOG_INTERVAL,
@@ -137,13 +137,13 @@ final class ConfigurationFileLoaderImpl implements ConfigurationFileLoader {
                     + " must be at least zero: " + interval);
         }
 
-        builder.setConnectionHandlersLogInterval(interval);
+        configuration.setConnectionHandlersLogInterval(interval);
 
     }
 
 
     private void parseConnectionHandlersTerminationTimeout(final Properties properties,
-                                                           final ConfigurationBuilder builder)
+                                                           final ConfigurationImpl configuration)
             throws InvalidConfigurationException {
 
         final String timeoutAsString = properties.getProperty(CONNECTION_HANDLERS_TERMINATION_TIMEOUT,
@@ -163,7 +163,7 @@ final class ConfigurationFileLoaderImpl implements ConfigurationFileLoader {
                     + " must be at least zero: " + timeout);
         }
 
-        builder.setConnectionHandlersTerminationTimeout(timeout);
+        configuration.setConnectionHandlersTerminationTimeout(timeout);
 
     }
 
