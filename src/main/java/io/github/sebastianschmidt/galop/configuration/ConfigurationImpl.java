@@ -4,22 +4,26 @@ import io.github.sebastianschmidt.galop.commons.PortNumber;
 
 import java.net.InetAddress;
 
+import static java.util.Objects.requireNonNull;
+
 final class ConfigurationImpl implements Configuration {
 
-    private PortNumber proxyPort;
-    private InetAddress targetAddress;
-    private PortNumber targetPort;
-    private int maxHttpHeaderSize;
-    private long connectionHandlersLogInterval;
-    private long connectionHandlersTerminationTimeout;
+    private final PortNumber proxyPort;
+    private final InetAddress targetAddress;
+    private final PortNumber targetPort;
+    private int maxHttpHeaderSize = ConfigurationDefaults.MAX_HTTP_HEADER_SIZE;
+    private long connectionHandlersLogInterval = ConfigurationDefaults.CONNECTION_HANDLERS_LOG_INTERVAL;
+    private long connectionHandlersTerminationTimeout = ConfigurationDefaults.CONNECTION_HANDLERS_TERMINATION_TIMEOUT;
+
+    ConfigurationImpl(final PortNumber proxyPort, final InetAddress targetAddress, final PortNumber targetPort) {
+        this.proxyPort = requireNonNull(proxyPort, "proxyPort must not be null.");
+        this.targetAddress = requireNonNull(targetAddress, "targetAddress must not be null.");
+        this.targetPort = requireNonNull(targetPort, "targetPort must not be null.");
+    }
 
     @Override
     public PortNumber getProxyPort() {
         return proxyPort;
-    }
-
-    public void setProxyPort(final PortNumber proxyPort) {
-        this.proxyPort = proxyPort;
     }
 
     @Override
@@ -27,17 +31,9 @@ final class ConfigurationImpl implements Configuration {
         return targetAddress;
     }
 
-    public void setTargetAddress(final InetAddress targetAddress) {
-        this.targetAddress = targetAddress;
-    }
-
     @Override
     public PortNumber getTargetPort() {
         return targetPort;
-    }
-
-    public void setTargetPort(final PortNumber targetPort) {
-        this.targetPort = targetPort;
     }
 
     @Override
@@ -45,7 +41,7 @@ final class ConfigurationImpl implements Configuration {
         return maxHttpHeaderSize;
     }
 
-    public void setMaxHttpHeaderSize(final int maxHttpHeaderSize) {
+    void setMaxHttpHeaderSize(final int maxHttpHeaderSize) {
         this.maxHttpHeaderSize = maxHttpHeaderSize;
     }
 
@@ -54,7 +50,7 @@ final class ConfigurationImpl implements Configuration {
         return connectionHandlersLogInterval;
     }
 
-    public void setConnectionHandlersLogInterval(final long connectionHandlersLogInterval) {
+    void setConnectionHandlersLogInterval(final long connectionHandlersLogInterval) {
         this.connectionHandlersLogInterval = connectionHandlersLogInterval;
     }
 
@@ -63,7 +59,8 @@ final class ConfigurationImpl implements Configuration {
         return connectionHandlersTerminationTimeout;
     }
 
-    public void setConnectionHandlersTerminationTimeout(final long connectionHandlersTerminationTimeout) {
+    void setConnectionHandlersTerminationTimeout(final long connectionHandlersTerminationTimeout) {
         this.connectionHandlersTerminationTimeout = connectionHandlersTerminationTimeout;
     }
+
 }

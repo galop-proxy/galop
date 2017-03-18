@@ -18,13 +18,8 @@ public class ConfigurationImplTest {
 
     @Before
     public void setUp() throws UnknownHostException {
-        configuration = new ConfigurationImpl();
-        configuration.setProxyPort(new PortNumber(8080));
-        configuration.setTargetAddress(InetAddress.getLocalHost());
-        configuration.setTargetPort(new PortNumber(80));
-        configuration.setMaxHttpHeaderSize(1024);
-        configuration.setConnectionHandlersLogInterval(10000);
-        configuration.setConnectionHandlersTerminationTimeout(60000);
+        configuration = new ConfigurationImpl(
+                new PortNumber(8080), InetAddress.getLocalHost(), new PortNumber(80));
     }
 
     @Test
@@ -43,17 +38,37 @@ public class ConfigurationImplTest {
     }
 
     @Test
-    public void getMaxHttpHeaderSize_returnsConfiguredValue() {
+    public void getMaxHttpHeaderSize_withoutConfiguredProperty_returnsDefaultValue() {
+        assertEquals(ConfigurationDefaults.MAX_HTTP_HEADER_SIZE, configuration.getMaxHttpHeaderSize());
+    }
+
+    @Test
+    public void getMaxHttpHeaderSize_withConfiguredProperty_returnsConfiguredValue() {
+        configuration.setMaxHttpHeaderSize(1024);
         assertEquals(1024, configuration.getMaxHttpHeaderSize());
     }
 
     @Test
-    public void getConnectionHandlersLogInterval_returnsConfiguredValue() {
+    public void getConnectionHandlersLogInterval_withoutConfiguredProperty_returnsDefaultValue() {
+        assertEquals(ConfigurationDefaults.CONNECTION_HANDLERS_LOG_INTERVAL,
+                configuration.getConnectionHandlersLogInterval());
+    }
+
+    @Test
+    public void getConnectionHandlersLogInterval_withConfiguredProperty_returnsConfiguredValue() {
+        configuration.setConnectionHandlersLogInterval(10000);
         assertEquals(10000, configuration.getConnectionHandlersLogInterval());
     }
 
     @Test
-    public void getConnectionHandlersTerminationTimeout_returnsConfiguredValue() {
+    public void getConnectionHandlersTerminationTimeout_withoutConfiguredProperty_returnsDefaultValue() {
+        assertEquals(ConfigurationDefaults.CONNECTION_HANDLERS_TERMINATION_TIMEOUT,
+                configuration.getConnectionHandlersTerminationTimeout());
+    }
+
+    @Test
+    public void getConnectionHandlersTerminationTimeout_withConfiguredProperty_returnsConfiguredValue() {
+        configuration.setConnectionHandlersTerminationTimeout(60000);
         assertEquals(60000, configuration.getConnectionHandlersTerminationTimeout());
     }
 
