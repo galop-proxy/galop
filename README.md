@@ -1,5 +1,7 @@
 # GALOP
 
+[![Release](https://img.shields.io/github/release/SebastianSchmidt/galop.svg)](https://github.com/SebastianSchmidt/galop/releases)
+[![License](https://img.shields.io/github/license/SebastianSchmidt/galop.svg)](https://github.com/SebastianSchmidt/galop/blob/master/LICENSE)
 [![Build Status](https://travis-ci.org/SebastianSchmidt/galop.svg?branch=master)](https://travis-ci.org/SebastianSchmidt/galop)
 [![Coverage Status](https://coveralls.io/repos/github/SebastianSchmidt/galop/badge.svg?branch=master)](https://coveralls.io/github/SebastianSchmidt/galop?branch=master)
 [![Dependency Status](https://www.versioneye.com/user/projects/58cc80f86893fd004792c788/badge.svg)](https://www.versioneye.com/user/projects/58cc80f86893fd004792c788)
