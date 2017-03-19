@@ -47,7 +47,7 @@ During the development, this list will be constantly updated.
 
 1. Precondition: An installed Java Runtime Environment 8.
 2. Download the
-   [latest release](https://github.com/SebastianSchmidt/node-gsettings-wrapper/releases/latest)
+   [latest release](https://github.com/SebastianSchmidt/galop/releases/latest)
    of GALOP.
 3. Extract the file galop-%version%.jar from the downloaded archive.
 4. Create a configuration file for GALOP.
