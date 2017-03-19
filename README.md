@@ -103,6 +103,14 @@ security.max_http_header_size=16384
 ```
 
 
+## Logging
+
+GALOP uses the [Log4j 2 framework](https://logging.apache.org/log4j/2.0/) for
+logging. By default, all log entries are written to the default output stream.
+Read the [Log4j 2 documentation](https://logging.apache.org/log4j/2.0/manual/configuration.html)
+to learn how to customize logging.
+
+
 ## License
 
 GALOP is licensed under [The MIT License](https://opensource.org/licenses/MIT).
