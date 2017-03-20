@@ -3,7 +3,7 @@ package io.github.sebastianschmidt.galop.proxy;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import io.github.sebastianschmidt.galop.commons.CommonsModule;
-import io.github.sebastianschmidt.galop.parser.ParserModule;
+import io.github.sebastianschmidt.galop.http.HttpModule;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -19,7 +19,7 @@ public class ProxyModuleTest {
 
     @Before
     public void setUp() {
-        injector = Guice.createInjector(new CommonsModule(), new ParserModule(), new ProxyModule());
+        injector = Guice.createInjector(new CommonsModule(), new HttpModule(), new ProxyModule());
     }
 
     @Test

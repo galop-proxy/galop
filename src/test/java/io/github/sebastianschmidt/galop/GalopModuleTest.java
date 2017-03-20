@@ -5,7 +5,7 @@ import com.google.inject.Injector;
 import io.github.sebastianschmidt.galop.administration.MonitorFactory;
 import io.github.sebastianschmidt.galop.commons.ServerSocketFactory;
 import io.github.sebastianschmidt.galop.configuration.ConfigurationFileLoader;
-import io.github.sebastianschmidt.galop.parser.HttpHeaderParser;
+import io.github.sebastianschmidt.galop.http.HttpHeaderParser;
 import io.github.sebastianschmidt.galop.proxy.ServerFactory;
 import org.junit.Before;
 import org.junit.Test;

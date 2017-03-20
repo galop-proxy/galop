@@ -1,7 +1,7 @@
 package io.github.sebastianschmidt.galop.proxy;
 
 import io.github.sebastianschmidt.galop.configuration.Configuration;
-import io.github.sebastianschmidt.galop.parser.HttpHeaderParser;
+import io.github.sebastianschmidt.galop.http.HttpHeaderParser;
 import org.apache.commons.io.IOUtils;
 
 import java.io.BufferedInputStream;

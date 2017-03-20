@@ -1,8 +1,8 @@
 package io.github.sebastianschmidt.galop.proxy;
 
 import io.github.sebastianschmidt.galop.configuration.Configuration;
-import io.github.sebastianschmidt.galop.parser.HttpTestUtils;
-import io.github.sebastianschmidt.galop.parser.HttpHeaderParser;
+import io.github.sebastianschmidt.galop.http.HttpTestUtils;
+import io.github.sebastianschmidt.galop.http.HttpHeaderParser;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -12,7 +12,7 @@ import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import static io.github.sebastianschmidt.galop.parser.HttpTestUtils.createGetRequest;
+import static io.github.sebastianschmidt.galop.http.HttpTestUtils.createGetRequest;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.AdditionalMatchers.not;
 import static org.mockito.Mockito.*;
