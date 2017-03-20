@@ -1,5 +1,6 @@
 package io.github.sebastianschmidt.galop.proxy;
 
+import io.github.sebastianschmidt.galop.commons.ByteLimitExceededException;
 import io.github.sebastianschmidt.galop.configuration.Configuration;
 import io.github.sebastianschmidt.galop.http.HttpTestUtils;
 import io.github.sebastianschmidt.galop.http.HttpHeaderParser;
@@ -220,6 +221,21 @@ public class ConnectionHandlerImplTest {
         connectionHandler.run();
 
         assertTrue(getOutputContent(source).startsWith("HTTP/1.1 400 Bad Request"));
+        verify(source).close();
+        verify(target).close();
+
+    }
+
+    @Test
+    public void run_whenHttpHeaderParserThrowsByteLimitExceededException_sendsRequestHeaderFieldsTooLargeToClientAndClosesConnection()
+            throws IOException {
+
+        when(source.isClosed()).thenReturn(false);
+        doThrow(ByteLimitExceededException.class).when(httpHeaderParser).calculateTotalLength(any(), anyInt(), any());
+
+        connectionHandler.run();
+
+        assertTrue(getOutputContent(source).startsWith("HTTP/1.1 431 Request Header Fields Too Large"));
         verify(source).close();
         verify(target).close();
 
