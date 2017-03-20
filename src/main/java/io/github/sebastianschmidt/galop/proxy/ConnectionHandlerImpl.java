@@ -65,13 +65,16 @@ final class ConnectionHandlerImpl implements ConnectionHandler {
     }
 
     private void handleRequest() throws IOException {
-        final long requestLength = httpHeaderParser.calculateTotalLength(sourceInputStream,
-                configuration.getMaxHttpHeaderSize(), this::markStartHandlingRequest);
-        IOUtils.copyLarge(sourceInputStream, target.getOutputStream(), 0, requestLength);
+        try {
+            final long requestLength = httpHeaderParser.calculateTotalLength(sourceInputStream,
+                    configuration.getMaxHttpHeaderSize(), this::markStartHandlingRequest);
+            IOUtils.copyLarge(sourceInputStream, target.getOutputStream(), 0, requestLength);
+        } catch (final Exception ex) {
+            handleBadRequest();
+            throw ex;
+        }
     }
-
     private void handleResponse() throws IOException {
-
         try {
             final long responseLength = httpHeaderParser.calculateTotalLength(
                     targetInputStream, configuration.getMaxHttpHeaderSize());
@@ -81,20 +84,24 @@ final class ConnectionHandlerImpl implements ConnectionHandler {
             handleBadGateway(ex);
             throw ex;
         }
+    }
 
+    private void handleBadRequest() {
+        sendHttpStatusToClient(HttpStatusCode.BAD_REQUEST);
     }
 
     private void handleBadGateway(final Exception ex) {
-
         LOGGER.error("An error occurred while processing the server response.", ex);
+        sendHttpStatusToClient(HttpStatusCode.BAD_GATEWAY);
+    }
 
+    private void sendHttpStatusToClient(final HttpStatusCode statusCode) {
         try {
-            final byte[] response = HttpResponse.createWithStatus(HttpStatusCode.BAD_GATEWAY).build();
+            final byte[] response = HttpResponse.createWithStatus(statusCode).build();
             IOUtils.write(response, source.getOutputStream());
         } catch (final Exception innerEx) {
             // Can be ignored.
         }
-
     }
 
     private synchronized void markStartHandlingRequest() {

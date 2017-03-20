@@ -3,6 +3,7 @@ package io.github.sebastianschmidt.galop.proxy;
 import io.github.sebastianschmidt.galop.configuration.Configuration;
 import io.github.sebastianschmidt.galop.http.HttpTestUtils;
 import io.github.sebastianschmidt.galop.http.HttpHeaderParser;
+import io.github.sebastianschmidt.galop.http.InvalidHttpHeaderException;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -207,15 +208,38 @@ public class ConnectionHandlerImplTest {
         verify(httpHeaderParser, never()).calculateTotalLength(any(), not(eq(1024)));
     }
 
+    // Invalid client request:
+
+    @Test
+    public void run_whenHttpHeaderParserThrowsInvalidHttpHeaderException_sendsBadRequestToClientAndClosesConnection()
+            throws IOException {
+
+        when(source.isClosed()).thenReturn(false);
+        doThrow(InvalidHttpHeaderException.class).when(httpHeaderParser).calculateTotalLength(any(), anyInt(), any());
+
+        connectionHandler.run();
+
+        assertTrue(getOutputContent(source).startsWith("HTTP/1.1 400 Bad Request"));
+        verify(source).close();
+        verify(target).close();
+
+    }
+
     // Invalid server response:
 
     @Test
     public void run_whenAnErrorOccursWhileParsingServerResponse_sendsBadeGatewayResponseToClientAndClosesConnections()
             throws IOException {
-        when(source.isClosed()).thenReturn(false).thenReturn(true);
+
+        when(source.isClosed()).thenReturn(false);
         doThrow(IOException.class).when(httpHeaderParser).calculateTotalLength(any(), anyInt());
+
         connectionHandler.run();
+
         assertTrue(getOutputContent(source).startsWith("HTTP/1.1 502 Bad Gateway"));
+        verify(source).close();
+        verify(target).close();
+
     }
 
     @Test
