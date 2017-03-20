@@ -5,6 +5,7 @@ import io.github.sebastianschmidt.galop.configuration.Configuration;
 import io.github.sebastianschmidt.galop.http.HttpTestUtils;
 import io.github.sebastianschmidt.galop.http.HttpHeaderParser;
 import io.github.sebastianschmidt.galop.http.InvalidHttpHeaderException;
+import io.github.sebastianschmidt.galop.http.UnsupportedTransferEncodingException;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -212,7 +213,7 @@ public class ConnectionHandlerImplTest {
     // Invalid client request:
 
     @Test
-    public void run_whenHttpHeaderParserThrowsInvalidHttpHeaderException_sendsBadRequestToClientAndClosesConnection()
+    public void run_whenHttpHeaderParserThrowsInvalidHttpHeaderException_sendsStatusCode400ToClientAndClosesConnection()
             throws IOException {
 
         when(source.isClosed()).thenReturn(false);
@@ -227,7 +228,7 @@ public class ConnectionHandlerImplTest {
     }
 
     @Test
-    public void run_whenHttpHeaderParserThrowsByteLimitExceededException_sendsRequestHeaderFieldsTooLargeToClientAndClosesConnection()
+    public void run_whenHttpHeaderParserThrowsByteLimitExceededException_sendsStatusCode431ToClientAndClosesConnection()
             throws IOException {
 
         when(source.isClosed()).thenReturn(false);
@@ -236,6 +237,21 @@ public class ConnectionHandlerImplTest {
         connectionHandler.run();
 
         assertTrue(getOutputContent(source).startsWith("HTTP/1.1 431 Request Header Fields Too Large"));
+        verify(source).close();
+        verify(target).close();
+
+    }
+
+    @Test
+    public void run_whenHttpHeaderParserThrowsUnsupportedTransferEncodingException_sendsStatusCode411ToClientAndClosesConnection()
+            throws IOException {
+
+        when(source.isClosed()).thenReturn(false);
+        doThrow(UnsupportedTransferEncodingException.class).when(httpHeaderParser).calculateTotalLength(any(), anyInt(), any());
+
+        connectionHandler.run();
+
+        assertTrue(getOutputContent(source).startsWith("HTTP/1.1 411 Length Required"));
         verify(source).close();
         verify(target).close();
 

@@ -5,6 +5,7 @@ import io.github.sebastianschmidt.galop.configuration.Configuration;
 import io.github.sebastianschmidt.galop.http.HttpHeaderParser;
 import io.github.sebastianschmidt.galop.http.HttpResponse;
 import io.github.sebastianschmidt.galop.http.HttpStatusCode;
+import io.github.sebastianschmidt.galop.http.UnsupportedTransferEncodingException;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -70,6 +71,9 @@ final class ConnectionHandlerImpl implements ConnectionHandler {
             final long requestLength = httpHeaderParser.calculateTotalLength(sourceInputStream,
                     configuration.getMaxHttpHeaderSize(), this::markStartHandlingRequest);
             IOUtils.copyLarge(sourceInputStream, target.getOutputStream(), 0, requestLength);
+        } catch (final UnsupportedTransferEncodingException ex) {
+            sendHttpStatusToClient(HttpStatusCode.LENGTH_REQUIRED);
+            throw ex;
         } catch (final ByteLimitExceededException ex) {
             sendHttpStatusToClient(HttpStatusCode.REQUEST_HEADER_FIELDS_TOO_LARGE);
             throw ex;
