@@ -1,8 +1,14 @@
 package io.github.sebastianschmidt.galop.proxy;
 
+import io.github.sebastianschmidt.galop.commons.ByteLimitExceededException;
 import io.github.sebastianschmidt.galop.configuration.Configuration;
-import io.github.sebastianschmidt.galop.parser.HttpHeaderParser;
+import io.github.sebastianschmidt.galop.http.HttpHeaderParser;
+import io.github.sebastianschmidt.galop.http.HttpResponse;
+import io.github.sebastianschmidt.galop.http.HttpStatusCode;
+import io.github.sebastianschmidt.galop.http.UnsupportedTransferEncodingException;
 import org.apache.commons.io.IOUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -12,6 +18,8 @@ import java.net.Socket;
 import static java.util.Objects.requireNonNull;
 
 final class ConnectionHandlerImpl implements ConnectionHandler {
+
+    private static final Logger LOGGER = LogManager.getLogger(ConnectionHandler.class);
 
     private final Configuration configuration;
     private final HttpHeaderParser httpHeaderParser;
@@ -59,16 +67,41 @@ final class ConnectionHandlerImpl implements ConnectionHandler {
     }
 
     private void handleRequest() throws IOException {
-        final long requestLength = httpHeaderParser.calculateTotalLength(sourceInputStream,
-                configuration.getMaxHttpHeaderSize(), this::markStartHandlingRequest);
-        IOUtils.copyLarge(sourceInputStream, target.getOutputStream(), 0, requestLength);
+        try {
+            final long requestLength = httpHeaderParser.calculateTotalLength(sourceInputStream,
+                    configuration.getMaxHttpHeaderSize(), this::markStartHandlingRequest);
+            IOUtils.copyLarge(sourceInputStream, target.getOutputStream(), 0, requestLength);
+        } catch (final UnsupportedTransferEncodingException ex) {
+            sendHttpStatusToClient(HttpStatusCode.LENGTH_REQUIRED);
+            throw ex;
+        } catch (final ByteLimitExceededException ex) {
+            sendHttpStatusToClient(HttpStatusCode.REQUEST_HEADER_FIELDS_TOO_LARGE);
+            throw ex;
+        } catch (final Exception ex) {
+            sendHttpStatusToClient(HttpStatusCode.BAD_REQUEST);
+            throw ex;
+        }
+    }
+    private void handleResponse() throws IOException {
+        try {
+            final long responseLength = httpHeaderParser.calculateTotalLength(
+                    targetInputStream, configuration.getMaxHttpHeaderSize());
+            IOUtils.copyLarge(targetInputStream, source.getOutputStream(), 0, responseLength);
+            markEndHandlingResponse();
+        } catch (final Exception ex) {
+            LOGGER.error("An error occurred while processing the server response.", ex);
+            sendHttpStatusToClient(HttpStatusCode.BAD_GATEWAY);
+            throw ex;
+        }
     }
 
-    private void handleResponse() throws IOException {
-        final long responseLength = httpHeaderParser.calculateTotalLength(
-                targetInputStream, configuration.getMaxHttpHeaderSize());
-        IOUtils.copyLarge(targetInputStream, source.getOutputStream(), 0, responseLength);
-        markEndHandlingResponse();
+    private void sendHttpStatusToClient(final HttpStatusCode statusCode) {
+        try {
+            final byte[] response = HttpResponse.createWithStatus(statusCode).build();
+            IOUtils.write(response, source.getOutputStream());
+        } catch (final Exception innerEx) {
+            // Can be ignored.
+        }
     }
 
     private synchronized void markStartHandlingRequest() {

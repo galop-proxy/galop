@@ -1,8 +1,11 @@
 package io.github.sebastianschmidt.galop.proxy;
 
+import io.github.sebastianschmidt.galop.commons.ByteLimitExceededException;
 import io.github.sebastianschmidt.galop.configuration.Configuration;
-import io.github.sebastianschmidt.galop.parser.HttpTestUtils;
-import io.github.sebastianschmidt.galop.parser.HttpHeaderParser;
+import io.github.sebastianschmidt.galop.http.HttpTestUtils;
+import io.github.sebastianschmidt.galop.http.HttpHeaderParser;
+import io.github.sebastianschmidt.galop.http.InvalidHttpHeaderException;
+import io.github.sebastianschmidt.galop.http.UnsupportedTransferEncodingException;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -12,8 +15,10 @@ import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import static io.github.sebastianschmidt.galop.parser.HttpTestUtils.createGetRequest;
+import static io.github.sebastianschmidt.galop.http.HttpTestUtils.createGetRequest;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.AdditionalMatchers.not;
 import static org.mockito.Mockito.*;
 
@@ -203,6 +208,78 @@ public class ConnectionHandlerImplTest {
         connectionHandler.run();
         verify(httpHeaderParser, atLeastOnce()).calculateTotalLength(any(), eq(1024));
         verify(httpHeaderParser, never()).calculateTotalLength(any(), not(eq(1024)));
+    }
+
+    // Invalid client request:
+
+    @Test
+    public void run_whenHttpHeaderParserThrowsInvalidHttpHeaderException_sendsStatusCode400ToClientAndClosesConnection()
+            throws IOException {
+
+        when(source.isClosed()).thenReturn(false);
+        doThrow(InvalidHttpHeaderException.class).when(httpHeaderParser).calculateTotalLength(any(), anyInt(), any());
+
+        connectionHandler.run();
+
+        assertTrue(getOutputContent(source).startsWith("HTTP/1.1 400 Bad Request"));
+        verify(source).close();
+        verify(target).close();
+
+    }
+
+    @Test
+    public void run_whenHttpHeaderParserThrowsByteLimitExceededException_sendsStatusCode431ToClientAndClosesConnection()
+            throws IOException {
+
+        when(source.isClosed()).thenReturn(false);
+        doThrow(ByteLimitExceededException.class).when(httpHeaderParser).calculateTotalLength(any(), anyInt(), any());
+
+        connectionHandler.run();
+
+        assertTrue(getOutputContent(source).startsWith("HTTP/1.1 431 Request Header Fields Too Large"));
+        verify(source).close();
+        verify(target).close();
+
+    }
+
+    @Test
+    public void run_whenHttpHeaderParserThrowsUnsupportedTransferEncodingException_sendsStatusCode411ToClientAndClosesConnection()
+            throws IOException {
+
+        when(source.isClosed()).thenReturn(false);
+        doThrow(UnsupportedTransferEncodingException.class).when(httpHeaderParser).calculateTotalLength(any(), anyInt(), any());
+
+        connectionHandler.run();
+
+        assertTrue(getOutputContent(source).startsWith("HTTP/1.1 411 Length Required"));
+        verify(source).close();
+        verify(target).close();
+
+    }
+
+    // Invalid server response:
+
+    @Test
+    public void run_whenAnErrorOccursWhileParsingServerResponse_sendsBadeGatewayResponseToClientAndClosesConnections()
+            throws IOException {
+
+        when(source.isClosed()).thenReturn(false);
+        doThrow(IOException.class).when(httpHeaderParser).calculateTotalLength(any(), anyInt());
+
+        connectionHandler.run();
+
+        assertTrue(getOutputContent(source).startsWith("HTTP/1.1 502 Bad Gateway"));
+        verify(source).close();
+        verify(target).close();
+
+    }
+
+    @Test
+    public void run_whenANewErrorOccursDuringHandlingBadGatewayError_ignoresNewError() throws IOException {
+        when(source.isClosed()).thenReturn(false).thenReturn(true);
+        doThrow(IOException.class).when(httpHeaderParser).calculateTotalLength(any(), anyInt());
+        doThrow(IOException.class).when(source).getOutputStream();
+        connectionHandler.run();
     }
 
     // Helper methods:

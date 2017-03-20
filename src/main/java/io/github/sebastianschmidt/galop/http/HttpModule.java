@@ -1,9 +1,9 @@
-package io.github.sebastianschmidt.galop.parser;
+package io.github.sebastianschmidt.galop.http;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Singleton;
 
-public final class ParserModule extends AbstractModule {
+public final class HttpModule extends AbstractModule {
 
     @Override
     protected void configure() {

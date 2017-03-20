@@ -1,4 +1,4 @@
-package io.github.sebastianschmidt.galop.parser;
+package io.github.sebastianschmidt.galop.http;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
@@ -9,15 +9,15 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 
 /**
- * Tests the class {@link ParserModule}.
+ * Tests the class {@link HttpModule}.
  */
-public class ParserModuleTest {
+public class HttpModuleTest {
 
     private Injector injector;
 
     @Before
     public void setUp() {
-        injector = Guice.createInjector(new ParserModule());
+        injector = Guice.createInjector(new HttpModule());
     }
 
     @Test

@@ -1,15 +1,14 @@
-package io.github.sebastianschmidt.galop.parser;
+package io.github.sebastianschmidt.galop.http;
 
 import io.github.sebastianschmidt.galop.commons.LimitedInputStream;
 
 import java.io.*;
-import java.nio.charset.Charset;
 
+import static io.github.sebastianschmidt.galop.http.HttpConstants.HTTP_HEADER_CHARSET;
 import static java.util.Objects.requireNonNull;
 
 final class HttpHeaderParserImpl implements HttpHeaderParser {
 
-    private static final Charset HTTP_HEADER_CHARSET = Charset.forName("ASCII");
     private static final String HEADER_CONTENT_LENGTH_PREFIX = "Content-Length:";
     private static final String HEADER_TRANSFER_ENCODING_PREFIX = "Transfer-Encoding:";
     private static final String IDENTITY_TRANSFER_ENCODING = "identity";

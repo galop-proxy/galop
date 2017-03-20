@@ -1,4 +1,4 @@
-package io.github.sebastianschmidt.galop.parser;
+package io.github.sebastianschmidt.galop.http;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
@@ -9,8 +9,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 
-import static io.github.sebastianschmidt.galop.parser.HttpTestUtils.createGetRequest;
-import static io.github.sebastianschmidt.galop.parser.HttpTestUtils.createResponse;
+import static io.github.sebastianschmidt.galop.http.HttpTestUtils.createGetRequest;
+import static io.github.sebastianschmidt.galop.http.HttpTestUtils.createResponse;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
