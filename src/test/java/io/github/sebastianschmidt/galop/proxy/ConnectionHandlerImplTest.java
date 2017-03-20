@@ -14,6 +14,8 @@ import java.util.concurrent.Executors;
 
 import static io.github.sebastianschmidt.galop.http.HttpTestUtils.createGetRequest;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.AdditionalMatchers.not;
 import static org.mockito.Mockito.*;
 
@@ -203,6 +205,25 @@ public class ConnectionHandlerImplTest {
         connectionHandler.run();
         verify(httpHeaderParser, atLeastOnce()).calculateTotalLength(any(), eq(1024));
         verify(httpHeaderParser, never()).calculateTotalLength(any(), not(eq(1024)));
+    }
+
+    // Invalid server response:
+
+    @Test
+    public void run_whenAnErrorOccursWhileParsingServerResponse_sendsBadeGatewayResponseToClientAndClosesConnections()
+            throws IOException {
+        when(source.isClosed()).thenReturn(false).thenReturn(true);
+        doThrow(IOException.class).when(httpHeaderParser).calculateTotalLength(any(), anyInt());
+        connectionHandler.run();
+        assertTrue(getOutputContent(source).startsWith("HTTP/1.1 502 Bad Gateway"));
+    }
+
+    @Test
+    public void run_whenANewErrorOccursDuringHandlingBadGatewayError_ignoresNewError() throws IOException {
+        when(source.isClosed()).thenReturn(false).thenReturn(true);
+        doThrow(IOException.class).when(httpHeaderParser).calculateTotalLength(any(), anyInt());
+        doThrow(IOException.class).when(source).getOutputStream();
+        connectionHandler.run();
     }
 
     // Helper methods:

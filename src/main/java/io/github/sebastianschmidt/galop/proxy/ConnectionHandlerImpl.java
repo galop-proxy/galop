@@ -2,7 +2,11 @@ package io.github.sebastianschmidt.galop.proxy;
 
 import io.github.sebastianschmidt.galop.configuration.Configuration;
 import io.github.sebastianschmidt.galop.http.HttpHeaderParser;
+import io.github.sebastianschmidt.galop.http.HttpResponse;
+import io.github.sebastianschmidt.galop.http.HttpStatusCode;
 import org.apache.commons.io.IOUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -12,6 +16,8 @@ import java.net.Socket;
 import static java.util.Objects.requireNonNull;
 
 final class ConnectionHandlerImpl implements ConnectionHandler {
+
+    private static final Logger LOGGER = LogManager.getLogger(ConnectionHandler.class);
 
     private final Configuration configuration;
     private final HttpHeaderParser httpHeaderParser;
@@ -65,10 +71,30 @@ final class ConnectionHandlerImpl implements ConnectionHandler {
     }
 
     private void handleResponse() throws IOException {
-        final long responseLength = httpHeaderParser.calculateTotalLength(
-                targetInputStream, configuration.getMaxHttpHeaderSize());
-        IOUtils.copyLarge(targetInputStream, source.getOutputStream(), 0, responseLength);
-        markEndHandlingResponse();
+
+        try {
+            final long responseLength = httpHeaderParser.calculateTotalLength(
+                    targetInputStream, configuration.getMaxHttpHeaderSize());
+            IOUtils.copyLarge(targetInputStream, source.getOutputStream(), 0, responseLength);
+            markEndHandlingResponse();
+        } catch (final Exception ex) {
+            handleBadGateway(ex);
+            throw ex;
+        }
+
+    }
+
+    private void handleBadGateway(final Exception ex) {
+
+        LOGGER.error("An error occurred while processing the server response.", ex);
+
+        try {
+            final byte[] response = HttpResponse.createWithStatus(HttpStatusCode.BAD_GATEWAY).build();
+            IOUtils.write(response, source.getOutputStream());
+        } catch (final Exception innerEx) {
+            // Can be ignored.
+        }
+
     }
 
     private synchronized void markStartHandlingRequest() {
