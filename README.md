@@ -29,9 +29,6 @@ a production environment. Please note the following limitations in the current
 functionality of GALOP.
 
 - **No secure connections**: Currently neither TLS nor SSL is supported.
-- **No error messages**: If the proxy does not understand an HTTP request or can
-  not process an HTTP response, the connection is silently closed. Currently,
-  the proxy does not send any error messages as HTTP responses to the client.
 - **Chunked transfer encoding not supported**: Currently, the proxy can process
   only HTTP requests and responses with a known Content-Length or without an
   HTTP entity.
