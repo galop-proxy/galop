@@ -2,6 +2,8 @@ package io.github.sebastianschmidt.galop.configuration;
 
 import io.github.sebastianschmidt.galop.commons.InetAddressFactory;
 import io.github.sebastianschmidt.galop.commons.PortNumber;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.inject.Inject;
 import java.io.FileInputStream;
@@ -15,6 +17,8 @@ import static java.util.Objects.requireNonNull;
 
 final class ConfigurationFileLoaderImpl implements ConfigurationFileLoader {
 
+    private static final Logger LOGGER = LogManager.getLogger(ConfigurationFileLoader.class);
+
     private final InetAddressFactory inetAddressFactory;
 
     @Inject
@@ -25,12 +29,24 @@ final class ConfigurationFileLoaderImpl implements ConfigurationFileLoader {
     @Override
     public Configuration load(final Path path) throws IOException, InvalidConfigurationException {
 
-        final Properties properties = new Properties();
-        properties.load(new FileInputStream(path.toFile()));
+        LOGGER.info("Loading configuration file: " + path.toAbsolutePath());
 
-        final ConfigurationImpl configuration = parseRequiredProperties(properties);
-        parseOptionalProperties(properties, configuration);
-        return configuration;
+        try {
+
+            final Properties properties = new Properties();
+            properties.load(new FileInputStream(path.toFile()));
+
+            final ConfigurationImpl configuration = parseRequiredProperties(properties);
+            parseOptionalProperties(properties, configuration);
+
+            LOGGER.info("Loaded configuration:\n" + configuration.toString());
+
+            return configuration;
+
+        } catch (final Exception ex) {
+            LOGGER.error("Could not parse configuration file: " + ex.getMessage());
+            throw ex;
+        }
 
     }
 
