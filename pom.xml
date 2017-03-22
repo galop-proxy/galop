@@ -6,7 +6,7 @@
 
     <groupId>io.github.sebastianschmidt</groupId>
     <artifactId>galop</artifactId>
-    <version>0.2.0</version>
+    <version>0.3.0-SNAPSHOT</version>
 
     <url>https://github.com/SebastianSchmidt/galop</url>
     <licenses>

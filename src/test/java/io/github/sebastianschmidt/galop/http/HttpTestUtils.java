@@ -1,12 +1,12 @@
 package io.github.sebastianschmidt.galop.http;
 
+import static io.github.sebastianschmidt.galop.http.HttpConstants.*;
+
 public class HttpTestUtils {
 
-    private static final String NEW_LINE = "\r\n";
-
     public static String createGetRequest() {
-        return "GET /hello-world.html HTTP/1.1" + NEW_LINE
-                + "Host: www.example.com" + NEW_LINE
+        return "GET /hello-world.html " + HTTP_VERSION + NEW_LINE
+                + HEADER_HOST_PREFIX + SPACE + "www.example.com" + NEW_LINE
                 + NEW_LINE;
     }
 
@@ -22,18 +22,20 @@ public class HttpTestUtils {
                                         final String transferEncoding) {
 
         final StringBuilder response  = new StringBuilder();
-        response.append("HTTP/1.1 200 OK" + NEW_LINE);
-        response.append("Server: Test/1.0" + NEW_LINE);
-        response.append("Content-Type: text/html" + NEW_LINE);
+        response.append(HTTP_VERSION + SPACE + "200 OK" + NEW_LINE);
+        response.append(HEADER_SERVER_PREFIX + SPACE + "Test/1.0" + NEW_LINE);
+        response.append(HEADER_CONTENT_TYPE_PREFIX + SPACE + "text/html" + NEW_LINE);
 
         if (contentLength != null) {
-            response.append("Content-Length: ");
+            response.append(HEADER_CONTENT_LENGTH_PREFIX);
+            response.append(SPACE);
             response.append(contentLength);
             response.append(NEW_LINE);
         }
 
         if (transferEncoding != null) {
-            response.append("Transfer-Encoding: ");
+            response.append(HEADER_TRANSFER_ENCODING_PREFIX);
+            response.append(SPACE);
             response.append(transferEncoding);
             response.append(NEW_LINE);
         }

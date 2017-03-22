@@ -29,9 +29,6 @@ a production environment. Please note the following limitations in the current
 functionality of GALOP.
 
 - **No secure connections**: Currently neither TLS nor SSL is supported.
-- **Chunked transfer encoding not supported**: Currently, the proxy can process
-  only HTTP requests and responses with a known Content-Length or without an
-  HTTP entity.
 - **X-Forwarded-For not supported**: Currently, the proxy can not send the
   original IP addresses of the clients to the server via the HTTP header
   X-Forwarded-For.

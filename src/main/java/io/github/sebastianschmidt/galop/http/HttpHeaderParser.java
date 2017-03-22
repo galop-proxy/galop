@@ -5,9 +5,19 @@ import java.io.InputStream;
 
 public interface HttpHeaderParser {
 
-    long calculateTotalLength(InputStream inputStream, int maxHttpHeaderSize) throws IOException;
+    interface Result {
 
-    long calculateTotalLength(InputStream inputStream, int maxHttpHeaderSize, Runnable startParsingCallback)
+        boolean isChunkedTransferEncoding();
+
+        long getHeaderLength();
+
+        Long getTotalLength();
+
+    }
+
+    Result parse(InputStream inputStream, int maxHttpHeaderSize) throws IOException;
+
+    Result parse(InputStream inputStream, int maxHttpHeaderSize, Runnable startParsingCallback)
             throws IOException;
 
 }
