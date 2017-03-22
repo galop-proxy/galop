@@ -75,9 +75,11 @@ final class ServerImpl implements Server {
 
     private void initServerSocket() {
         try {
+            LOGGER.info("Initialize server socket on port " + config.getProxyPort().getValue() + "...");
             serverSocket = serverSocketFactory.create(config.getProxyPort().getValue());
+            LOGGER.info("Server socket initialized.");
         } catch (final IOException ex) {
-            throw new RuntimeException("Could not create server socket: " + ex.getMessage(), ex);
+            throw new RuntimeException("Could not initialize server socket: " + ex.getMessage(), ex);
         }
     }
 

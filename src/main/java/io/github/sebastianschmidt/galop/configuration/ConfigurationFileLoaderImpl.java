@@ -2,6 +2,8 @@ package io.github.sebastianschmidt.galop.configuration;
 
 import io.github.sebastianschmidt.galop.commons.InetAddressFactory;
 import io.github.sebastianschmidt.galop.commons.PortNumber;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.inject.Inject;
 import java.io.FileInputStream;
@@ -15,6 +17,8 @@ import static java.util.Objects.requireNonNull;
 
 final class ConfigurationFileLoaderImpl implements ConfigurationFileLoader {
 
+    private static final Logger LOGGER = LogManager.getLogger(ConfigurationFileLoader.class);
+
     private final InetAddressFactory inetAddressFactory;
 
     @Inject
@@ -25,12 +29,22 @@ final class ConfigurationFileLoaderImpl implements ConfigurationFileLoader {
     @Override
     public Configuration load(final Path path) throws IOException, InvalidConfigurationException {
 
-        final Properties properties = new Properties();
-        properties.load(new FileInputStream(path.toFile()));
+        LOGGER.info("Loading configuration file: " + path.toAbsolutePath());
 
-        final ConfigurationImpl configuration = parseRequiredProperties(properties);
-        parseOptionalProperties(properties, configuration);
-        return configuration;
+        try {
+
+            final Properties properties = new Properties();
+            properties.load(new FileInputStream(path.toFile()));
+
+            final ConfigurationImpl configuration = parseRequiredProperties(properties);
+            parseOptionalProperties(properties, configuration);
+            logResult(configuration);
+            return configuration;
+
+        } catch (final Exception ex) {
+            LOGGER.error("Could not parse configuration file: " + ex.getMessage());
+            throw ex;
+        }
 
     }
 
@@ -181,6 +195,20 @@ final class ConfigurationFileLoaderImpl implements ConfigurationFileLoader {
 
         configuration.setConnectionHandlersTerminationTimeout(timeout);
 
+    }
+
+    private void logResult(final Configuration configuration) {
+        LOGGER.info("Loaded configuration:");
+        log(PROXY_PORT, configuration.getProxyPort().getValue());
+        log(TARGET_ADDRESS, configuration.getTargetAddress());
+        log(TARGET_PORT, configuration.getTargetPort().getValue());
+        log(CONNECTION_HANDLERS_LOG_INTERVAL, configuration.getConnectionHandlersLogInterval());
+        log(CONNECTION_HANDLERS_TERMINATION_TIMEOUT, configuration.getConnectionHandlersTerminationTimeout());
+        log(MAX_HTTP_HEADER_SIZE, configuration.getMaxHttpHeaderSize());
+    }
+
+    private void log(final String key, final Object property) {
+        LOGGER.info(key + " = " + property);
     }
 
 }

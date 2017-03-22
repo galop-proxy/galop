@@ -38,13 +38,13 @@ final class Monitor extends Thread {
 
         while (!interrupted()) {
 
-            LOGGER.info("Active connection handlers: " + threadPool.getActiveCount());
-
             try {
                 Thread.sleep(logInterval);
             } catch (final InterruptedException ex) {
                 interrupt();
             }
+
+            LOGGER.info("Active connection handlers: " + threadPool.getActiveCount());
 
         }
 

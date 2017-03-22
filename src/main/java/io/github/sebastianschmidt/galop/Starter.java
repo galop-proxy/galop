@@ -56,7 +56,6 @@ final class Starter {
         try {
             configuration = configurationFileLoader.load(Paths.get(args[0]));
         } catch (final Exception ex) {
-            LOGGER.error("Could not parse configuration file: " + ex.getMessage());
             runtime.exit(1);
             return;
         }
