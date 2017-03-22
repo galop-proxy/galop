@@ -10,11 +10,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 
+import static io.github.sebastianschmidt.galop.http.HttpConstants.HTTP_VERSION;
 import static io.github.sebastianschmidt.galop.http.HttpConstants.NEW_LINE;
+import static io.github.sebastianschmidt.galop.http.HttpConstants.SPACE;
 import static io.github.sebastianschmidt.galop.http.HttpTestUtils.createGetRequest;
 import static io.github.sebastianschmidt.galop.http.HttpTestUtils.createResponse;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 /**
@@ -144,6 +145,23 @@ public class HttpHeaderParserImplTest {
         final String response = createResponse("<h1>Unknown Transfer-Encoding</h1>", null, "unknown");
         final InputStream responseInputStream = createInputStream(response);
         parser.parse(responseInputStream, MAX_HTTP_HEADER_SIZE);
+    }
+
+    // Case-insensitive header field names:
+
+    @Test
+    public void parse_always_ignoresUpperAndLowerCasesInHeaderFieldNames() throws IOException {
+
+        final String response = HTTP_VERSION + SPACE + "200 OK" + NEW_LINE
+                + "TRANSFER-ENCODING:" + SPACE + "chunked" + NEW_LINE + NEW_LINE;
+        final InputStream responseInputStream = createInputStream(response);
+
+        final Result result = parser.parse(responseInputStream, MAX_HTTP_HEADER_SIZE);
+
+        assertTrue(result.isChunkedTransferEncoding());
+        assertEquals(response.getBytes().length, result.getHeaderLength());
+        assertNull(result.getTotalLength());
+
     }
 
     // Wrong use of API:

@@ -8,13 +8,13 @@ public class HttpConstants {
 
     public static final Charset HEADER_CHARSET = Charset.forName("ASCII");
 
-    public static final String HEADER_HOST_PREFIX = "Host:";
-    public static final String HEADER_DATE_PREFIX = "Date:";
-    public static final String HEADER_SERVER_PREFIX = "Server:";
-    public static final String HEADER_CONTENT_LENGTH_PREFIX = "Content-Length:";
-    public static final String HEADER_CONTENT_TYPE_PREFIX = "Content-Type:";
+    public static final String HEADER_HOST_PREFIX = "Host:".toLowerCase();
+    public static final String HEADER_DATE_PREFIX = "Date:".toLowerCase();
+    public static final String HEADER_SERVER_PREFIX = "Server:".toLowerCase();
+    public static final String HEADER_CONTENT_LENGTH_PREFIX = "Content-Length:".toLowerCase();
+    public static final String HEADER_CONTENT_TYPE_PREFIX = "Content-Type:".toLowerCase();
     public static final String HEADER_CONTENT_TYPE_CHARSET_PREFIX = "charset=";
-    public static final String HEADER_TRANSFER_ENCODING_PREFIX = "Transfer-Encoding:";
+    public static final String HEADER_TRANSFER_ENCODING_PREFIX = "Transfer-Encoding:".toLowerCase();
 
     public static final String TRANSFER_ENCODING_IDENTITY = "identity";
     public static final String TRANSFER_ENCODING_CHUNKED = "chunked";

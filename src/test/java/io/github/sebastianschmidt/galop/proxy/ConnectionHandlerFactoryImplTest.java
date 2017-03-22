@@ -2,6 +2,7 @@ package io.github.sebastianschmidt.galop.proxy;
 
 import io.github.sebastianschmidt.galop.configuration.Configuration;
 import io.github.sebastianschmidt.galop.http.HttpHeaderParser;
+import io.github.sebastianschmidt.galop.http.HttpMessageHandler;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -15,17 +16,25 @@ import static org.mockito.Mockito.mock;
  */
 public class ConnectionHandlerFactoryImplTest {
 
+    private HttpHeaderParser parser;
+    private HttpMessageHandler handler;
     private ConnectionHandlerFactoryImpl factory;
 
     @Before
     public void setUp() {
-        final HttpHeaderParser parser = mock(HttpHeaderParser.class);
-        factory = new ConnectionHandlerFactoryImpl(parser);
+        parser = mock(HttpHeaderParser.class);
+        handler = mock(HttpMessageHandler.class);
+        factory = new ConnectionHandlerFactoryImpl(parser, handler);
     }
 
     @Test(expected = NullPointerException.class)
     public void constructor_withoutHttpHeaderParser_throwsNullPointerException() {
-        new ConnectionHandlerFactoryImpl(null);
+        new ConnectionHandlerFactoryImpl(null, handler);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void constructor_withoutHttpMessageHandler_throwsNullPointerException() {
+        new ConnectionHandlerFactoryImpl(parser, null);
     }
 
     @Test

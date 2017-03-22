@@ -26,9 +26,9 @@ public class HttpResponseTest {
         final String expectedDefaultContent = HttpStatusCode.BAD_REQUEST.getReason();
         final byte[] expectedDefaultContentBytes = expectedDefaultContent.getBytes(expectedCharset);
         final String expectedHttpResponse = "HTTP/1.1 400 Bad Request\r\n"
-                + "Date: Mon, 20 Mar 2017 19:09:03 GMT\r\n"
-                + "Content-Length: " + expectedDefaultContentBytes.length + "\r\n"
-                + "Content-Type: text/plain; charset=UTF-8\r\n"
+                + "date: Mon, 20 Mar 2017 19:09:03 GMT\r\n"
+                + "content-length: " + expectedDefaultContentBytes.length + "\r\n"
+                + "content-type: text/plain; charset=UTF-8\r\n"
                 + "\r\n"
                 + expectedDefaultContent;
         assertEquals(expectedHttpResponse, new String(httpResponse.build(), expectedCharset));
@@ -49,9 +49,9 @@ public class HttpResponseTest {
         final Charset expectedCharset = Charset.forName("UTF-8");
         final byte[] expectedContentBytes = expectedContent.getBytes(expectedCharset);
         final String expectedHttpResponse = "HTTP/1.1 200 OK\r\n"
-                + "Date: Mon, 20 Mar 2017 19:09:03 GMT\r\n"
-                + "Content-Length: " + expectedContentBytes.length + "\r\n"
-                + "Content-Type: text/plain; charset=UTF-8\r\n"
+                + "date: Mon, 20 Mar 2017 19:09:03 GMT\r\n"
+                + "content-length: " + expectedContentBytes.length + "\r\n"
+                + "content-type: text/plain; charset=UTF-8\r\n"
                 + "\r\n"
                 + expectedContent;
         assertEquals(expectedHttpResponse, new String(httpResponse.build(), expectedCharset));
@@ -62,7 +62,7 @@ public class HttpResponseTest {
     public void build_withoutDateTime_returnsResponseWithCurrentDateTime() {
         final HttpResponse httpResponse = HttpResponse.createWithStatus(HttpStatusCode.BAD_REQUEST);
         final String response = new String(httpResponse.build(), Charset.forName("UTF-8"));
-        assertTrue(response.contains("Date: "));
+        assertTrue(response.contains("date: "));
     }
 
 }

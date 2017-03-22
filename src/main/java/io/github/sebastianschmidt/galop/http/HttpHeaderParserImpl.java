@@ -92,7 +92,7 @@ final class HttpHeaderParserImpl implements HttpHeaderParser {
 
                 if (currentByteIndex != 0) {
 
-                    final String line = new String(bytes, 0, currentByteIndex, HEADER_CHARSET);
+                    final String line = new String(bytes, 0, currentByteIndex, HEADER_CHARSET).toLowerCase();
                     currentByteIndex = 0;
 
                     if (line.startsWith(HEADER_CONTENT_LENGTH_PREFIX)) {

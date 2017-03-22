@@ -30,4 +30,14 @@ public class HttpModuleTest {
         assertSame(injector.getInstance(HttpHeaderParser.class), injector.getInstance(HttpHeaderParser.class));
     }
 
+    @Test
+    public void configure_bindsHttpMessageHandler() {
+        assertNotNull(injector.getInstance(HttpMessageHandler.class));
+    }
+
+    @Test
+    public void configure_bindsHttpMessageHandlerAsSingleton() {
+        assertSame(injector.getInstance(HttpMessageHandler.class), injector.getInstance(HttpMessageHandler.class));
+    }
+
 }

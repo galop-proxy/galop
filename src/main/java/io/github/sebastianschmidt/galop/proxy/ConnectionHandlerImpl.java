@@ -2,10 +2,7 @@ package io.github.sebastianschmidt.galop.proxy;
 
 import io.github.sebastianschmidt.galop.commons.ByteLimitExceededException;
 import io.github.sebastianschmidt.galop.configuration.Configuration;
-import io.github.sebastianschmidt.galop.http.HttpHeaderParser;
-import io.github.sebastianschmidt.galop.http.HttpResponse;
-import io.github.sebastianschmidt.galop.http.HttpStatusCode;
-import io.github.sebastianschmidt.galop.http.UnsupportedTransferEncodingException;
+import io.github.sebastianschmidt.galop.http.*;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -23,6 +20,7 @@ final class ConnectionHandlerImpl implements ConnectionHandler {
 
     private final Configuration configuration;
     private final HttpHeaderParser httpHeaderParser;
+    private final HttpMessageHandler httpMessageHandler;
     private final Socket source;
     private final Socket target;
 
@@ -33,9 +31,10 @@ final class ConnectionHandlerImpl implements ConnectionHandler {
     private InputStream targetInputStream;
 
     ConnectionHandlerImpl(final Configuration configuration, final HttpHeaderParser httpHeaderParser,
-                                 final Socket source, final Socket target) {
+                          final HttpMessageHandler httpMessageHandler, final Socket source, final Socket target) {
         this.configuration = requireNonNull(configuration, "configuration must not be null.");
         this.httpHeaderParser = requireNonNull(httpHeaderParser, "httpHeaderParser must not be null.");
+        this.httpMessageHandler = requireNonNull(httpMessageHandler, "httpMessageHandler must not be null.");
         this.source = requireNonNull(source, "source must not be null.");
         this.target = requireNonNull(target, "target must not be null.");
     }
@@ -68,9 +67,9 @@ final class ConnectionHandlerImpl implements ConnectionHandler {
 
     private void handleRequest() throws IOException {
         try {
-            final long requestLength = httpHeaderParser.parse(sourceInputStream,
-                    configuration.getMaxHttpHeaderSize(), this::markStartHandlingRequest).getTotalLength();
-            IOUtils.copyLarge(sourceInputStream, target.getOutputStream(), 0, requestLength);
+            final HttpHeaderParser.Result header = httpHeaderParser.parse(
+                    sourceInputStream, configuration.getMaxHttpHeaderSize(), this::markStartHandlingRequest);
+            httpMessageHandler.handle(header, sourceInputStream, target.getOutputStream());
         } catch (final UnsupportedTransferEncodingException ex) {
             sendHttpStatusToClient(HttpStatusCode.LENGTH_REQUIRED);
             throw ex;
@@ -84,9 +83,9 @@ final class ConnectionHandlerImpl implements ConnectionHandler {
     }
     private void handleResponse() throws IOException {
         try {
-            final long responseLength = httpHeaderParser.parse(
-                    targetInputStream, configuration.getMaxHttpHeaderSize()).getTotalLength();
-            IOUtils.copyLarge(targetInputStream, source.getOutputStream(), 0, responseLength);
+            final HttpHeaderParser.Result header = httpHeaderParser.parse(
+                    targetInputStream, configuration.getMaxHttpHeaderSize());
+            httpMessageHandler.handle(header, targetInputStream, source.getOutputStream());
             markEndHandlingResponse();
         } catch (final Exception ex) {
             LOGGER.error("An error occurred while processing the server response.", ex);
