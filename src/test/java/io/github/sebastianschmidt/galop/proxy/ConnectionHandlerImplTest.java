@@ -2,6 +2,7 @@ package io.github.sebastianschmidt.galop.proxy;
 
 import io.github.sebastianschmidt.galop.commons.ByteLimitExceededException;
 import io.github.sebastianschmidt.galop.configuration.Configuration;
+import io.github.sebastianschmidt.galop.http.HttpHeaderParser.Result;
 import io.github.sebastianschmidt.galop.http.HttpTestUtils;
 import io.github.sebastianschmidt.galop.http.HttpHeaderParser;
 import io.github.sebastianschmidt.galop.http.InvalidHttpHeaderException;
@@ -110,7 +111,7 @@ public class ConnectionHandlerImplTest {
     @Test
     public void run_whenHandleRequestAndResponseThrowsIOException_closesSocketsAndTerminates() throws Exception {
 
-        doThrow(IOException.class).when(httpHeaderParser).calculateTotalLength(any(), anyInt());
+        doThrow(IOException.class).when(httpHeaderParser).parse(any(), anyInt());
 
         connectionHandler.run();
 
@@ -206,8 +207,8 @@ public class ConnectionHandlerImplTest {
     public void run_whenParsingHttpHeader_passesConfiguredMaxHttpHeaderSizeToParser() throws IOException {
         when(source.isClosed()).thenReturn(false).thenReturn(true);
         connectionHandler.run();
-        verify(httpHeaderParser, atLeastOnce()).calculateTotalLength(any(), eq(1024));
-        verify(httpHeaderParser, never()).calculateTotalLength(any(), not(eq(1024)));
+        verify(httpHeaderParser, atLeastOnce()).parse(any(), eq(1024));
+        verify(httpHeaderParser, never()).parse(any(), not(eq(1024)));
     }
 
     // Invalid client request:
@@ -217,7 +218,7 @@ public class ConnectionHandlerImplTest {
             throws IOException {
 
         when(source.isClosed()).thenReturn(false);
-        doThrow(InvalidHttpHeaderException.class).when(httpHeaderParser).calculateTotalLength(any(), anyInt(), any());
+        doThrow(InvalidHttpHeaderException.class).when(httpHeaderParser).parse(any(), anyInt(), any());
 
         connectionHandler.run();
 
@@ -232,7 +233,7 @@ public class ConnectionHandlerImplTest {
             throws IOException {
 
         when(source.isClosed()).thenReturn(false);
-        doThrow(ByteLimitExceededException.class).when(httpHeaderParser).calculateTotalLength(any(), anyInt(), any());
+        doThrow(ByteLimitExceededException.class).when(httpHeaderParser).parse(any(), anyInt(), any());
 
         connectionHandler.run();
 
@@ -247,7 +248,7 @@ public class ConnectionHandlerImplTest {
             throws IOException {
 
         when(source.isClosed()).thenReturn(false);
-        doThrow(UnsupportedTransferEncodingException.class).when(httpHeaderParser).calculateTotalLength(any(), anyInt(), any());
+        doThrow(UnsupportedTransferEncodingException.class).when(httpHeaderParser).parse(any(), anyInt(), any());
 
         connectionHandler.run();
 
@@ -264,7 +265,7 @@ public class ConnectionHandlerImplTest {
             throws IOException {
 
         when(source.isClosed()).thenReturn(false);
-        doThrow(IOException.class).when(httpHeaderParser).calculateTotalLength(any(), anyInt());
+        doThrow(IOException.class).when(httpHeaderParser).parse(any(), anyInt());
 
         connectionHandler.run();
 
@@ -277,7 +278,7 @@ public class ConnectionHandlerImplTest {
     @Test
     public void run_whenANewErrorOccursDuringHandlingBadGatewayError_ignoresNewError() throws IOException {
         when(source.isClosed()).thenReturn(false).thenReturn(true);
-        doThrow(IOException.class).when(httpHeaderParser).calculateTotalLength(any(), anyInt());
+        doThrow(IOException.class).when(httpHeaderParser).parse(any(), anyInt());
         doThrow(IOException.class).when(source).getOutputStream();
         connectionHandler.run();
     }
@@ -297,10 +298,11 @@ public class ConnectionHandlerImplTest {
         when(socket.getInputStream()).thenReturn(inputStream);
 
         final long totalLength = (long) content.getBytes().length;
+        final Result result = mock(Result.class);
+        when(result.getTotalLength()).thenReturn(totalLength);
+        when(httpHeaderParser.parse(any(), anyInt())).thenReturn(result);
 
-        when(httpHeaderParser.calculateTotalLength(any(), anyInt())).thenReturn(totalLength);
-
-        when(httpHeaderParser.calculateTotalLength(any(), anyInt(), any())).thenAnswer((invocation) -> {
+        when(httpHeaderParser.parse(any(), anyInt(), any())).thenAnswer((invocation) -> {
 
             final Runnable callback = (Runnable) invocation.getArguments()[2];
 
@@ -312,11 +314,17 @@ public class ConnectionHandlerImplTest {
                 callbackAfterCallback.run();
             }
 
-            return totalLength;
+            return result;
 
         });
 
 
+    }
+
+    private Result createResult(final long totalLength) {
+        final Result result = mock(Result.class);
+        when(result.getTotalLength()).thenReturn(totalLength);
+        return result;
     }
 
     private String getOutputContent(final Socket socket) throws IOException {

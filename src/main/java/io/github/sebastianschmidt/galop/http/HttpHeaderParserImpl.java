@@ -4,23 +4,48 @@ import io.github.sebastianschmidt.galop.commons.LimitedInputStream;
 
 import java.io.*;
 
-import static io.github.sebastianschmidt.galop.http.HttpConstants.HTTP_HEADER_CHARSET;
+import static io.github.sebastianschmidt.galop.http.HttpConstants.*;
 import static java.util.Objects.requireNonNull;
 
 final class HttpHeaderParserImpl implements HttpHeaderParser {
 
-    private static final String HEADER_CONTENT_LENGTH_PREFIX = "Content-Length:";
-    private static final String HEADER_TRANSFER_ENCODING_PREFIX = "Transfer-Encoding:";
-    private static final String IDENTITY_TRANSFER_ENCODING = "identity";
+    private static final class ResultImpl implements Result {
 
-    @Override
-    public long calculateTotalLength(final InputStream inputStream, final int maxHttpHeaderSize) throws IOException {
-        return calculateTotalLength(inputStream, maxHttpHeaderSize, null);
+        private final boolean chunkedTransferEncoding;
+        private final long headerLength;
+        private final Long totalLength;
+
+        private ResultImpl(final boolean chunkedTransferEncoding, final long headerLength, final Long totalLength) {
+            this.chunkedTransferEncoding = chunkedTransferEncoding;
+            this.headerLength = headerLength;
+            this.totalLength = totalLength;
+        }
+
+        @Override
+        public boolean isChunkedTransferEncoding() {
+            return chunkedTransferEncoding;
+        }
+
+        @Override
+        public long getHeaderLength() {
+            return headerLength;
+        }
+
+        @Override
+        public Long getTotalLength() {
+            return totalLength;
+        }
+
     }
 
     @Override
-    public long calculateTotalLength(final InputStream inputStream, final int maxHttpHeaderSize,
-                                     final Runnable startParsingCallback) throws IOException {
+    public Result parse(final InputStream inputStream, final int maxHttpHeaderSize) throws IOException {
+        return parse(inputStream, maxHttpHeaderSize, null);
+    }
+
+    @Override
+    public Result parse(final InputStream inputStream, final int maxHttpHeaderSize,
+                        final Runnable startParsingCallback) throws IOException {
 
         requireNonNull(inputStream, "inputStream must not be null.");
 
@@ -31,14 +56,14 @@ final class HttpHeaderParserImpl implements HttpHeaderParser {
         final LimitedInputStream limitedInputStream = new LimitedInputStream(inputStream, maxHttpHeaderSize);
         inputStream.mark(maxHttpHeaderSize);
 
-        final long calculatedLength = parseRequest(limitedInputStream, maxHttpHeaderSize, startParsingCallback);
+        final Result result = parseRequest(limitedInputStream, maxHttpHeaderSize, startParsingCallback);
         inputStream.reset();
-        return calculatedLength;
+        return result;
 
     }
 
-    private long parseRequest(final LimitedInputStream limitedInputStream, final int maxHttpHeaderSize,
-                              final Runnable startParsingCallback) throws IOException {
+    private Result parseRequest(final LimitedInputStream limitedInputStream, final int maxHttpHeaderSize,
+                                final Runnable startParsingCallback) throws IOException {
 
         boolean firstByte = true;
 
@@ -47,6 +72,7 @@ final class HttpHeaderParserImpl implements HttpHeaderParser {
         int currentByte;
 
         long contentLength = 0;
+        boolean chunkedEncoding = false;
 
         while ((currentByte = limitedInputStream.read()) > -1) {
 
@@ -66,13 +92,13 @@ final class HttpHeaderParserImpl implements HttpHeaderParser {
 
                 if (currentByteIndex != 0) {
 
-                    final String line = new String(bytes, 0, currentByteIndex, HTTP_HEADER_CHARSET);
+                    final String line = new String(bytes, 0, currentByteIndex, HEADER_CHARSET);
                     currentByteIndex = 0;
 
                     if (line.startsWith(HEADER_CONTENT_LENGTH_PREFIX)) {
                         contentLength = parseContentLength(line);
                     } else if (line.startsWith(HEADER_TRANSFER_ENCODING_PREFIX)) {
-                        parseTransferEncoding(line);
+                        chunkedEncoding = parseTransferEncoding(line);
                     }
 
                 } else {
@@ -86,7 +112,16 @@ final class HttpHeaderParserImpl implements HttpHeaderParser {
 
         }
 
-        return limitedInputStream.getTotalNumberOfBytesRead() + contentLength;
+        final long headerLength = limitedInputStream.getTotalNumberOfBytesRead();
+        final Long totalLength;
+
+        if (chunkedEncoding) {
+            totalLength = null;
+        } else {
+            totalLength = headerLength + contentLength;
+        }
+
+        return new ResultImpl(chunkedEncoding, headerLength, totalLength);
 
     }
 
@@ -110,12 +145,17 @@ final class HttpHeaderParserImpl implements HttpHeaderParser {
 
     }
 
-    private void parseTransferEncoding(final String line) throws IOException {
+    private boolean parseTransferEncoding(final String line) throws IOException {
 
         final String transferEncoding = line.substring(HEADER_TRANSFER_ENCODING_PREFIX.length()).trim();
 
-        if (!transferEncoding.equals(IDENTITY_TRANSFER_ENCODING)) {
-            throw new UnsupportedTransferEncodingException(transferEncoding);
+        switch (transferEncoding) {
+            case TRANSFER_ENCODING_CHUNKED:
+                return true;
+            case TRANSFER_ENCODING_IDENTITY:
+                return false;
+            default:
+                throw new UnsupportedTransferEncodingException(transferEncoding);
         }
 
     }

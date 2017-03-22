@@ -5,20 +5,10 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
-import static io.github.sebastianschmidt.galop.http.HttpConstants.HTTP_HEADER_CHARSET;
+import static io.github.sebastianschmidt.galop.http.HttpConstants.*;
 import static java.util.Objects.requireNonNull;
 
 public final class HttpResponse {
-
-    private static final char SPACE = ' ';
-    private static final char VALUE_SEPARATOR = ';';
-    private static final String NEW_LINE = "\r\n";
-
-    private static final String HTTP_VERSION = "HTTP/1.1";
-    private static final String DATE_HEADER_PREFIX = "Date: ";
-    private static final String CONTENT_LENGTH_HEADER_PREFIX = "Content-Length: ";
-    private static final String CONTENT_TYPE_HEADER_PREFIX = "Content-Type: ";
-    private static final String CONTENT_CHARSET_HEADER_PREFIX = "charset=";
 
     private static final String TEXT_CONTENT_TYPE = "text/plain";
     private static final Charset DEFAULT_CONTENT_CHARSET = Charset.forName("UTF-8");
@@ -51,7 +41,7 @@ public final class HttpResponse {
 
     public byte[] build() {
 
-        final byte[] header = buildHeader().getBytes(HTTP_HEADER_CHARSET);
+        final byte[] header = buildHeader().getBytes(HEADER_CHARSET);
         final byte[] content = buildContent();
 
         final byte[] headerAndContent = new byte[header.length + content.length];
@@ -89,7 +79,8 @@ public final class HttpResponse {
             dateTime = ZonedDateTime.now(ZoneId.of("GMT"));
         }
 
-        builder.append(DATE_HEADER_PREFIX);
+        builder.append(HEADER_DATE_PREFIX);
+        builder.append(SPACE);
         builder.append(DateTimeFormatter.RFC_1123_DATE_TIME.format(dateTime));
         builder.append(NEW_LINE);
 
@@ -111,14 +102,16 @@ public final class HttpResponse {
             content = this.content;
         }
 
-        builder.append(CONTENT_LENGTH_HEADER_PREFIX);
+        builder.append(HEADER_CONTENT_LENGTH_PREFIX);
+        builder.append(SPACE);
         builder.append(content.length);
         builder.append(NEW_LINE);
-        builder.append(CONTENT_TYPE_HEADER_PREFIX);
+        builder.append(HEADER_CONTENT_TYPE_PREFIX);
+        builder.append(SPACE);
         builder.append(type);
         builder.append(VALUE_SEPARATOR);
         builder.append(SPACE);
-        builder.append(CONTENT_CHARSET_HEADER_PREFIX);
+        builder.append(HEADER_CONTENT_TYPE_CHARSET_PREFIX);
         builder.append(charset);
         builder.append(NEW_LINE);
 

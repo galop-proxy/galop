@@ -68,8 +68,8 @@ final class ConnectionHandlerImpl implements ConnectionHandler {
 
     private void handleRequest() throws IOException {
         try {
-            final long requestLength = httpHeaderParser.calculateTotalLength(sourceInputStream,
-                    configuration.getMaxHttpHeaderSize(), this::markStartHandlingRequest);
+            final long requestLength = httpHeaderParser.parse(sourceInputStream,
+                    configuration.getMaxHttpHeaderSize(), this::markStartHandlingRequest).getTotalLength();
             IOUtils.copyLarge(sourceInputStream, target.getOutputStream(), 0, requestLength);
         } catch (final UnsupportedTransferEncodingException ex) {
             sendHttpStatusToClient(HttpStatusCode.LENGTH_REQUIRED);
@@ -84,8 +84,8 @@ final class ConnectionHandlerImpl implements ConnectionHandler {
     }
     private void handleResponse() throws IOException {
         try {
-            final long responseLength = httpHeaderParser.calculateTotalLength(
-                    targetInputStream, configuration.getMaxHttpHeaderSize());
+            final long responseLength = httpHeaderParser.parse(
+                    targetInputStream, configuration.getMaxHttpHeaderSize()).getTotalLength();
             IOUtils.copyLarge(targetInputStream, source.getOutputStream(), 0, responseLength);
             markEndHandlingResponse();
         } catch (final Exception ex) {
