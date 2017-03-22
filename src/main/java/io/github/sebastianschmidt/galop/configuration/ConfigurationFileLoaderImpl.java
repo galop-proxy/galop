@@ -38,9 +38,7 @@ final class ConfigurationFileLoaderImpl implements ConfigurationFileLoader {
 
             final ConfigurationImpl configuration = parseRequiredProperties(properties);
             parseOptionalProperties(properties, configuration);
-
-            LOGGER.info("Loaded configuration:\n" + configuration.toString());
-
+            logResult(configuration);
             return configuration;
 
         } catch (final Exception ex) {
@@ -197,6 +195,20 @@ final class ConfigurationFileLoaderImpl implements ConfigurationFileLoader {
 
         configuration.setConnectionHandlersTerminationTimeout(timeout);
 
+    }
+
+    private void logResult(final Configuration configuration) {
+        LOGGER.info("Loaded configuration:");
+        log(PROXY_PORT, configuration.getProxyPort().getValue());
+        log(TARGET_ADDRESS, configuration.getTargetAddress());
+        log(TARGET_PORT, configuration.getTargetPort().getValue());
+        log(CONNECTION_HANDLERS_LOG_INTERVAL, configuration.getConnectionHandlersLogInterval());
+        log(CONNECTION_HANDLERS_TERMINATION_TIMEOUT, configuration.getConnectionHandlersTerminationTimeout());
+        log(MAX_HTTP_HEADER_SIZE, configuration.getMaxHttpHeaderSize());
+    }
+
+    private void log(final String key, final Object property) {
+        LOGGER.info(key + " = " + property);
     }
 
 }

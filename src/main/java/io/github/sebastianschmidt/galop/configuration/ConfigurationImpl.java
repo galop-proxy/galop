@@ -4,7 +4,6 @@ import io.github.sebastianschmidt.galop.commons.PortNumber;
 
 import java.net.InetAddress;
 
-import static io.github.sebastianschmidt.galop.configuration.ConfigurationPropertyKeys.*;
 import static java.util.Objects.requireNonNull;
 
 final class ConfigurationImpl implements Configuration {
@@ -62,22 +61,6 @@ final class ConfigurationImpl implements Configuration {
 
     void setConnectionHandlersTerminationTimeout(final long connectionHandlersTerminationTimeout) {
         this.connectionHandlersTerminationTimeout = connectionHandlersTerminationTimeout;
-    }
-
-    @Override
-    public String toString() {
-        final StringBuilder builder = new StringBuilder();
-        append(PROXY_PORT, proxyPort.getValue(), builder);
-        append(TARGET_ADDRESS, targetAddress, builder);
-        append(TARGET_PORT, targetPort.getValue(), builder);
-        append(CONNECTION_HANDLERS_LOG_INTERVAL, connectionHandlersLogInterval, builder);
-        append(CONNECTION_HANDLERS_TERMINATION_TIMEOUT, connectionHandlersTerminationTimeout, builder);
-        append(MAX_HTTP_HEADER_SIZE, maxHttpHeaderSize, builder);
-        return builder.substring(0, builder.toString().length() - 2);
-    }
-
-    private void append(final String key, final Object property, final StringBuilder builder) {
-        builder.append(key).append(" = ").append(property).append("\r\n");
     }
 
 }
