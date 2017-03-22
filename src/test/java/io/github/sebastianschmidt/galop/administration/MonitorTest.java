@@ -8,7 +8,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 
 /**
@@ -23,7 +22,7 @@ public class MonitorTest {
     @Before
     public void setUp() {
         configuration = mock(Configuration.class);
-        when(configuration.getConnectionHandlersLogInterval()).thenReturn(1L);
+        when(configuration.getConnectionHandlersLogInterval()).thenReturn(100L);
         executorService = spy(Executors.newCachedThreadPool());
         monitor = new Monitor(configuration, executorService);
     }
@@ -37,15 +36,10 @@ public class MonitorTest {
 
     @Test(timeout = 10000)
     public void interrupt_shutDownsMonitor() {
-
         monitor.start();
         verify(((ThreadPoolExecutor) executorService), timeout(10000).atLeastOnce()).getActiveCount();
-
         monitor.interrupt();
-
-        assertTrue(monitor.isInterrupted());
         while (monitor.isAlive());
-
     }
 
     // Constructor:
