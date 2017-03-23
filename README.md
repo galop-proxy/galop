@@ -19,6 +19,7 @@ be shut down without interrupting open HTTP requests.
 - Simple reverse proxy for HTTP requests.
 - Closes connections gracefully when shutting down by processing open HTTP
   requests before terminating a connection.
+- Supports chunked transfer encoding.
 
 
 ## Limitations
