@@ -16,6 +16,10 @@
             <source>README.txt</source>
         </file>
         <file>
+            <source>../CHANGELOG.md</source>
+            <destName>CHANGELOG.txt</destName>
+        </file>
+        <file>
             <source>../LICENSE</source>
             <destName>LICENSE.txt</destName>
         </file>
