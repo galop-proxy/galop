@@ -1,6 +1,13 @@
 # Changelog
 
 
+## 0.3.1 - 2017-04-12
+
+### Changed
+
+- Apache Log4j updated to version 2.8.2.
+
+
 ## 0.3.0 - 2017-03-22
 
 ### Added
