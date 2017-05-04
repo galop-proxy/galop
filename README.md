@@ -29,8 +29,8 @@ be unstable and not all functions are implemented that are necessary for use in
 a production environment. Please note the following limitations in the current
 functionality of GALOP.
 
-- **No secure connections**: Currently neither TLS nor SSL is supported.
-- **X-Forwarded-For not supported**: Currently, the proxy can not send the
+- **No secure connections:** Currently neither TLS nor SSL is supported.
+- **X-Forwarded-For not supported:** Currently, the proxy can not send the
   original IP addresses of the clients to the server via the HTTP header
   X-Forwarded-For.
 
@@ -60,27 +60,34 @@ Each property consists of a name and a value, separated by an equals sign.
 A configuration file for GALOP must contain at least the following three
 properties.
 
+- **proxy_port:**
+  When GALOP starts, it binds to this port number and waits for incoming requests.
+- **target_address:**
+  Each request is forwarded to the server with this address.
+  The address can be an IP address or hostname.
+- **target_port:**
+  Each request is forwarded to this port number of the target server.
+
+A minimal configuration file might look like this:
+
 ```
 proxy_port=80
 target_address=localhost
 target_port=3000
 ```
 
-When GALOP starts, it binds to port `proxy_port` and waits for incoming requests.
-Each request is forwarded to the server with the address `target_address` and
-the port `target_port`. The property `target_address` can be an IP address or
-hostname. In addition, the following optional properties are available:
+In addition, the following optional properties are available:
 
-- **connection_handlers.termination_timeout**:
+- **connection_handlers.termination_timeout:**
   When GALOP is shut down, the open connections are not closed until open HTTP
   requests have been processed. This property can be used to configure the
   maximum time in milliseconds, after which all connections are closed even if
   HTTP requests are still open. The default value is 30000 milliseconds.
-- **connection_handlers.log_interval**:
+- **connection_handlers.log_interval:**
   In this interval, the current number of open connections is logged. The
   interval must be specified in milliseconds. The default value is 60000
   milliseconds.
-- **security.max_http_header_size**:
+- **security.max_http_header_size:**
   The maximum allowed size of an HTTP header in bytes. Any HTTP request or
   response that contains a larger header is rejected by GALOP. The default
   value is 8192 bytes.
