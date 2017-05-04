@@ -1,6 +1,17 @@
 # Changelog
 
 
+## [Unreleased]
+
+### Added
+
+- If the proxy can not establish a TCP connection with the server within a
+  configured time, the proxy sends the HTTP status code 504 Gateway Time-out
+  to the client.
+- If a connection to the server can not be established, the proxy sends the
+  HTTP status code 503 Service Unavailable to the client.
+
+
 ## 0.3.1 - 2017-04-12
 
 ### Changed
