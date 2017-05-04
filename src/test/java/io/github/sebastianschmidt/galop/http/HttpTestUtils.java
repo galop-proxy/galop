@@ -22,22 +22,16 @@ public class HttpTestUtils {
                                         final String transferEncoding) {
 
         final StringBuilder response  = new StringBuilder();
-        response.append(HTTP_VERSION + SPACE + "200 OK" + NEW_LINE);
-        response.append(HEADER_SERVER_PREFIX + SPACE + "Test/1.0" + NEW_LINE);
-        response.append(HEADER_CONTENT_TYPE_PREFIX + SPACE + "text/html" + NEW_LINE);
+        response.append(HTTP_VERSION).append(SPACE).append("200 OK").append(NEW_LINE);
+        response.append(HEADER_SERVER_PREFIX).append(SPACE).append("Test/1.0").append(NEW_LINE);
+        response.append(HEADER_CONTENT_TYPE_PREFIX).append(SPACE).append("text/html").append(NEW_LINE);
 
         if (contentLength != null) {
-            response.append(HEADER_CONTENT_LENGTH_PREFIX);
-            response.append(SPACE);
-            response.append(contentLength);
-            response.append(NEW_LINE);
+            appendHeader(HEADER_CONTENT_LENGTH_PREFIX, contentLength, response);
         }
 
         if (transferEncoding != null) {
-            response.append(HEADER_TRANSFER_ENCODING_PREFIX);
-            response.append(SPACE);
-            response.append(transferEncoding);
-            response.append(NEW_LINE);
+            appendHeader(HEADER_TRANSFER_ENCODING_PREFIX, transferEncoding, response);
         }
 
         response.append(NEW_LINE);
@@ -45,6 +39,13 @@ public class HttpTestUtils {
 
         return response.toString();
 
+    }
+
+    private static void appendHeader(final String prefix, final String content, final StringBuilder builder) {
+        builder.append(prefix);
+        builder.append(SPACE);
+        builder.append(content);
+        builder.append(NEW_LINE);
     }
 
 }
