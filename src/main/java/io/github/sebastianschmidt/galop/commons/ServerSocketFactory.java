@@ -5,6 +5,6 @@ import java.net.ServerSocket;
 
 public interface ServerSocketFactory {
 
-    ServerSocket create(int port) throws IOException;
+    ServerSocket create(PortNumber port) throws IOException;
 
 }

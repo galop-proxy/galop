@@ -1,7 +1,5 @@
 package io.github.sebastianschmidt.galop.commons;
 
-import io.github.sebastianschmidt.galop.commons.ServerSocketFactoryImpl;
-import io.github.sebastianschmidt.galop.commons.SocketFactoryImpl;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -23,10 +21,10 @@ public class SocketFactoryImplTest {
         final ServerSocketFactoryImpl serverSocketFactory = new ServerSocketFactoryImpl();
         final SocketFactoryImpl socketFactory = new SocketFactoryImpl();
 
-        try (final ServerSocket serverSocket = serverSocketFactory.create(0)) {
+        try (final ServerSocket serverSocket = serverSocketFactory.create(new PortNumber(0))) {
 
             final InetAddress serverAddress = InetAddress.getLocalHost();
-            final int serverPort = serverSocket.getLocalPort();
+            final PortNumber serverPort = new PortNumber(serverSocket.getLocalPort());
 
             try (final Socket socket = socketFactory.create(serverAddress, serverPort)) {
                 assertNotNull(socket);

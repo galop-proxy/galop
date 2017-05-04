@@ -20,9 +20,9 @@ import static org.mockito.Mockito.*;
  */
 public class ServerImplTest {
 
-    private static final int SERVER_PORT = 80;
+    private static final PortNumber SERVER_PORT = new PortNumber(80);
     private static final InetAddress TARGET_ADDRESS = mock(InetAddress.class);
-    private static final int TARGET_PORT = 8080;
+    private static final PortNumber TARGET_PORT = new PortNumber(8080);
 
     private Configuration configuration;
     private ServerSocketFactory serverSocketFactory;
@@ -40,9 +40,9 @@ public class ServerImplTest {
     public void setUp() throws IOException {
 
         configuration = mock(Configuration.class);
-        when(configuration.getProxyPort()).thenReturn(new PortNumber(SERVER_PORT));
+        when(configuration.getProxyPort()).thenReturn(SERVER_PORT);
         when(configuration.getTargetAddress()).thenReturn(TARGET_ADDRESS);
-        when(configuration.getTargetPort()).thenReturn(new PortNumber(TARGET_PORT));
+        when(configuration.getTargetPort()).thenReturn(TARGET_PORT);
 
         serverSocketFactory = mock(ServerSocketFactory.class);
         serverSocket = mock(ServerSocket.class);

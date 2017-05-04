@@ -18,7 +18,7 @@ public class ServerSocketFactoryImplTest {
 
         final ServerSocketFactoryImpl factory = new ServerSocketFactoryImpl();
 
-        try (final ServerSocket serverSocket = factory.create(0)) {
+        try (final ServerSocket serverSocket = factory.create(new PortNumber(0))) {
             assertNotNull(serverSocket);
         }
 

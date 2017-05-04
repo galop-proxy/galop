@@ -6,8 +6,8 @@ import java.net.ServerSocket;
 final class ServerSocketFactoryImpl implements ServerSocketFactory {
 
     @Override
-    public ServerSocket create(final int port) throws IOException {
-        return new ServerSocket(port);
+    public ServerSocket create(final PortNumber port) throws IOException {
+        return new ServerSocket(port.getValue());
     }
 
 }

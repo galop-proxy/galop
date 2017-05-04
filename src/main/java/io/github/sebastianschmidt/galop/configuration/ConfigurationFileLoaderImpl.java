@@ -199,9 +199,9 @@ final class ConfigurationFileLoaderImpl implements ConfigurationFileLoader {
 
     private void logResult(final Configuration configuration) {
         LOGGER.info("Loaded configuration:");
-        log(PROXY_PORT, configuration.getProxyPort().getValue());
+        log(PROXY_PORT, configuration.getProxyPort());
         log(TARGET_ADDRESS, configuration.getTargetAddress());
-        log(TARGET_PORT, configuration.getTargetPort().getValue());
+        log(TARGET_PORT, configuration.getTargetPort());
         log(CONNECTION_HANDLERS_LOG_INTERVAL, configuration.getConnectionHandlersLogInterval());
         log(CONNECTION_HANDLERS_TERMINATION_TIMEOUT, configuration.getConnectionHandlersTerminationTimeout());
         log(MAX_HTTP_HEADER_SIZE, configuration.getMaxHttpHeaderSize());
