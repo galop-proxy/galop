@@ -10,6 +10,7 @@ import java.net.UnknownHostException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import static io.github.sebastianschmidt.galop.configuration.ConfigurationDefaults.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.doThrow;
@@ -53,6 +54,7 @@ public class ConfigurationFileLoaderImplTest {
         assertEquals(80, configuration.getProxyPort().getValue());
         assertEquals("localhost", configuration.getTargetAddress().getHostName());
         assertEquals(8080, configuration.getTargetPort().getValue());
+        assertEquals(30000, configuration.getTargetConnectionTimeout());
         assertEquals(255, configuration.getMaxHttpHeaderSize());
         assertEquals(30000, configuration.getConnectionHandlersLogInterval());
         assertEquals(15000, configuration.getConnectionHandlersTerminationTimeout());
@@ -80,14 +82,21 @@ public class ConfigurationFileLoaderImplTest {
         assertEquals(80, configuration.getProxyPort().getValue());
         assertEquals("localhost", configuration.getTargetAddress().getHostName());
         assertEquals(8080, configuration.getTargetPort().getValue());
-        assertEquals(ConfigurationDefaults.MAX_HTTP_HEADER_SIZE, configuration.getMaxHttpHeaderSize());
+        assertEquals(TARGET_CONNECTION_TIMEOUT, configuration.getTargetConnectionTimeout());
+        assertEquals(MAX_HTTP_HEADER_SIZE, configuration.getMaxHttpHeaderSize());
+        assertEquals(CONNECTION_HANDLERS_LOG_INTERVAL, configuration.getConnectionHandlersLogInterval());
+        assertEquals(CONNECTION_HANDLERS_TERMINATION_TIMEOUT, configuration.getConnectionHandlersTerminationTimeout());
 
     }
 
+    @Test
+    public void load_withValidTargetConnectionTimeout_returnsSpecifiedConfiguration() throws Exception {
+        final Configuration configuration = load("valid-configuration-with-target-connection-timeout.properties");
+        assertEquals(25000, configuration.getTargetConnectionTimeout());
+    }
 
     @Test
-    public void load_withValidFileWithConnectionHandlersLogInterval_returnsSpecifiedConfiguration()
-            throws Exception {
+    public void load_withValidFileWithConnectionHandlersLogInterval_returnsSpecifiedConfiguration() throws Exception {
         final Configuration configuration = load("valid-configuration-with-log-interval.properties");
         assertEquals(10000, configuration.getConnectionHandlersLogInterval());
     }
@@ -96,8 +105,7 @@ public class ConfigurationFileLoaderImplTest {
     public void load_withValidFileWithoutConnectionHandlersLogInterval_returnsConfigurationWithDefaultInterval()
             throws Exception {
         final Configuration configuration = load("valid-configuration-without-overwritten-defaults.properties");
-        assertEquals(ConfigurationDefaults.CONNECTION_HANDLERS_LOG_INTERVAL,
-                configuration.getConnectionHandlersLogInterval());
+        assertEquals(CONNECTION_HANDLERS_LOG_INTERVAL, configuration.getConnectionHandlersLogInterval());
     }
 
     @Test
@@ -111,8 +119,7 @@ public class ConfigurationFileLoaderImplTest {
     public void load_withValidFileWithoutConnectionHandlersTerminationTimeout_returnsConfigurationWithDefaultTimeout()
             throws Exception {
         final Configuration configuration = load("valid-configuration-without-overwritten-defaults.properties");
-        assertEquals(ConfigurationDefaults.CONNECTION_HANDLERS_TERMINATION_TIMEOUT,
-                configuration.getConnectionHandlersTerminationTimeout());
+        assertEquals(CONNECTION_HANDLERS_TERMINATION_TIMEOUT, configuration.getConnectionHandlersTerminationTimeout());
     }
 
     // Invalid configuration files:
@@ -145,6 +152,16 @@ public class ConfigurationFileLoaderImplTest {
     @Test(expected = InvalidConfigurationException.class)
     public void load_withInvalidTargetPort_throwsInvalidConfigurationException() throws Exception {
         load("invalid-configuration-with-invalid-target-port.properties");
+    }
+
+    @Test(expected = InvalidConfigurationException.class)
+    public void load_withInvalidTargetConnectionTimeout_throwsInvalidConfigurationException() throws Exception {
+        load("valid-configuration-with-invalid-target-connection-timeout.properties");
+    }
+
+    @Test(expected = InvalidConfigurationException.class)
+    public void load_withTooLowTargetConnectionTimeout_throwsInvalidConfigurationException() throws Exception {
+        load("valid-configuration-with-too-low-target-connection-timeout.properties");
     }
 
     @Test(expected = InvalidConfigurationException.class)

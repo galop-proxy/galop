@@ -11,6 +11,7 @@ final class ConfigurationImpl implements Configuration {
     private final PortNumber proxyPort;
     private final InetAddress targetAddress;
     private final PortNumber targetPort;
+    private long targetConnectionTimeout = ConfigurationDefaults.TARGET_CONNECTION_TIMEOUT;
     private int maxHttpHeaderSize = ConfigurationDefaults.MAX_HTTP_HEADER_SIZE;
     private long connectionHandlersLogInterval = ConfigurationDefaults.CONNECTION_HANDLERS_LOG_INTERVAL;
     private long connectionHandlersTerminationTimeout = ConfigurationDefaults.CONNECTION_HANDLERS_TERMINATION_TIMEOUT;
@@ -34,6 +35,15 @@ final class ConfigurationImpl implements Configuration {
     @Override
     public PortNumber getTargetPort() {
         return targetPort;
+    }
+
+    @Override
+    public long getTargetConnectionTimeout() {
+        return targetConnectionTimeout;
+    }
+
+    void setTargetConnectionTimeout(final long targetConnectionTimeout) {
+        this.targetConnectionTimeout = targetConnectionTimeout;
     }
 
     @Override

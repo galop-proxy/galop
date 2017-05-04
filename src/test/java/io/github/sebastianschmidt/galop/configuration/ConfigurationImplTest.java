@@ -38,6 +38,17 @@ public class ConfigurationImplTest {
     }
 
     @Test
+    public void getTargetConnectionTimeout_withoutConfiguredProperty_returnsDefaultValue() {
+        assertEquals(ConfigurationDefaults.TARGET_CONNECTION_TIMEOUT, configuration.getTargetConnectionTimeout());
+    }
+
+    @Test
+    public void getTargetConnectionTimeout_withConfiguredProperty_returnsConfiguredValue() {
+        configuration.setTargetConnectionTimeout(1000);
+        assertEquals(1000, configuration.getTargetConnectionTimeout());
+    }
+
+    @Test
     public void getMaxHttpHeaderSize_withoutConfiguredProperty_returnsDefaultValue() {
         assertEquals(ConfigurationDefaults.MAX_HTTP_HEADER_SIZE, configuration.getMaxHttpHeaderSize());
     }

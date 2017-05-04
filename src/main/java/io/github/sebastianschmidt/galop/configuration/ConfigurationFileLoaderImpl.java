@@ -109,9 +109,37 @@ final class ConfigurationFileLoaderImpl implements ConfigurationFileLoader {
 
     private void parseOptionalProperties(final Properties properties, final ConfigurationImpl configuration)
             throws InvalidConfigurationException {
+        parseTargetConnectionTimeout(properties, configuration);
         parseMaxHttpHeaderSize(properties, configuration);
         parseConnectionHandlersLogInterval(properties, configuration);
         parseConnectionHandlersTerminationTimeout(properties, configuration);
+    }
+
+    private void parseTargetConnectionTimeout(final Properties properties, final ConfigurationImpl configuration)
+            throws InvalidConfigurationException {
+
+        final String targetConnectionTimeoutAsString = properties.getProperty(TARGET_CONNECTION_TIMEOUT);
+
+        if (targetConnectionTimeoutAsString == null) {
+            return;
+        }
+
+        final long targetConnectionTimeout;
+
+        try {
+            targetConnectionTimeout = Long.parseLong(targetConnectionTimeoutAsString);
+        } catch (final NumberFormatException ex) {
+            throw new InvalidConfigurationException("Property " + TARGET_CONNECTION_TIMEOUT
+                    + " is not a valid number: " + targetConnectionTimeoutAsString);
+        }
+
+        if (targetConnectionTimeout < 0) {
+            throw new InvalidConfigurationException("Property " + TARGET_CONNECTION_TIMEOUT
+                    + " must be at least zero: " + targetConnectionTimeout);
+        }
+
+        configuration.setTargetConnectionTimeout(targetConnectionTimeout);
+
     }
 
     private void parseMaxHttpHeaderSize(final Properties properties, final ConfigurationImpl configuration)
@@ -202,6 +230,7 @@ final class ConfigurationFileLoaderImpl implements ConfigurationFileLoader {
         log(PROXY_PORT, configuration.getProxyPort());
         log(TARGET_ADDRESS, configuration.getTargetAddress());
         log(TARGET_PORT, configuration.getTargetPort());
+        log(TARGET_CONNECTION_TIMEOUT, configuration.getTargetConnectionTimeout());
         log(CONNECTION_HANDLERS_LOG_INTERVAL, configuration.getConnectionHandlersLogInterval());
         log(CONNECTION_HANDLERS_TERMINATION_TIMEOUT, configuration.getConnectionHandlersTerminationTimeout());
         log(MAX_HTTP_HEADER_SIZE, configuration.getMaxHttpHeaderSize());

@@ -12,6 +12,8 @@ public interface Configuration {
 
     PortNumber getTargetPort();
 
+    long getTargetConnectionTimeout();
+
     int getMaxHttpHeaderSize();
 
     long getConnectionHandlersLogInterval();

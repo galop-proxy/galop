@@ -78,6 +78,10 @@ target_port=3000
 
 In addition, the following optional properties are available:
 
+- **target.connection_timeout:**
+  The maximum time that GALOP waits for the target server to establish a TCP
+  connection. The time must be specified in milliseconds. The default value is
+  15000 milliseconds.
 - **connection_handlers.termination_timeout:**
   When GALOP is shut down, the open connections are not closed until open HTTP
   requests have been processed. This property can be used to configure the
@@ -90,7 +94,7 @@ In addition, the following optional properties are available:
 - **security.max_http_header_size:**
   The maximum allowed size of an HTTP header in bytes. Any HTTP request or
   response that contains a larger header is rejected by GALOP. The default
-  value is 8192 bytes.
+  value is 8192 bytes. The smallest size that can be configured is 255 bytes.
 
 For example, a configuration file that overwrites all default values ​​might
 look like this:
@@ -99,6 +103,7 @@ look like this:
 proxy_port=80
 target_address=localhost
 target_port=3000
+target.connection_timeout=30000
 connection_handlers.termination_timeout=120000
 connection_handlers.log_interval=30000
 security.max_http_header_size=16384
