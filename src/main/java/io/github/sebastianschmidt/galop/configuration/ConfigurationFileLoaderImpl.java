@@ -124,10 +124,10 @@ final class ConfigurationFileLoaderImpl implements ConfigurationFileLoader {
             return;
         }
 
-        final long targetConnectionTimeout;
+        final int targetConnectionTimeout;
 
         try {
-            targetConnectionTimeout = Long.parseLong(targetConnectionTimeoutAsString);
+            targetConnectionTimeout = Integer.parseInt(targetConnectionTimeoutAsString);
         } catch (final NumberFormatException ex) {
             throw new InvalidConfigurationException("Property " + TARGET_CONNECTION_TIMEOUT
                     + " is not a valid number: " + targetConnectionTimeoutAsString);

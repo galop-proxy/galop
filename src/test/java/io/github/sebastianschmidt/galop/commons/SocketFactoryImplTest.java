@@ -26,7 +26,7 @@ public class SocketFactoryImplTest {
             final InetAddress serverAddress = InetAddress.getLocalHost();
             final PortNumber serverPort = new PortNumber(serverSocket.getLocalPort());
 
-            try (final Socket socket = socketFactory.create(serverAddress, serverPort)) {
+            try (final Socket socket = socketFactory.create(serverAddress, serverPort, 0)) {
                 assertNotNull(socket);
             }
 

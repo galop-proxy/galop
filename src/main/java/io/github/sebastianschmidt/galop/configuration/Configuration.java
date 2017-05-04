@@ -12,7 +12,7 @@ public interface Configuration {
 
     PortNumber getTargetPort();
 
-    long getTargetConnectionTimeout();
+    int getTargetConnectionTimeout();
 
     int getMaxHttpHeaderSize();
 

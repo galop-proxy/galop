@@ -6,6 +6,6 @@ import java.net.Socket;
 
 public interface SocketFactory {
 
-    Socket create(InetAddress address, PortNumber port) throws IOException;
+    Socket create(InetAddress address, PortNumber port, int timeout) throws IOException;
 
 }

@@ -332,12 +332,6 @@ public class ConnectionHandlerImplTest {
 
     }
 
-    private Result createResult(final long totalLength) {
-        final Result result = mock(Result.class);
-        when(result.getTotalLength()).thenReturn(totalLength);
-        return result;
-    }
-
     private String getOutputContent(final Socket socket) throws IOException {
         return socket.getOutputStream().toString();
     }

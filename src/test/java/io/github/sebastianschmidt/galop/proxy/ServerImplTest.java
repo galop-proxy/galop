@@ -4,15 +4,16 @@ import io.github.sebastianschmidt.galop.commons.PortNumber;
 import io.github.sebastianschmidt.galop.commons.ServerSocketFactory;
 import io.github.sebastianschmidt.galop.commons.SocketFactory;
 import io.github.sebastianschmidt.galop.configuration.Configuration;
+import io.github.sebastianschmidt.galop.http.HttpStatusCode;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
+import java.net.*;
 import java.util.concurrent.ExecutorService;
 
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 
 /**
@@ -35,6 +36,7 @@ public class ServerImplTest {
     private Socket source;
     private Socket target;
     private ConnectionHandler connectionHandler;
+    private ByteArrayOutputStream sourceOutputStream;
 
     @Before
     public void setUp() throws IOException {
@@ -50,10 +52,12 @@ public class ServerImplTest {
 
         source = mock(Socket.class);
         when(serverSocket.accept()).thenReturn(source);
+        sourceOutputStream = new ByteArrayOutputStream();
+        when(source.getOutputStream()).thenReturn(sourceOutputStream);
 
         socketFactory = mock(SocketFactory.class);
         target = mock(Socket.class);
-        when(socketFactory.create(TARGET_ADDRESS, TARGET_PORT)).thenReturn(target);
+        when(socketFactory.create(TARGET_ADDRESS, TARGET_PORT, 0)).thenReturn(target);
 
         connectionHandlerFactory = mock(ConnectionHandlerFactory.class);
         connectionHandler = mock(ConnectionHandler.class);
@@ -100,13 +104,73 @@ public class ServerImplTest {
     }
 
     @Test
+    public void run_whenCannotConnectToTarget_sendsServerUnavailableMessageToClientAndClosesConnectionSocket()
+            throws IOException {
+
+        doThrow(ConnectException.class).when(socketFactory).create(any(), any(), anyInt());
+        when(serverSocket.isClosed()).thenReturn(false).thenReturn(true);
+
+        server.run();
+
+        verify(source).close();
+        assertSourceOutputStreamContains(HttpStatusCode.SERVICE_UNAVAILABLE);
+
+    }
+
+    @Test
+    public void run_whenTimeoutWhileConnectingToTarget_sendsGatewayTimeoutMessageToClientAndClosesConnectionSocket()
+            throws IOException {
+
+        doThrow(SocketTimeoutException.class).when(socketFactory).create(any(), any(), anyInt());
+        when(serverSocket.isClosed()).thenReturn(false).thenReturn(true);
+
+        server.run();
+
+        verify(source).close();
+        assertSourceOutputStreamContains(HttpStatusCode.GATEWAY_TIMEOUT);
+
+    }
+
+    @Test
+    public void run_whenAnErrorOccurredWhileSendingAnErrorMessageToClient_ignoresErrorAndClosesConnectionSocketQuietly()
+            throws IOException {
+
+        doThrow(ConnectException.class).when(socketFactory).create(any(), any(), anyInt());
+        doThrow(Exception.class).when(source).getOutputStream();
+        when(serverSocket.isClosed()).thenReturn(false).thenReturn(true);
+
+        server.run();
+
+        verify(source).close();
+
+    }
+
+    @Test
+    public void run_whenAnErrorOccurredWhileSendingAnErrorMessageToClient_continuesHandlingNewConnections()
+            throws IOException {
+
+        doThrow(ConnectException.class).when(socketFactory).create(any(), any(), anyInt());
+        doThrow(Exception.class).when(source).getOutputStream();
+        when(serverSocket.isClosed()).thenReturn(false).thenReturn(false).thenReturn(true);
+
+        server.run();
+
+        verify(serverSocket, times(2)).accept();
+
+    }
+
+    @Test
     public void run_whenAnErrorOccurredWhileProcessingANewConnection_closesConnectionSocketsQuietly()
             throws IOException {
+
         doThrow(Exception.class).when(executorService).execute(any());
         when(serverSocket.isClosed()).thenReturn(false).thenReturn(true);
+
         server.run();
+
         verify(source).close();
         verify(target).close();
+
     }
 
     @Test
@@ -168,6 +232,14 @@ public class ServerImplTest {
     @Test(expected = NullPointerException.class)
     public void constructor_withoutExecutorService_throwsNullPointerException() {
         new ServerImpl(configuration, serverSocketFactory, socketFactory, connectionHandlerFactory, null);
+    }
+
+    // Helper method:
+
+    private void assertSourceOutputStreamContains(final HttpStatusCode httpStatusCode) throws IOException {
+        final String output = source.getOutputStream().toString();
+        assertTrue(output.contains(httpStatusCode.getCode() + ""));
+        assertTrue(output.contains(httpStatusCode.getReason() + ""));
     }
 
 }
