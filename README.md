@@ -4,7 +4,7 @@
 [![License](https://img.shields.io/github/license/galop-proxy/galop.svg)](https://github.com/galop-proxy/galop/blob/master/LICENSE)
 [![Build Status](https://travis-ci.org/galop-proxy/galop.svg?branch=master)](https://travis-ci.org/galop-proxy/galop)
 [![Coverage Status](https://coveralls.io/repos/github/galop-proxy/galop/badge.svg?branch=master)](https://coveralls.io/github/galop-proxy/galop?branch=master)
-[![Dependency Status](https://www.versioneye.com/user/projects/58cc80f86893fd004792c788/badge.svg)](https://www.versioneye.com/user/projects/58cc80f86893fd004792c788)
+[![Dependency Status](https://www.versioneye.com/user/projects/590cf5e39e070f0038ec764e/badge.svg)](https://www.versioneye.com/user/projects/590cf5e39e070f0038ec764e)
 
 GALOP (**G**raceful **A**pp**l**icati**o**n **P**roxy) is a simple reverse
 proxy that accepts HTTP requests from clients and passes them to a server.
