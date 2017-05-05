@@ -244,8 +244,12 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <file>README.md</file>
-                    <outputFile>target/README.txt</outputFile>
+                    <includes>
+                        <include>${project.basedir}/README.md</include>
+                        <include>${project.basedir}/CHANGELOG.md</include>
+                    </includes>
+                    <preserveDir>false</preserveDir>
+                    <outputDir>${project.build.directory}</outputDir>
                     <replacements>
                         <replacement>
                             <token>\[!\[.*\)\r\n</token>
@@ -257,6 +261,14 @@
                         </replacement>
                         <replacement>
                             <token>\*\*</token>
+                            <value />
+                        </replacement>
+                        <replacement>
+                            <token>```</token>
+                            <value>-------------------------------------------------------------------------------</value>
+                        </replacement>
+                        <replacement>
+                            <token>`</token>
                             <value />
                         </replacement>
                     </replacements>

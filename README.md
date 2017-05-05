@@ -96,7 +96,7 @@ In addition, the following optional properties are available:
   response that contains a larger header is rejected by GALOP. The default
   value is 8192 bytes. The smallest size that can be configured is 255 bytes.
 
-For example, a configuration file that overwrites all default values ​​might
+For example, a configuration file that overwrites all default values might
 look like this:
 
 ```
