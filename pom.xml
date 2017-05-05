@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>io.github.sebastianschmidt</groupId>
+    <groupId>io.github.galop_proxy</groupId>
     <artifactId>galop</artifactId>
     <version>0.3.1</version>
 
@@ -33,7 +33,7 @@
         <java.version>1.8</java.version>
         <java.version.source>${java.version}</java.version.source>
         <java.version.target>${java.version}</java.version.target>
-        <main_class>io.github.sebastianschmidt.galop.EntryPoint</main_class>
+        <main_class>io.github.galop_proxy.galop.EntryPoint</main_class>
     </properties>
 
     <dependencies>
