@@ -1,9 +1,9 @@
 # GALOP
 
-[![Release](https://img.shields.io/github/release/SebastianSchmidt/galop.svg)](https://github.com/SebastianSchmidt/galop/releases)
-[![License](https://img.shields.io/github/license/SebastianSchmidt/galop.svg)](https://github.com/SebastianSchmidt/galop/blob/master/LICENSE)
-[![Build Status](https://travis-ci.org/SebastianSchmidt/galop.svg?branch=master)](https://travis-ci.org/SebastianSchmidt/galop)
-[![Coverage Status](https://coveralls.io/repos/github/SebastianSchmidt/galop/badge.svg?branch=master)](https://coveralls.io/github/SebastianSchmidt/galop?branch=master)
+[![Release](https://img.shields.io/github/release/galop-proxy/galop.svg)](https://github.com/galop-proxy/galop/releases)
+[![License](https://img.shields.io/github/license/galop-proxy/galop.svg)](https://github.com/galop-proxy/galop/blob/master/LICENSE)
+[![Build Status](https://travis-ci.org/galop-proxy/galop.svg?branch=master)](https://travis-ci.org/galop-proxy/galop)
+[![Coverage Status](https://coveralls.io/repos/github/galop-proxy/galop/badge.svg?branch=master)](https://coveralls.io/github/galop-proxy/galop?branch=master)
 [![Dependency Status](https://www.versioneye.com/user/projects/58cc80f86893fd004792c788/badge.svg)](https://www.versioneye.com/user/projects/58cc80f86893fd004792c788)
 
 GALOP (**G**raceful **A**pp**l**icati**o**n **P**roxy) is a simple reverse
@@ -42,7 +42,7 @@ During the development, this list will be constantly updated.
 
 1. Precondition: An installed Java Runtime Environment 8.
 2. Download the
-   [latest release](https://github.com/SebastianSchmidt/galop/releases/latest)
+   [latest release](https://github.com/galop-proxy/galop/releases/latest)
    of GALOP.
 3. Extract the file galop-%version%.jar from the downloaded archive.
 4. Create a configuration file for GALOP.
