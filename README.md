@@ -62,18 +62,18 @@ properties.
 
 - **proxy_port:**
   When GALOP starts, it binds to this port number and waits for incoming requests.
-- **target_address:**
+- **target.address:**
   Each request is forwarded to the server with this address.
   The address can be an IP address or hostname.
-- **target_port:**
+- **target.port:**
   Each request is forwarded to this port number of the target server.
 
 A minimal configuration file might look like this:
 
 ```
 proxy_port=80
-target_address=localhost
-target_port=3000
+target.address=localhost
+target.port=3000
 ```
 
 In addition, the following optional properties are available:
@@ -101,8 +101,8 @@ look like this:
 
 ```
 proxy_port=80
-target_address=localhost
-target_port=3000
+target.address=localhost
+target.port=3000
 target.connection_timeout=30000
 connection_handlers.termination_timeout=120000
 connection_handlers.log_interval=30000

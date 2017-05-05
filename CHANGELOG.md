@@ -10,6 +10,12 @@
   to the client.
 - If a connection to the server can not be established, the proxy sends the
   HTTP status code 503 Service Unavailable to the client.
+  
+### Changed
+
+- The following two configuration properties have been renamed:
+    - `target_address` to `target.address`
+    - `target_port` to `target.port`
 
 
 ## 0.3.1 - 2017-04-12

@@ -36,7 +36,6 @@ public class ServerImplTest {
     private Socket source;
     private Socket target;
     private ConnectionHandler connectionHandler;
-    private ByteArrayOutputStream sourceOutputStream;
 
     @Before
     public void setUp() throws IOException {
@@ -52,7 +51,7 @@ public class ServerImplTest {
 
         source = mock(Socket.class);
         when(serverSocket.accept()).thenReturn(source);
-        sourceOutputStream = new ByteArrayOutputStream();
+        final ByteArrayOutputStream sourceOutputStream = new ByteArrayOutputStream();
         when(source.getOutputStream()).thenReturn(sourceOutputStream);
 
         socketFactory = mock(SocketFactory.class);
