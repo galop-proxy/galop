@@ -52,7 +52,7 @@ final class ConnectionHandlerImpl implements ConnectionHandler {
                 handleNextRequestAndResponse();
             }
 
-        } catch (final IOException ex) {
+        } catch (final Exception ex) {
             // Can be ignored.
         } finally {
             closeConnection();
@@ -81,6 +81,7 @@ final class ConnectionHandlerImpl implements ConnectionHandler {
             throw ex;
         }
     }
+
     private void handleResponse() throws IOException {
         try {
             final HttpHeaderParser.Result header = httpHeaderParser.parse(
