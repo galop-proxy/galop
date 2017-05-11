@@ -13,9 +13,12 @@
   
 ### Changed
 
-- The following two configuration properties have been renamed:
+- The following configuration properties have been renamed:
     - `target_address` to `target.address`
     - `target_port` to `target.port`
+    - `connection_handlers.termination_timeout` to `http.connection.termination_timeout`
+    - `connection_handlers.log_interval` to `http.connection.log_interval`
+    - `security.max_http_header_size` to `http.header.max_size`
 
 
 ## 0.3.1 - 2017-04-12
