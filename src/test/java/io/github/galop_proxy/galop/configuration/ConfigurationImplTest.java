@@ -49,19 +49,8 @@ public class ConfigurationImplTest {
     }
 
     @Test
-    public void getMaxHttpHeaderSize_withoutConfiguredProperty_returnsDefaultValue() {
-        assertEquals(ConfigurationDefaults.MAX_HTTP_HEADER_SIZE, configuration.getMaxHttpHeaderSize());
-    }
-
-    @Test
-    public void getMaxHttpHeaderSize_withConfiguredProperty_returnsConfiguredValue() {
-        configuration.setMaxHttpHeaderSize(1024);
-        assertEquals(1024, configuration.getMaxHttpHeaderSize());
-    }
-
-    @Test
     public void getConnectionHandlersLogInterval_withoutConfiguredProperty_returnsDefaultValue() {
-        assertEquals(ConfigurationDefaults.CONNECTION_HANDLERS_LOG_INTERVAL,
+        assertEquals(ConfigurationDefaults.HTTP_CONNECTION_LOG_INTERVAL,
                 configuration.getConnectionHandlersLogInterval());
     }
 
@@ -73,7 +62,7 @@ public class ConfigurationImplTest {
 
     @Test
     public void getConnectionHandlersTerminationTimeout_withoutConfiguredProperty_returnsDefaultValue() {
-        assertEquals(ConfigurationDefaults.CONNECTION_HANDLERS_TERMINATION_TIMEOUT,
+        assertEquals(ConfigurationDefaults.HTTP_CONNECTION_TERMINATION_TIMEOUT,
                 configuration.getConnectionHandlersTerminationTimeout());
     }
 
@@ -81,6 +70,41 @@ public class ConfigurationImplTest {
     public void getConnectionHandlersTerminationTimeout_withConfiguredProperty_returnsConfiguredValue() {
         configuration.setConnectionHandlersTerminationTimeout(60000);
         assertEquals(60000, configuration.getConnectionHandlersTerminationTimeout());
+    }
+
+    @Test
+    public void getHttpRequestHeaderReceiveTimeout_withoutConfiguredProperty_returnsDefaultValue() {
+        assertEquals(ConfigurationDefaults.HTTP_REQUEST_HEADER_RECEIVE_TIMEOUT,
+                configuration.getHttpRequestHeaderReceiveTimeout());
+    }
+
+    @Test
+    public void getHttpRequestHeaderReceiveTimeout_withConfiguredProperty_returnsConfiguredValue() {
+        configuration.setHttpRequestHeaderReceiveTimeout(30000);
+        assertEquals(30000, configuration.getHttpRequestHeaderReceiveTimeout());
+    }
+
+    @Test
+    public void getHttpResponseHeaderReceiveTimeout_withoutConfiguredProperty_returnsDefaultValue() {
+        assertEquals(ConfigurationDefaults.HTTP_RESPONSE_HEADER_RECEIVE_TIMEOUT,
+                configuration.getHttpResponseHeaderReceiveTimeout());
+    }
+
+    @Test
+    public void getHttpResponseHeaderReceiveTimeout_withConfiguredProperty_returnsConfiguredValue() {
+        configuration.setHttpResponseHeaderReceiveTimeout(120000);
+        assertEquals(120000, configuration.getHttpResponseHeaderReceiveTimeout());
+    }
+
+    @Test
+    public void getMaxHttpHeaderSize_withoutConfiguredProperty_returnsDefaultValue() {
+        assertEquals(ConfigurationDefaults.HTTP_HEADER_MAX_SIZE, configuration.getMaxHttpHeaderSize());
+    }
+
+    @Test
+    public void getMaxHttpHeaderSize_withConfiguredProperty_returnsConfiguredValue() {
+        configuration.setMaxHttpHeaderSize(1024);
+        assertEquals(1024, configuration.getMaxHttpHeaderSize());
     }
 
 }

@@ -61,7 +61,7 @@ Each property consists of a name and a value, separated by an equals sign.
 A configuration file for GALOP must contain at least the following three
 properties.
 
-- **proxy_port:**
+- **proxy.port:**
   When GALOP starts, it binds to this port number and waits for incoming requests.
 - **target.address:**
   Each request is forwarded to the server with this address.
@@ -72,7 +72,7 @@ properties.
 A minimal configuration file might look like this:
 
 ```
-proxy_port=80
+proxy.port=80
 target.address=localhost
 target.port=3000
 ```
@@ -92,7 +92,7 @@ In addition, the following optional properties are available:
   In this interval, the current number of open connections is logged. The
   interval must be specified in milliseconds. The default value is 60000
   milliseconds.
-- **http.header.max_size:**
+- **security.max_http_header_size:**
   The maximum allowed size of an HTTP header in bytes. Any HTTP request or
   response that contains a larger header is rejected by GALOP. The default
   value is 8192 bytes. The smallest size that can be configured is 255 bytes.
@@ -101,13 +101,13 @@ For example, a configuration file that overwrites all default values might
 look like this:
 
 ```
-proxy_port=80
+proxy.port=80
 target.address=localhost
 target.port=3000
 target.connection_timeout=30000
 http.connection.termination_timeout=120000
 http.connection.log_interval=30000
-http.header.max_size=16384
+security.max_http_header_size=16384
 ```
 
 
