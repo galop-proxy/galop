@@ -4,7 +4,7 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import io.github.galop_proxy.galop.administration.MonitorFactory;
 import io.github.galop_proxy.galop.commons.ServerSocketFactory;
-import io.github.galop_proxy.galop.http.HttpHeaderParser;
+import io.github.galop_proxy.galop.http.HttpExchangeHandler;
 import io.github.galop_proxy.galop.proxy.ServerFactory;
 import io.github.galop_proxy.galop.configuration.ConfigurationFileLoader;
 import org.junit.Before;
@@ -36,7 +36,7 @@ public class GalopModuleTest {
 
     @Test
     public void configure_installsParserModule() {
-        assertNotNull(injector.getInstance(HttpHeaderParser.class));
+        assertNotNull(injector.getInstance(HttpExchangeHandler.class));
     }
 
     @Test

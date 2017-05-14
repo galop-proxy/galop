@@ -3,7 +3,7 @@ package io.github.galop_proxy.galop.http;
 import java.io.IOException;
 import java.io.InputStream;
 
-public interface HttpHeaderParser {
+interface HttpHeaderParser {
 
     interface Result {
 
