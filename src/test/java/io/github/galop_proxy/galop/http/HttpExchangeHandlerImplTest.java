@@ -160,6 +160,20 @@ public class HttpExchangeHandlerImplTest {
     }
 
     @Test
+    public void handleRequest_whenReceiveRequestHeaderTimeout_sendsStatusCode408ToClient() throws Exception {
+
+        doThrow(TimeoutException.class).when(future).get(anyLong(), any());
+
+        try {
+            handler.handleRequest(source, target, configuration, callback);
+            fail("Exception expected.");
+        } catch (final Exception ex) {
+            assertHttpStatusCode(HttpStatusCode.REQUEST_TIMEOUT);
+        }
+
+    }
+
+    @Test
     public void handleRequest_whenAnErrorOccurredWhileSendingToServer_sendsStatusCode400ToClient() throws Exception {
 
         doThrow(Exception.class).when(httpMessageHandler).handle(any(), any(), any());

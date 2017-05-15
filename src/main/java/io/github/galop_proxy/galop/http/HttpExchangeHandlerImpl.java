@@ -67,6 +67,8 @@ final class HttpExchangeHandlerImpl implements HttpExchangeHandler {
             sendHttpStatusToClient(HttpStatusCode.REQUEST_HEADER_FIELDS_TOO_LARGE, source);
         } else if (ex instanceof InterruptedException) {
             sendHttpStatusToClient(HttpStatusCode.SERVICE_UNAVAILABLE, source);
+        } else if (ex instanceof TimeoutException) {
+            sendHttpStatusToClient(HttpStatusCode.REQUEST_TIMEOUT, source);
         } else {
             sendHttpStatusToClient(HttpStatusCode.BAD_REQUEST, source);
         }
