@@ -10,6 +10,9 @@
   to the client.
 - If a connection to the server can not be established, the proxy sends the
   HTTP status code 503 Service Unavailable to the client.
+- If the server does not send a full HTTP response header to the client within
+  a configured time, the proxy sends the HTTP status code 504 Gateway Time-out
+  to the client.
   
 ### Changed
 

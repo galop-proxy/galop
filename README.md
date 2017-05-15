@@ -92,6 +92,11 @@ In addition, the following optional properties are available:
   In this interval, the current number of open connections is logged. The
   interval must be specified in milliseconds. The default value is 60000
   milliseconds.
+- **http.response.header.receive_timeout:**
+  The maximum time for the server to send a complete HTTP response header to
+  the client. If the time is exceeded, the HTTP status code 504 (Gateway Time-out)
+  will be sent to the client. The time must be specified in milliseconds.
+  The default value is 90000 milliseconds.
 - **security.max_http_header_size:**
   The maximum allowed size of an HTTP header in bytes. Any HTTP request or
   response that contains a larger header is rejected by GALOP. The default
@@ -107,6 +112,7 @@ target.port=3000
 target.connection_timeout=30000
 http.connection.termination_timeout=120000
 http.connection.log_interval=30000
+http.response.header.receive_timeout=180000
 security.max_http_header_size=16384
 ```
 
