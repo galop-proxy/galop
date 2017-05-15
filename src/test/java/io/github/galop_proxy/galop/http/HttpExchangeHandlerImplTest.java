@@ -36,7 +36,6 @@ public class HttpExchangeHandlerImplTest {
     private Configuration configuration;
     private Runnable callback;
 
-
     @Before
     public void setUp() throws Exception {
 
@@ -174,14 +173,6 @@ public class HttpExchangeHandlerImplTest {
 
     }
 
-    @Test(expected = IOException.class)
-    public void handleRequest_whenAnErrorOccurredWhileSendingStatusCodeToClient_ignoresNewError()
-            throws Exception {
-        doThrow(new ExecutionException(new IOException())).when(future).get(anyLong(), any());
-        when(source.getOutputStream()).thenReturn(null);
-        handler.handleRequest(source, target, configuration, callback);
-    }
-
     @Test
     public void handleRequest_whenAnUnexpectedErrorOccurredWhileParsingHeader_treatErrorAsInvalidRequestHeaderError()
             throws  Exception{
@@ -195,6 +186,14 @@ public class HttpExchangeHandlerImplTest {
             assertHttpStatusCode(HttpStatusCode.BAD_REQUEST);
         }
 
+    }
+
+    @Test(expected = IOException.class)
+    public void handleRequest_whenAnErrorOccurredWhileSendingStatusCodeToClient_ignoresNewError()
+            throws Exception {
+        doThrow(new ExecutionException(new IOException())).when(future).get(anyLong(), any());
+        when(source.getOutputStream()).thenReturn(null);
+        handler.handleRequest(source, target, configuration, callback);
     }
 
     // Handle response:
@@ -237,6 +236,20 @@ public class HttpExchangeHandlerImplTest {
     }
 
     @Test
+    public void handleResponse_whenReceiveResponseHeaderTimeout_sendsStatusCode504ToClient() throws Exception {
+
+        doThrow(TimeoutException.class).when(future).get(anyLong(), any());
+
+        try {
+            handler.handleResponse(source, target, configuration, callback);
+            fail("Exception expected.");
+        } catch (final Exception ex) {
+            assertHttpStatusCode(HttpStatusCode.GATEWAY_TIMEOUT);
+        }
+
+    }
+
+    @Test
     public void handleResponse_whenAnErrorOccurredWhileSendingToClient_sendsStatusCode502ToClient() throws Exception {
 
         doThrow(Exception.class).when(httpMessageHandler).handle(any(), any(), any());
@@ -248,14 +261,6 @@ public class HttpExchangeHandlerImplTest {
             assertHttpStatusCode(HttpStatusCode.BAD_GATEWAY);
         }
 
-    }
-
-    @Test(expected = IOException.class)
-    public void handleResponse_whenAnErrorOccurredWhileSendingStatusCodeToClient_ignoresNewError()
-            throws Exception {
-        doThrow(new ExecutionException(new IOException())).when(future).get(anyLong(), any());
-        when(source.getOutputStream()).thenReturn(null);
-        handler.handleResponse(source, target, configuration, callback);
     }
 
     @Test
@@ -271,6 +276,14 @@ public class HttpExchangeHandlerImplTest {
             assertHttpStatusCode(HttpStatusCode.BAD_GATEWAY);
         }
 
+    }
+
+    @Test(expected = IOException.class)
+    public void handleResponse_whenAnErrorOccurredWhileSendingStatusCodeToClient_ignoresNewError()
+            throws Exception {
+        doThrow(new ExecutionException(new IOException())).when(future).get(anyLong(), any());
+        when(source.getOutputStream()).thenReturn(null);
+        handler.handleResponse(source, target, configuration, callback);
     }
 
     // Invalid parameters:

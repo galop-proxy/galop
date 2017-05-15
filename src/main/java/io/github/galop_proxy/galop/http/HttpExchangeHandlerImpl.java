@@ -103,10 +103,13 @@ final class HttpExchangeHandlerImpl implements HttpExchangeHandler {
 
     private void handleResponseError(final Exception ex, final Socket source) {
 
+        LOGGER.error("An error occurred while processing the server response.", ex);
+
         if (ex instanceof InterruptedException) {
             sendHttpStatusToClient(HttpStatusCode.SERVICE_UNAVAILABLE, source);
+        } else if (ex instanceof TimeoutException) {
+            sendHttpStatusToClient(HttpStatusCode.GATEWAY_TIMEOUT, source);
         } else {
-            LOGGER.error("An error occurred while processing the server response.", ex);
             sendHttpStatusToClient(HttpStatusCode.BAD_GATEWAY, source);
         }
 
