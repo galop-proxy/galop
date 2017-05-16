@@ -1,5 +1,6 @@
 package io.github.galop_proxy.galop;
 
+import com.google.common.base.Strings;
 import com.google.inject.Guice;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -35,14 +36,11 @@ class EntryPoint {
     private static String center(final String s) {
 
         final int width = 42;
+        final int diff = width - s.length();
+        final int spaceWidth = (int) Math.ceil(diff / 2d);
 
-        String result = s;
-
-        while (result.length() < width) {
-            result = " " + result + " ";
-        }
-
-        return result;
+        final String space = Strings.repeat(" ", Math.max(0, spaceWidth));
+        return space + s + space;
 
     }
 
