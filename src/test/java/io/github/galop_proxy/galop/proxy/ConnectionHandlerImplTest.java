@@ -2,22 +2,15 @@ package io.github.galop_proxy.galop.proxy;
 
 import io.github.galop_proxy.galop.configuration.Configuration;
 import io.github.galop_proxy.galop.http.*;
-import io.github.galop_proxy.galop.commons.ByteLimitExceededException;
-import io.github.galop_proxy.galop.http.HttpHeaderParser.Result;
-import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
+import org.mockito.invocation.InvocationOnMock;
 
-import java.io.*;
 import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
-import static io.github.galop_proxy.galop.http.HttpTestUtils.createGetRequest;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.AdditionalMatchers.not;
 import static org.mockito.Mockito.*;
 
 /**
@@ -25,142 +18,83 @@ import static org.mockito.Mockito.*;
  */
 public class ConnectionHandlerImplTest {
 
+    private HttpExchangeHandler httpExchangeHandler;
     private Configuration configuration;
-    private HttpHeaderParser httpHeaderParser;
-    private HttpMessageHandler httpMessageHandler;
     private Socket source;
     private Socket target;
 
-    private ConnectionHandlerImpl connectionHandler;
+    private ConnectionHandlerImpl handler;
 
     @Before
-    public void setUp() throws IOException {
+    public void setUp() throws Exception {
 
         configuration = mock(Configuration.class);
-        when(configuration.getMaxHttpHeaderSize()).thenReturn(1024);
 
-        httpHeaderParser = mock(HttpHeaderParser.class);
-
-        httpMessageHandler = mock(HttpMessageHandler.class);
-        doAnswer((invocation) -> {
-            final InputStream inputStream = (InputStream) invocation.getArguments()[1];
-            final OutputStream outputStream = (OutputStream) invocation.getArguments()[2];
-            IOUtils.copyLarge(inputStream, outputStream);
-            return null;
-        }).when(httpMessageHandler).handle(any(), any(), any());
+        httpExchangeHandler = mock(HttpExchangeHandler.class);
+        doAnswer(this::answerHandler).when(httpExchangeHandler).handleRequest(any(), any(), any(), any());
+        doAnswer(this::answerHandler).when(httpExchangeHandler).handleResponse(any(), any(), any(), any());
 
         source = mock(Socket.class);
         when(source.isClosed()).thenReturn(false);
-        when(source.getOutputStream()).thenReturn(new ByteArrayOutputStream());
-        setInputContent("", source);
-
         target = mock(Socket.class);
         when(target.isClosed()).thenReturn(false);
-        when(target.getOutputStream()).thenReturn(new ByteArrayOutputStream());
-        setInputContent("", target);
 
-        connectionHandler = new ConnectionHandlerImpl(configuration, httpHeaderParser, httpMessageHandler, source,
-                target);
+        handler = new ConnectionHandlerImpl(httpExchangeHandler, configuration, source, target);
 
+    }
+
+    private Object answerHandler(final InvocationOnMock invocation) {
+        final Runnable callback = (Runnable) invocation.getArguments()[3];
+        callback.run();
+        return null;
     }
 
     // Constructor:
 
     @Test(expected = NullPointerException.class)
+    public void constructor_withoutHttpExchangeHandler_throwsNullPointerException() {
+        new ConnectionHandlerImpl(null, configuration, source, target);
+    }
+
+    @Test(expected = NullPointerException.class)
     public void constructor_withoutConfiguration_throwsNullPointerException() {
-        new ConnectionHandlerImpl(null, httpHeaderParser, httpMessageHandler, source, target);
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void constructor_withoutHttpHeaderParser_throwsNullPointerException() {
-        new ConnectionHandlerImpl(configuration, null, httpMessageHandler, source, target);
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void constructor_withoutHttpMessageHandler_throwsNullPointerException() {
-        new ConnectionHandlerImpl(configuration, httpHeaderParser, null, source, target);
+        new ConnectionHandlerImpl(httpExchangeHandler, null, source, target);
     }
 
     @Test(expected = NullPointerException.class)
     public void constructor_withoutSourceSocket_throwsNullPointerException() {
-        new ConnectionHandlerImpl(configuration, httpHeaderParser, httpMessageHandler, null, target);
+        new ConnectionHandlerImpl(httpExchangeHandler, configuration, null, target);
     }
 
     @Test(expected = NullPointerException.class)
     public void constructor_withoutTargetSocket_throwsNullPointerException() {
-        new ConnectionHandlerImpl(configuration, httpHeaderParser, httpMessageHandler, source, null);
+        new ConnectionHandlerImpl(httpExchangeHandler, configuration, source, null);
     }
 
-    // Handle one request and response:
+    // Handle requests and responses:
 
     @Test
-    public void run_withOneRequest_copiesRequestToRequestTarget() throws Exception {
-
-        final String request = createGetRequest();
-        setInputContent(request, source);
+    public void run_withOneRequest_callsHttpExchangeHandler() throws Exception {
         when(source.isClosed()).thenReturn(false).thenReturn(true);
-
-        connectionHandler.run();
-
-        assertEquals(request, getOutputContent(target));
-
+        handler.run();
+        verify(httpExchangeHandler).handleRequest(same(source), same(target), same(configuration), any());
+        verify(httpExchangeHandler).handleResponse(same(source), same(target), same(configuration), any());
     }
 
     @Test
-    public void run_withOneResponse_copiesResponseToRequestSource() throws Exception {
-
-        final String responseContent = "<h1>Hello, world!</h1>";
-        final String response = HttpTestUtils.createResponse(responseContent);
-        setInputContent(response, target);
-        when(source.isClosed()).thenReturn(false).thenReturn(true);
-
-        connectionHandler.run();
-
-        assertEquals(response, getOutputContent(source));
-
+    public void run_withTwoRequests_callsHttpExchangeHandlerTwoTimes() throws Exception {
+        when(source.isClosed()).thenReturn(false).thenReturn(false).thenReturn(true);
+        handler.run();
+        verify(httpExchangeHandler, times(2)).handleRequest(same(source), same(target), same(configuration), any());
+        verify(httpExchangeHandler, times(2)).handleResponse(same(source), same(target), same(configuration), any());
     }
 
-    @Test
-    public void run_whenHandleRequestAndResponseThrowsIOException_closesSocketsAndTerminates() throws Exception {
-
-        doThrow(IOException.class).when(httpHeaderParser).parse(any(), anyInt());
-
-        connectionHandler.run();
-
+    @Test(timeout = 5000)
+    public void run_whenHttpExchangeHandlerThrowsException_closesSocketsAndTerminates() throws Exception {
+        doThrow(Exception.class).when(httpExchangeHandler).handleRequest(any(), any(), any(), any());
+        handler.run();
         verify(source).close();
         verify(target).close();
-
-    }
-
-    // Handle multiple requests and responses:
-
-    @Test
-    public void run_withMultipleRequests_copiesRequestsToRequestTarget() throws Exception {
-
-        final String request1 = createGetRequest();
-        final String request2 = createGetRequest();
-        setInputContent(request1 + request2, source);
-        when(source.isClosed()).thenReturn(false).thenReturn(false).thenReturn(true);
-
-        connectionHandler.run();
-
-        assertEquals(request1 + request2, getOutputContent(target));
-
-    }
-
-    @Test
-    public void run_withMultipleResponses_copiesResponsesToRequestSource() throws Exception {
-
-        final String responseContent = "<h1>Hello, world!</h1>";
-        final String response1 = HttpTestUtils.createResponse(responseContent);
-        final String response2 = HttpTestUtils.createResponse(responseContent);
-        setInputContent(response1 + response2, target);
-        when(source.isClosed()).thenReturn(false).thenReturn(false).thenReturn(true);
-
-        connectionHandler.run();
-
-        assertEquals(response1 + response2, getOutputContent(source));
-
     }
 
     // Closed sockets:
@@ -168,14 +102,14 @@ public class ConnectionHandlerImplTest {
     @Test
     public void run_whenSourceSocketIsClosed_closesTargetSocketAndTerminates() throws Exception {
         when(source.isClosed()).thenReturn(true);
-        connectionHandler.run();
+        handler.run();
         verify(target).close();
     }
 
     @Test
     public void run_whenTargetSocketIsClosed_closesSourceSocketAndTerminates() throws Exception {
         when(target.isClosed()).thenReturn(true);
-        connectionHandler.run();
+        handler.run();
         verify(source).close();
     }
 
@@ -184,163 +118,33 @@ public class ConnectionHandlerImplTest {
     @Test
     public void run_whenThreadIsInterrupted_closesSourceAndTargetSocketAndTerminates() throws Exception {
 
-        final int terminationTimeout = 30000;
         final ExecutorService executorService = Executors.newSingleThreadExecutor();
+        executorService.execute(handler);
 
-        executorService.execute(connectionHandler);
         executorService.shutdownNow();
+        executorService.awaitTermination(5, TimeUnit.SECONDS);
 
-        verify(source, timeout(terminationTimeout)).close();
-        verify(target, timeout(terminationTimeout)).close();
-
-    }
-
-    // Connection should be closed:
-
-    @Test
-    public void run_whenConnectionShouldBeClosed_closesSourceAndTargetSocketAndTerminatesAfterHandlingCurrentRequest()
-            throws IOException {
-
-        final String request = createGetRequest();
-        setInputContent(request, source, () -> IOUtils.closeQuietly(connectionHandler));
-        when(source.isClosed()).thenReturn(false);
-
-        connectionHandler.run();
-
-        assertEquals(request, getOutputContent(target));
         verify(source, atLeastOnce()).close();
         verify(target, atLeastOnce()).close();
 
     }
 
-    // Configuration:
+    // Close handler:
 
     @Test
-    public void run_whenParsingHttpHeader_passesConfiguredMaxHttpHeaderSizeToParser() throws IOException {
-        when(source.isClosed()).thenReturn(false).thenReturn(true);
-        connectionHandler.run();
-        verify(httpHeaderParser, atLeastOnce()).parse(any(), eq(1024));
-        verify(httpHeaderParser, never()).parse(any(), not(eq(1024)));
-    }
+    public void close_whenCurrentlyNoRequestOrResponseIsHandled_closesSocketsAndTerminates() throws Exception {
 
-    // Invalid client request:
+        final ExecutorService executorService = Executors.newSingleThreadExecutor();
+        executorService.execute(handler);
 
-    @Test
-    public void run_whenHttpHeaderParserThrowsInvalidHttpHeaderException_sendsStatusCode400ToClientAndClosesConnection()
-            throws IOException {
+        handler.close();
 
-        when(source.isClosed()).thenReturn(false);
-        doThrow(InvalidHttpHeaderException.class).when(httpHeaderParser).parse(any(), anyInt(), any());
+        executorService.shutdown();
+        executorService.awaitTermination(5, TimeUnit.SECONDS);
 
-        connectionHandler.run();
+        verify(source, atLeastOnce()).close();
+        verify(target, atLeastOnce()).close();
 
-        assertTrue(getOutputContent(source).startsWith("HTTP/1.1 400 Bad Request"));
-        verify(source).close();
-        verify(target).close();
-
-    }
-
-    @Test
-    public void run_whenHttpHeaderParserThrowsByteLimitExceededException_sendsStatusCode431ToClientAndClosesConnection()
-            throws IOException {
-
-        when(source.isClosed()).thenReturn(false);
-        doThrow(ByteLimitExceededException.class).when(httpHeaderParser).parse(any(), anyInt(), any());
-
-        connectionHandler.run();
-
-        assertTrue(getOutputContent(source).startsWith("HTTP/1.1 431 Request Header Fields Too Large"));
-        verify(source).close();
-        verify(target).close();
-
-    }
-
-    @Test
-    public void run_whenHttpHeaderParserThrowsUnsupportedTransferEncodingException_sendsStatusCode411ToClientAndClosesConnection()
-            throws IOException {
-
-        when(source.isClosed()).thenReturn(false);
-        Mockito.doThrow(UnsupportedTransferEncodingException.class).when(httpHeaderParser).parse(any(), anyInt(), any());
-
-        connectionHandler.run();
-
-        assertTrue(getOutputContent(source).startsWith("HTTP/1.1 411 Length Required"));
-        verify(source).close();
-        verify(target).close();
-
-    }
-
-    // Invalid server response:
-
-    @Test
-    public void run_whenAnErrorOccursWhileParsingServerResponse_sendsBadeGatewayResponseToClientAndClosesConnections()
-            throws IOException {
-
-        when(source.isClosed()).thenReturn(false);
-        doThrow(IOException.class).when(httpHeaderParser).parse(any(), anyInt());
-
-        connectionHandler.run();
-
-        assertTrue(getOutputContent(source).startsWith("HTTP/1.1 502 Bad Gateway"));
-        verify(source).close();
-        verify(target).close();
-
-    }
-
-    @Test
-    public void run_whenANewErrorOccursDuringHandlingBadGatewayError_ignoresNewError() throws IOException {
-        when(source.isClosed()).thenReturn(false).thenReturn(true);
-        doThrow(IOException.class).when(httpHeaderParser).parse(any(), anyInt());
-        doThrow(IOException.class).when(source).getOutputStream();
-        connectionHandler.run();
-    }
-
-    // Helper methods:
-
-    private void setInputContent(final String content, final Socket socket) throws IOException {
-        setInputContent(content, socket, null);
-    }
-
-    private void setInputContent(final String content, final Socket socket, final Runnable callbackAfterCallback)
-            throws IOException {
-
-        final byte[] contentBytes = content.getBytes();
-
-        final InputStream inputStream = new ByteArrayInputStream(contentBytes);
-        when(socket.getInputStream()).thenReturn(inputStream);
-
-        final long totalLength = (long) content.getBytes().length;
-        final Result result = mock(Result.class);
-        when(result.getTotalLength()).thenReturn(totalLength);
-        when(httpHeaderParser.parse(any(), anyInt())).thenReturn(result);
-
-        when(httpHeaderParser.parse(any(), anyInt(), any())).thenAnswer((invocation) -> {
-
-            final Runnable callback = (Runnable) invocation.getArguments()[2];
-
-            if (callback != null) {
-                callback.run();
-            }
-
-            if (callbackAfterCallback != null) {
-                callbackAfterCallback.run();
-            }
-
-            return result;
-
-        });
-
-
-    }
-
-    private Result createResult(final long totalLength) {
-        final Result result = mock(Result.class);
-        when(result.getTotalLength()).thenReturn(totalLength);
-        return result;
-    }
-
-    private String getOutputContent(final Socket socket) throws IOException {
-        return socket.getOutputStream().toString();
     }
 
 }

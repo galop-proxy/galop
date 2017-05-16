@@ -2,9 +2,9 @@ package io.github.galop_proxy.galop.http;
 
 import java.io.IOException;
 
-public class InvalidHttpHeaderException extends IOException {
+final class InvalidHttpHeaderException extends IOException {
 
-    public InvalidHttpHeaderException(final String message) {
+    InvalidHttpHeaderException(final String message) {
         super(message);
     }
 

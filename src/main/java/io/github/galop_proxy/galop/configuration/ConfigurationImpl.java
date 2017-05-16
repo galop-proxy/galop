@@ -11,9 +11,16 @@ final class ConfigurationImpl implements Configuration {
     private final PortNumber proxyPort;
     private final InetAddress targetAddress;
     private final PortNumber targetPort;
-    private int maxHttpHeaderSize = ConfigurationDefaults.MAX_HTTP_HEADER_SIZE;
-    private long connectionHandlersLogInterval = ConfigurationDefaults.CONNECTION_HANDLERS_LOG_INTERVAL;
-    private long connectionHandlersTerminationTimeout = ConfigurationDefaults.CONNECTION_HANDLERS_TERMINATION_TIMEOUT;
+
+    private int targetConnectionTimeout = ConfigurationDefaults.TARGET_CONNECTION_TIMEOUT;
+
+    private long connectionHandlersLogInterval = ConfigurationDefaults.HTTP_CONNECTION_LOG_INTERVAL;
+    private long connectionHandlersTerminationTimeout = ConfigurationDefaults.HTTP_CONNECTION_TERMINATION_TIMEOUT;
+
+    private long httpRequestHeaderReceiveTimeout = ConfigurationDefaults.HTTP_REQUEST_HEADER_RECEIVE_TIMEOUT;
+    private long httpResponseHeaderReceiveTimeout = ConfigurationDefaults.HTTP_RESPONSE_HEADER_RECEIVE_TIMEOUT;
+
+    private int maxHttpHeaderSize = ConfigurationDefaults.HTTP_HEADER_MAX_SIZE;
 
     ConfigurationImpl(final PortNumber proxyPort, final InetAddress targetAddress, final PortNumber targetPort) {
         this.proxyPort = requireNonNull(proxyPort, "proxyPort must not be null.");
@@ -37,12 +44,12 @@ final class ConfigurationImpl implements Configuration {
     }
 
     @Override
-    public int getMaxHttpHeaderSize() {
-        return maxHttpHeaderSize;
+    public int getTargetConnectionTimeout() {
+        return targetConnectionTimeout;
     }
 
-    void setMaxHttpHeaderSize(final int maxHttpHeaderSize) {
-        this.maxHttpHeaderSize = maxHttpHeaderSize;
+    void setTargetConnectionTimeout(final int targetConnectionTimeout) {
+        this.targetConnectionTimeout = targetConnectionTimeout;
     }
 
     @Override
@@ -62,5 +69,33 @@ final class ConfigurationImpl implements Configuration {
     void setConnectionHandlersTerminationTimeout(final long connectionHandlersTerminationTimeout) {
         this.connectionHandlersTerminationTimeout = connectionHandlersTerminationTimeout;
     }
+
+    @Override
+    public long getHttpRequestHeaderReceiveTimeout() {
+        return httpRequestHeaderReceiveTimeout;
+    }
+
+    void setHttpRequestHeaderReceiveTimeout(final long httpRequestHeaderReceiveTimeout) {
+        this.httpRequestHeaderReceiveTimeout = httpRequestHeaderReceiveTimeout;
+    }
+
+    @Override
+    public long getHttpResponseHeaderReceiveTimeout() {
+        return httpResponseHeaderReceiveTimeout;
+    }
+
+    void setHttpResponseHeaderReceiveTimeout(final long httpResponseHeaderReceiveTimeout) {
+        this.httpResponseHeaderReceiveTimeout = httpResponseHeaderReceiveTimeout;
+    }
+
+    @Override
+    public int getMaxHttpHeaderSize() {
+        return maxHttpHeaderSize;
+    }
+
+    void setMaxHttpHeaderSize(final int maxHttpHeaderSize) {
+        this.maxHttpHeaderSize = maxHttpHeaderSize;
+    }
+
 
 }

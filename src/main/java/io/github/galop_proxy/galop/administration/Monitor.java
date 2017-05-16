@@ -44,7 +44,8 @@ final class Monitor extends Thread {
                 interrupt();
             }
 
-            LOGGER.info("Active connection handlers: " + threadPool.getActiveCount());
+            final int activeConnectionHandlers = (int) Math.ceil(threadPool.getActiveCount() / 2d);
+            LOGGER.info("Active connection handlers: " + activeConnectionHandlers);
 
         }
 

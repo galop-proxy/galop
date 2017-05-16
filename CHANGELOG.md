@@ -1,6 +1,32 @@
 # Changelog
 
 
+## [Unreleased]
+
+### Added
+
+- If the proxy can not establish a TCP connection with the server within a
+  configured time, the proxy sends the HTTP status code 504 (Gateway Time-out)
+  to the client.
+- If a connection to the server can not be established, the proxy sends the
+  HTTP status code 503 (Service Unavailable) to the client.
+- If the client does not send a full HTTP request header to the server within
+  a configured time, the proxy sends the HTTP status code 408 (Request Time-out)
+  to the client.
+- If the server does not send a full HTTP response header to the client within
+  a configured time, the proxy sends the HTTP status code 504 (Gateway Time-out)
+  to the client.
+  
+### Changed
+
+- The following configuration properties have been renamed:
+    - `proxy_port` to `proxy.port`
+    - `target_address` to `target.address`
+    - `target_port` to `target.port`
+    - `connection_handlers.termination_timeout` to `http.connection.termination_timeout`
+    - `connection_handlers.log_interval` to `http.connection.log_interval`
+
+
 ## 0.3.1 - 2017-04-12
 
 ### Changed
@@ -25,7 +51,7 @@
 - If the client sends an invalid HTTP request or the server sends an invalid
   HTTP response, the proxy now sends an error message to the client.
 - If an error occurred while processing the server response, the proxy sends
-  the HTTP status code 502 Bad Gateway to the client and logs the error.
+  the HTTP status code 502 (Bad Gateway) to the client and logs the error.
 
 
 ## 0.1.0 - 2017-03-19

@@ -13,6 +13,7 @@ public enum HttpStatusCode {
 
     // Server errors:
     BAD_GATEWAY(502, "Bad Gateway"),
+    SERVICE_UNAVAILABLE(503, "Service Unavailable"),
     GATEWAY_TIMEOUT(504, "Gateway Time-out");
 
     private final int code;

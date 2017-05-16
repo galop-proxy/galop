@@ -2,7 +2,7 @@ package io.github.galop_proxy.galop.http;
 
 import static io.github.galop_proxy.galop.http.HttpConstants.*;
 
-public class HttpTestUtils {
+final class HttpTestUtils {
 
     public static String createGetRequest() {
         return "GET /hello-world.html " + HTTP_VERSION + NEW_LINE

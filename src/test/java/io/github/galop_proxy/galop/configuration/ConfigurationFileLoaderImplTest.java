@@ -10,6 +10,7 @@ import java.net.UnknownHostException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import static io.github.galop_proxy.galop.configuration.ConfigurationDefaults.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.doThrow;
@@ -46,139 +47,138 @@ public class ConfigurationFileLoaderImplTest {
     // Valid configuration files:
 
     @Test
-    public void load_withValidFileWithOverwrittenDefaults_returnsSpecifiedConfiguration() throws Exception {
+    public void load_withValidFileWithAllOverwrittenDefaults_returnsSpecifiedConfiguration() throws Exception {
 
-        final Configuration configuration = load("valid-configuration-with-all-overwritten-defaults.properties");
+        final Configuration configuration = load("configuration-with-all-overwritten-defaults.properties");
 
         assertEquals(80, configuration.getProxyPort().getValue());
         assertEquals("localhost", configuration.getTargetAddress().getHostName());
         assertEquals(8080, configuration.getTargetPort().getValue());
-        assertEquals(255, configuration.getMaxHttpHeaderSize());
+        assertEquals(20000, configuration.getTargetConnectionTimeout());
         assertEquals(30000, configuration.getConnectionHandlersLogInterval());
         assertEquals(15000, configuration.getConnectionHandlersTerminationTimeout());
+        assertEquals(45000, configuration.getHttpRequestHeaderReceiveTimeout());
+        assertEquals(120000, configuration.getHttpResponseHeaderReceiveTimeout());
+        assertEquals(255, configuration.getMaxHttpHeaderSize());
 
     }
 
     @Test
-    public void load_withValidFileWithMaxHttpHeaderSize_returnsSpecifiedConfiguration() throws Exception {
+    public void load_withValidFileWithoutOverwrittenDefaults_returnsConfigurationWithDefaultMaxHttpHeaderSize()
+            throws Exception {
 
-        final Configuration configuration = load("valid-configuration-with-max-http-header-size.properties");
+        final Configuration configuration = load("configuration-without-overwritten-defaults.properties");
 
         assertEquals(80, configuration.getProxyPort().getValue());
         assertEquals("localhost", configuration.getTargetAddress().getHostName());
         assertEquals(8080, configuration.getTargetPort().getValue());
-        assertEquals(16384, configuration.getMaxHttpHeaderSize());
+        assertEquals(TARGET_CONNECTION_TIMEOUT, configuration.getTargetConnectionTimeout());
+        assertEquals(HTTP_CONNECTION_LOG_INTERVAL, configuration.getConnectionHandlersLogInterval());
+        assertEquals(HTTP_CONNECTION_TERMINATION_TIMEOUT, configuration.getConnectionHandlersTerminationTimeout());
+        assertEquals(HTTP_REQUEST_HEADER_RECEIVE_TIMEOUT, configuration.getHttpRequestHeaderReceiveTimeout());
+        assertEquals(HTTP_RESPONSE_HEADER_RECEIVE_TIMEOUT, configuration.getHttpResponseHeaderReceiveTimeout());
+        assertEquals(HTTP_HEADER_MAX_SIZE, configuration.getMaxHttpHeaderSize());
 
-    }
-
-    @Test
-    public void load_withValidFileWithoutMaxHttpHeaderSize_returnsConfigurationWithDefaultMaxHttpHeaderSize()
-            throws Exception {
-
-        final Configuration configuration = load("valid-configuration-without-overwritten-defaults.properties");
-
-        assertEquals(80, configuration.getProxyPort().getValue());
-        assertEquals("localhost", configuration.getTargetAddress().getHostName());
-        assertEquals(8080, configuration.getTargetPort().getValue());
-        assertEquals(ConfigurationDefaults.MAX_HTTP_HEADER_SIZE, configuration.getMaxHttpHeaderSize());
-
-    }
-
-
-    @Test
-    public void load_withValidFileWithConnectionHandlersLogInterval_returnsSpecifiedConfiguration()
-            throws Exception {
-        final Configuration configuration = load("valid-configuration-with-log-interval.properties");
-        assertEquals(10000, configuration.getConnectionHandlersLogInterval());
-    }
-
-    @Test
-    public void load_withValidFileWithoutConnectionHandlersLogInterval_returnsConfigurationWithDefaultInterval()
-            throws Exception {
-        final Configuration configuration = load("valid-configuration-without-overwritten-defaults.properties");
-        assertEquals(ConfigurationDefaults.CONNECTION_HANDLERS_LOG_INTERVAL,
-                configuration.getConnectionHandlersLogInterval());
-    }
-
-    @Test
-    public void load_withValidFileWithConnectionHandlerTerminationTimeout_returnsSpecifiedConfiguration()
-            throws Exception {
-        final Configuration configuration = load("valid-configuration-with-termination-timeout.properties");
-        assertEquals(120000, configuration.getConnectionHandlersTerminationTimeout());
-    }
-
-    @Test
-    public void load_withValidFileWithoutConnectionHandlersTerminationTimeout_returnsConfigurationWithDefaultTimeout()
-            throws Exception {
-        final Configuration configuration = load("valid-configuration-without-overwritten-defaults.properties");
-        assertEquals(ConfigurationDefaults.CONNECTION_HANDLERS_TERMINATION_TIMEOUT,
-                configuration.getConnectionHandlersTerminationTimeout());
     }
 
     // Invalid configuration files:
 
     @Test(expected = InvalidConfigurationException.class)
     public void load_withoutProxyPort_throwsInvalidConfigurationException() throws Exception {
-        load("invalid-configuration-without-proxy-port.properties");
+        load("configuration-without-proxy-port.properties");
     }
 
     @Test(expected = InvalidConfigurationException.class)
     public void load_withInvalidProxyPort_throwsInvalidConfigurationException() throws Exception {
-        load("invalid-configuration-with-invalid-proxy-port.properties");
+        load("configuration-with-invalid-proxy-port.properties");
     }
 
     @Test(expected = InvalidConfigurationException.class)
     public void load_withoutTargetAddress_throwsInvalidConfigurationException() throws Exception {
-        load("invalid-configuration-without-target-address.properties");
+        load("configuration-without-target-address.properties");
     }
 
     @Test(expected = InvalidConfigurationException.class)
     public void load_withUnknownTargetAddress_throwsInvalidConfigurationException() throws Exception {
-        load("invalid-configuration-with-unknown-target-address.properties");
+        load("configuration-with-unknown-target-address.properties");
     }
 
     @Test(expected = InvalidConfigurationException.class)
     public void load_withoutTargetPort_throwsInvalidConfigurationException() throws Exception {
-        load("invalid-configuration-without-target-port.properties");
+        load("configuration-without-target-port.properties");
     }
 
     @Test(expected = InvalidConfigurationException.class)
     public void load_withInvalidTargetPort_throwsInvalidConfigurationException() throws Exception {
-        load("invalid-configuration-with-invalid-target-port.properties");
+        load("configuration-with-invalid-target-port.properties");
     }
 
     @Test(expected = InvalidConfigurationException.class)
-    public void load_withInvalidMaxHttpHeaderSize_throwsInvalidConfigurationException() throws Exception {
-        load("invalid-configuration-with-invalid-max-http-header-size.properties");
+    public void load_withInvalidTargetConnectionTimeout_throwsInvalidConfigurationException() throws Exception {
+        load("configuration-with-invalid-target-connection-timeout.properties");
     }
 
     @Test(expected = InvalidConfigurationException.class)
-    public void load_withTooLowMaxHttpHeaderSize_throwsInvalidConfigurationException() throws Exception {
-        load("invalid-configuration-with-too-low-max-http-header-size.properties");
+    public void load_withTooLowTargetConnectionTimeout_throwsInvalidConfigurationException() throws Exception {
+        load("configuration-with-too-low-target-connection-timeout.properties");
     }
 
     @Test(expected = InvalidConfigurationException.class)
     public void load_withInvalidConnectionHandlersLogInterval_throwsInvalidConfigurationException()
             throws Exception {
-        load("invalid-configuration-with-invalid-log-interval.properties");
+        load("configuration-with-invalid-log-interval.properties");
     }
 
     @Test(expected = InvalidConfigurationException.class)
     public void load_withTooLowConnectionHandlersLogInterval_throwsInvalidConfigurationException()
             throws Exception {
-        load("invalid-configuration-with-too-low-log-interval.properties");
+        load("configuration-with-too-low-log-interval.properties");
     }
 
     @Test(expected = InvalidConfigurationException.class)
     public void load_withInvalidConnectionHandlersTerminationTimeout_throwsInvalidConfigurationException()
             throws Exception {
-        load("invalid-configuration-with-invalid-termination-timeout.properties");
+        load("configuration-with-invalid-termination-timeout.properties");
     }
 
     @Test(expected = InvalidConfigurationException.class)
     public void load_withTooLowConnectionHandlersTerminationTimeout_throwsInvalidConfigurationException()
             throws Exception {
-        load("invalid-configuration-with-too-low-termination-timeout.properties");
+        load("configuration-with-too-low-termination-timeout.properties");
+    }
+
+    @Test(expected = InvalidConfigurationException.class)
+    public void load_withInvalidHttpRequestHeaderReceiveTimeout_throwsInvalidConfigurationException()
+            throws Exception {
+        load("configuration-with-invalid-http-request-header-receive-timeout.properties");
+    }
+
+    @Test(expected = InvalidConfigurationException.class)
+    public void load_withTooLowHttpRequestHeaderReceiveTimeout_throwsInvalidConfigurationException()
+            throws Exception {
+        load("configuration-with-too-low-http-request-header-receive-timeout.properties");
+    }
+
+    @Test(expected = InvalidConfigurationException.class)
+    public void load_withInvalidHttpResponseHeaderReceiveTimeout_throwsInvalidConfigurationException()
+            throws Exception {
+        load("configuration-with-invalid-http-response-header-receive-timeout.properties");
+    }
+
+    @Test(expected = InvalidConfigurationException.class)
+    public void load_withTooLowHttpResponseHeaderReceiveTimeout_throwsInvalidConfigurationException()
+            throws Exception {
+        load("configuration-with-too-low-http-response-header-receive-timeout.properties");
+    }
+
+    @Test(expected = InvalidConfigurationException.class)
+    public void load_withInvalidMaxHttpHeaderSize_throwsInvalidConfigurationException() throws Exception {
+        load("configuration-with-invalid-max-http-header-size.properties");
+    }
+
+    @Test(expected = InvalidConfigurationException.class)
+    public void load_withTooLowMaxHttpHeaderSize_throwsInvalidConfigurationException() throws Exception {
+        load("configuration-with-too-low-max-http-header-size.properties");
     }
 
     // Helper methods:

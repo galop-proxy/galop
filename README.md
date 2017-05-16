@@ -61,47 +61,64 @@ Each property consists of a name and a value, separated by an equals sign.
 A configuration file for GALOP must contain at least the following three
 properties.
 
-- **proxy_port:**
+- **proxy.port:**
   When GALOP starts, it binds to this port number and waits for incoming requests.
-- **target_address:**
+- **target.address:**
   Each request is forwarded to the server with this address.
   The address can be an IP address or hostname.
-- **target_port:**
+- **target.port:**
   Each request is forwarded to this port number of the target server.
 
 A minimal configuration file might look like this:
 
 ```
-proxy_port=80
-target_address=localhost
-target_port=3000
+proxy.port=80
+target.address=localhost
+target.port=3000
 ```
 
 In addition, the following optional properties are available:
 
-- **connection_handlers.termination_timeout:**
+- **target.connection_timeout:**
+  The maximum time that GALOP waits for the target server to establish a TCP
+  connection. The time must be specified in milliseconds. The default value is
+  15000 milliseconds.
+- **http.connection.termination_timeout:**
   When GALOP is shut down, the open connections are not closed until open HTTP
   requests have been processed. This property can be used to configure the
   maximum time in milliseconds, after which all connections are closed even if
   HTTP requests are still open. The default value is 30000 milliseconds.
-- **connection_handlers.log_interval:**
+- **http.connection.log_interval:**
   In this interval, the current number of open connections is logged. The
   interval must be specified in milliseconds. The default value is 60000
   milliseconds.
+- **http.request.header.receive_timeout:**
+  The maximum time for the client to send a complete HTTP request header to the
+  client. If the time is exceeded, the HTTP status code 408 (Request Time-out)
+  will be sent to the client. The time must be specified in milliseconds.
+  The default value is 60000 milliseconds.
+- **http.response.header.receive_timeout:**
+  The maximum time for the server to send a complete HTTP response header to
+  the client. If the time is exceeded, the HTTP status code 504 (Gateway Time-out)
+  will be sent to the client. The time must be specified in milliseconds.
+  The default value is 90000 milliseconds.
 - **security.max_http_header_size:**
   The maximum allowed size of an HTTP header in bytes. Any HTTP request or
   response that contains a larger header is rejected by GALOP. The default
-  value is 8192 bytes.
+  value is 8192 bytes. The smallest size that can be configured is 255 bytes.
 
-For example, a configuration file that overwrites all default values ​​might
+For example, a configuration file that overwrites all default values might
 look like this:
 
 ```
-proxy_port=80
-target_address=localhost
-target_port=3000
-connection_handlers.termination_timeout=120000
-connection_handlers.log_interval=30000
+proxy.port=80
+target.address=localhost
+target.port=3000
+target.connection_timeout=30000
+http.connection.termination_timeout=120000
+http.connection.log_interval=30000
+http.request.header.receive_timeout=100000
+http.response.header.receive_timeout=180000
 security.max_http_header_size=16384
 ```
 

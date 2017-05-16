@@ -4,16 +4,22 @@ import com.google.common.collect.MapMaker;
 import io.github.galop_proxy.galop.commons.ServerSocketFactory;
 import io.github.galop_proxy.galop.commons.SocketFactory;
 import io.github.galop_proxy.galop.configuration.Configuration;
+import io.github.galop_proxy.galop.http.HttpResponse;
+import io.github.galop_proxy.galop.http.HttpStatusCode;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
+import java.net.ConnectException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutorService;
 
+import static io.github.galop_proxy.galop.http.HttpStatusCode.GATEWAY_TIMEOUT;
+import static io.github.galop_proxy.galop.http.HttpStatusCode.SERVICE_UNAVAILABLE;
 import static java.util.Objects.requireNonNull;
 
 final class ServerImpl implements Server {
@@ -54,19 +60,17 @@ final class ServerImpl implements Server {
             try {
 
                 source = serverSocket.accept();
-                target = socketFactory.create(config.getTargetAddress(), config.getTargetPort());
+                target = socketFactory.create(
+                        config.getTargetAddress(), config.getTargetPort(), config.getTargetConnectionTimeout());
 
                 handleNewConnection(source, target);
 
+            } catch (final ConnectException ex) {
+                handleServerError(SERVICE_UNAVAILABLE, source);
+            } catch (final SocketTimeoutException ex) {
+                handleServerError(GATEWAY_TIMEOUT, source);
             } catch (final Exception ex) {
-
-                if (!"socket closed".equals(String.valueOf(ex.getMessage()).toLowerCase())) {
-                    LOGGER.error("An error occurred while processing a new connection.", ex);
-                }
-
-                IOUtils.closeQuietly(source);
-                IOUtils.closeQuietly(target);
-
+                handleUnexpectedException(ex, source, target);
             }
 
         }
@@ -87,6 +91,28 @@ final class ServerImpl implements Server {
         final ConnectionHandler handler = connectionHandlerFactory.create(config, source, target);
         connectionHandlers.put(handler, System.currentTimeMillis());
         executorService.execute(handler);
+    }
+
+    private void handleServerError(final HttpStatusCode httpStatusCode, final Socket source) {
+        try {
+            final byte[] response = HttpResponse.createWithStatus(httpStatusCode).build();
+            IOUtils.write(response, source.getOutputStream());
+        } catch (final Exception ex) {
+            // Can be ignored.
+        } finally {
+            IOUtils.closeQuietly(source);
+        }
+    }
+
+    private void handleUnexpectedException(final Exception ex, final Socket source, final Socket target) {
+
+        if (!"socket closed".equals(String.valueOf(ex.getMessage()).toLowerCase())) {
+            LOGGER.error("An error occurred while processing a new connection.", ex);
+        }
+
+        IOUtils.closeQuietly(source);
+        IOUtils.closeQuietly(target);
+
     }
 
     @Override
