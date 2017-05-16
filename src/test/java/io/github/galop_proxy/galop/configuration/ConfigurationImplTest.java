@@ -74,7 +74,7 @@ public class ConfigurationImplTest {
 
     @Test
     public void getHttpRequestHeaderReceiveTimeout_withoutConfiguredProperty_returnsDefaultValue() {
-        assertEquals(ConfigurationDefaults.HTTP_REQUEST_HEADER_RECEIVE_TIMEOUT,
+        assertEquals(ConfigurationDefaults.HTTP_HEADER_REQUEST_RECEIVE_TIMEOUT,
                 configuration.getHttpRequestHeaderReceiveTimeout());
     }
 
@@ -86,7 +86,7 @@ public class ConfigurationImplTest {
 
     @Test
     public void getHttpResponseHeaderReceiveTimeout_withoutConfiguredProperty_returnsDefaultValue() {
-        assertEquals(ConfigurationDefaults.HTTP_RESPONSE_HEADER_RECEIVE_TIMEOUT,
+        assertEquals(ConfigurationDefaults.HTTP_HEADER_RESPONSE_RECEIVE_TIMEOUT,
                 configuration.getHttpResponseHeaderReceiveTimeout());
     }
 

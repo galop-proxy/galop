@@ -17,8 +17,8 @@ final class ConfigurationImpl implements Configuration {
     private long connectionHandlersLogInterval = ConfigurationDefaults.HTTP_CONNECTION_LOG_INTERVAL;
     private long connectionHandlersTerminationTimeout = ConfigurationDefaults.HTTP_CONNECTION_TERMINATION_TIMEOUT;
 
-    private long httpRequestHeaderReceiveTimeout = ConfigurationDefaults.HTTP_REQUEST_HEADER_RECEIVE_TIMEOUT;
-    private long httpResponseHeaderReceiveTimeout = ConfigurationDefaults.HTTP_RESPONSE_HEADER_RECEIVE_TIMEOUT;
+    private long httpRequestHeaderReceiveTimeout = ConfigurationDefaults.HTTP_HEADER_REQUEST_RECEIVE_TIMEOUT;
+    private long httpResponseHeaderReceiveTimeout = ConfigurationDefaults.HTTP_HEADER_RESPONSE_RECEIVE_TIMEOUT;
 
     private int maxHttpHeaderSize = ConfigurationDefaults.HTTP_HEADER_MAX_SIZE;
 

@@ -203,7 +203,7 @@ final class ConfigurationFileLoaderImpl implements ConfigurationFileLoader {
     private void parseHttpRequestHeaderReceiveTimeout(final Properties properties, final ConfigurationImpl configuration)
             throws InvalidConfigurationException{
 
-        final Long timeout = parseHttpHeaderReceiveTimeout(HTTP_REQUEST_HEADER_RECEIVE_TIMEOUT, properties);
+        final Long timeout = parseHttpHeaderReceiveTimeout(HTTP_HEADER_REQUEST_RECEIVE_TIMEOUT, properties);
 
         if (timeout != null) {
             configuration.setHttpRequestHeaderReceiveTimeout(timeout);
@@ -214,7 +214,7 @@ final class ConfigurationFileLoaderImpl implements ConfigurationFileLoader {
     private void parseHttpResponseHeaderReceiveTimeout(final Properties properties, final ConfigurationImpl configuration)
             throws InvalidConfigurationException{
 
-        final Long timeout = parseHttpHeaderReceiveTimeout(HTTP_RESPONSE_HEADER_RECEIVE_TIMEOUT, properties);
+        final Long timeout = parseHttpHeaderReceiveTimeout(HTTP_HEADER_RESPONSE_RECEIVE_TIMEOUT, properties);
 
         if (timeout != null) {
             configuration.setHttpResponseHeaderReceiveTimeout(timeout);
@@ -299,8 +299,8 @@ final class ConfigurationFileLoaderImpl implements ConfigurationFileLoader {
     }
 
     private void logHttpHeaderResult(final Configuration configuration) {
-        log(HTTP_REQUEST_HEADER_RECEIVE_TIMEOUT, configuration.getHttpRequestHeaderReceiveTimeout());
-        log(HTTP_RESPONSE_HEADER_RECEIVE_TIMEOUT, configuration.getHttpResponseHeaderReceiveTimeout());
+        log(HTTP_HEADER_REQUEST_RECEIVE_TIMEOUT, configuration.getHttpRequestHeaderReceiveTimeout());
+        log(HTTP_HEADER_RESPONSE_RECEIVE_TIMEOUT, configuration.getHttpResponseHeaderReceiveTimeout());
         log(HTTP_HEADER_MAX_SIZE, configuration.getMaxHttpHeaderSize());
     }
 

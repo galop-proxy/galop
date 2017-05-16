@@ -11,8 +11,8 @@ final class ConfigurationPropertyKeys {
     static final String HTTP_CONNECTION_LOG_INTERVAL = "http.connection.log_interval";
     static final String HTTP_CONNECTION_TERMINATION_TIMEOUT = "http.connection.termination_timeout";
 
-    static final String HTTP_REQUEST_HEADER_RECEIVE_TIMEOUT = "http.request.header.receive_timeout";
-    static final String HTTP_RESPONSE_HEADER_RECEIVE_TIMEOUT = "http.response.header.receive_timeout";
+    static final String HTTP_HEADER_REQUEST_RECEIVE_TIMEOUT = "http.header.request.receive_timeout";
+    static final String HTTP_HEADER_RESPONSE_RECEIVE_TIMEOUT = "http.header.response.receive_timeout";
 
     static final String HTTP_HEADER_MAX_SIZE = "security.max_http_header_size";
 

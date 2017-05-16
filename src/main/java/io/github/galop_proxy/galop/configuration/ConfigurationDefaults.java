@@ -7,8 +7,8 @@ final class ConfigurationDefaults {
     static final long HTTP_CONNECTION_LOG_INTERVAL = 60000;
     static final long HTTP_CONNECTION_TERMINATION_TIMEOUT = 30000;
 
-    static final long HTTP_REQUEST_HEADER_RECEIVE_TIMEOUT = 60000;
-    static final long HTTP_RESPONSE_HEADER_RECEIVE_TIMEOUT = 90000;
+    static final long HTTP_HEADER_REQUEST_RECEIVE_TIMEOUT = 60000;
+    static final long HTTP_HEADER_RESPONSE_RECEIVE_TIMEOUT = 90000;
 
     static final int HTTP_HEADER_MAX_SIZE = 8192;
 

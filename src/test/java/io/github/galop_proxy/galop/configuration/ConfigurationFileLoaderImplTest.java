@@ -75,8 +75,8 @@ public class ConfigurationFileLoaderImplTest {
         assertEquals(TARGET_CONNECTION_TIMEOUT, configuration.getTargetConnectionTimeout());
         assertEquals(HTTP_CONNECTION_LOG_INTERVAL, configuration.getConnectionHandlersLogInterval());
         assertEquals(HTTP_CONNECTION_TERMINATION_TIMEOUT, configuration.getConnectionHandlersTerminationTimeout());
-        assertEquals(HTTP_REQUEST_HEADER_RECEIVE_TIMEOUT, configuration.getHttpRequestHeaderReceiveTimeout());
-        assertEquals(HTTP_RESPONSE_HEADER_RECEIVE_TIMEOUT, configuration.getHttpResponseHeaderReceiveTimeout());
+        assertEquals(HTTP_HEADER_REQUEST_RECEIVE_TIMEOUT, configuration.getHttpRequestHeaderReceiveTimeout());
+        assertEquals(HTTP_HEADER_RESPONSE_RECEIVE_TIMEOUT, configuration.getHttpResponseHeaderReceiveTimeout());
         assertEquals(HTTP_HEADER_MAX_SIZE, configuration.getMaxHttpHeaderSize());
 
     }
