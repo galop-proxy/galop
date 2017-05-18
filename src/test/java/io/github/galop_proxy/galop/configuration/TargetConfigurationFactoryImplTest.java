@@ -66,7 +66,7 @@ public class TargetConfigurationFactoryImplTest {
     }
 
     @Test
-    public void parse_withoutConnectionTimeout_returnsDefault() throws InvalidConfigurationException {
+    public void parse_withoutConnectionTimeout_returnsDefaultValue() throws InvalidConfigurationException {
         properties.remove(TARGET_CONNECTION_TIMEOUT);
         configuration = factory.parse(properties);
         assertEquals(ConfigurationDefaults.TARGET_CONNECTION_TIMEOUT, configuration.getConnectionTimeout());
@@ -111,7 +111,7 @@ public class TargetConfigurationFactoryImplTest {
     }
 
     @Test(expected = InvalidConfigurationException.class)
-    public void parse_withOutOfRangeConnectionTimeout_throwsInvalidConfigurationException()
+    public void parse_withNegativeConnectionTimeout_throwsInvalidConfigurationException()
             throws InvalidConfigurationException {
         properties.put(TARGET_CONNECTION_TIMEOUT, "-1");
         factory.parse(properties);
