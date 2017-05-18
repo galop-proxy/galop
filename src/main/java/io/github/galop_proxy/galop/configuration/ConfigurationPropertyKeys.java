@@ -12,7 +12,9 @@ final class ConfigurationPropertyKeys {
     static final String HTTP_CONNECTION_TERMINATION_TIMEOUT = "http.connection.termination_timeout";
 
     static final String HTTP_HEADER_REQUEST_RECEIVE_TIMEOUT = "http.header.request.receive_timeout";
+    static final String HTTP_HEADER_REQUEST_MAX_SIZE = "http.header.request.max_size";
     static final String HTTP_HEADER_RESPONSE_RECEIVE_TIMEOUT = "http.header.response.receive_timeout";
+    static final String HTTP_HEADER_RESPONSE_MAX_SIZE = "http.header.response.max_size";
 
     static final String HTTP_HEADER_MAX_SIZE = "security.max_http_header_size";
 

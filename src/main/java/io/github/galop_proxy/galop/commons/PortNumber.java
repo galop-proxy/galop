@@ -1,7 +1,5 @@
 package io.github.galop_proxy.galop.commons;
 
-import java.util.Objects;
-
 public final class PortNumber {
 
     public static boolean isValidPortNumber(final int value) {

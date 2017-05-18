@@ -4,10 +4,6 @@ import io.github.galop_proxy.galop.commons.PortNumber;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import static io.github.galop_proxy.galop.configuration.ConfigurationPropertyKeys.PROXY_PORT;
 import static org.junit.Assert.assertEquals;
 
 /**

@@ -4,6 +4,7 @@ import java.util.Map;
 
 import static io.github.galop_proxy.galop.configuration.ConfigurationPropertyKeys.HTTP_CONNECTION_LOG_INTERVAL;
 import static io.github.galop_proxy.galop.configuration.ConfigurationPropertyKeys.HTTP_CONNECTION_TERMINATION_TIMEOUT;
+import static io.github.galop_proxy.galop.configuration.FactoryUtils.parseTimeout;
 import static java.util.Objects.requireNonNull;
 
 final class HttpConnectionConfigurationFactoryImpl implements HttpConnectionConfigurationFactory {
@@ -40,26 +41,8 @@ final class HttpConnectionConfigurationFactoryImpl implements HttpConnectionConf
     }
 
     private long parseTerminationTimeout(final Map<String, String> properties) throws InvalidConfigurationException {
-
-        final String timeoutAsString = properties.getOrDefault(HTTP_CONNECTION_TERMINATION_TIMEOUT,
-                Long.toString(ConfigurationDefaults.HTTP_CONNECTION_TERMINATION_TIMEOUT));
-
-        final long timeout;
-
-        try {
-            timeout = Long.parseLong(timeoutAsString);
-        } catch (final NumberFormatException ex) {
-            throw new InvalidConfigurationException("Property " + HTTP_CONNECTION_TERMINATION_TIMEOUT
-                    + " is not a valid number: " + timeoutAsString);
-        }
-
-        if (timeout < 0) {
-            throw new InvalidConfigurationException("Property " + HTTP_CONNECTION_TERMINATION_TIMEOUT
-                    + " must be at least zero: " + timeout);
-        }
-
-        return timeout;
-
+        return parseTimeout(properties, HTTP_CONNECTION_TERMINATION_TIMEOUT,
+                ConfigurationDefaults.HTTP_CONNECTION_TERMINATION_TIMEOUT);
     }
 
 }

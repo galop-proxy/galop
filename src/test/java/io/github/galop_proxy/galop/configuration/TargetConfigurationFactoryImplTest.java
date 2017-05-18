@@ -23,7 +23,6 @@ import static org.mockito.Mockito.when;
  */
 public class TargetConfigurationFactoryImplTest {
 
-    private InetAddressFactory inetAddressFactory;
     private TargetConfigurationFactory factory;
     private Map<String, String> properties;
     private TargetConfiguration configuration;
@@ -31,7 +30,7 @@ public class TargetConfigurationFactoryImplTest {
     @Before
     public void setUp() throws Exception {
 
-        inetAddressFactory = mock(InetAddressFactory.class);
+        final InetAddressFactory inetAddressFactory = mock(InetAddressFactory.class);
         final InetAddress inetAddress = mock(InetAddress.class);
         when(inetAddress.getHostName()).thenReturn("localhost");
         when(inetAddressFactory.createByName("localhost")).thenReturn(inetAddress);

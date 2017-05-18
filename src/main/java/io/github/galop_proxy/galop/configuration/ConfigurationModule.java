@@ -11,6 +11,8 @@ public final class ConfigurationModule extends AbstractModule {
         bind(ProxyConfigurationFactory.class).to(ProxyConfigurationFactoryImpl.class).in(Singleton.class);
         bind(TargetConfigurationFactory.class).to(TargetConfigurationFactoryImpl.class).in(Singleton.class);
         bind(HttpConnectionConfigurationFactory.class).to(HttpConnectionConfigurationFactoryImpl.class).in(Singleton.class);
+        bind(HttpHeaderRequestConfigurationFactory.class).to(HttpHeaderRequestConfigurationFactoryImpl.class).in(Singleton.class);
+        bind(HttpHeaderResponseConfigurationFactory.class).to(HttpHeaderResponseConfigurationFactoryImpl.class).in(Singleton.class);
     }
 
 }
