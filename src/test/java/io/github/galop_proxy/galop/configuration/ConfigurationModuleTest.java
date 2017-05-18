@@ -82,9 +82,20 @@ public class ConfigurationModuleTest {
     }
 
     @Test
-    public void configure_HttpHeaderResponseConfigurationFactoryAsSingleton() {
+    public void configure_bindsHttpHeaderResponseConfigurationFactoryAsSingleton() {
         assertSame(injector.getInstance(HttpHeaderResponseConfigurationFactory.class),
                 injector.getInstance(HttpHeaderResponseConfigurationFactory.class));
+    }
+
+    @Test
+    public void configure_bindsHttpHeaderConfigurationFactory() {
+        assertNotNull(injector.getInstance(HttpHeaderConfigurationFactory.class));
+    }
+
+    @Test
+    public void configure_bindsHttpHeaderConfigurationFactoryAsSingleton() {
+        assertSame(injector.getInstance(HttpHeaderConfigurationFactory.class),
+                injector.getInstance(HttpHeaderConfigurationFactory.class));
     }
 
 }

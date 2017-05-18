@@ -4,9 +4,6 @@ import io.github.galop_proxy.galop.commons.PortNumber;
 
 import java.util.Map;
 
-import static io.github.galop_proxy.galop.configuration.ConfigurationPropertyKeys.HTTP_HEADER_MAX_SIZE;
-import static io.github.galop_proxy.galop.configuration.ConfigurationPropertyKeys.HTTP_HEADER_REQUEST_MAX_SIZE;
-
 final class FactoryUtils {
 
     static PortNumber parsePortNumber(final Map<String, String> properties, final String propertyKey)
