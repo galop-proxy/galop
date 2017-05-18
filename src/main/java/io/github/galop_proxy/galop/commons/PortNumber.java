@@ -1,5 +1,7 @@
 package io.github.galop_proxy.galop.commons;
 
+import java.util.Objects;
+
 public final class PortNumber {
 
     public static boolean isValidPortNumber(final int value) {
@@ -43,6 +45,27 @@ public final class PortNumber {
     @Override
     public String toString() {
         return Integer.toString(value);
+    }
+
+    @Override
+    public int hashCode() {
+        return value;
+    }
+
+    @Override
+    public boolean equals(final Object other) {
+
+        if (this == other) {
+            return true;
+        }
+
+        if (other == null || getClass() != other.getClass()) {
+            return false;
+        }
+
+        final PortNumber that = (PortNumber) other;
+        return value == that.value;
+
     }
 
 }

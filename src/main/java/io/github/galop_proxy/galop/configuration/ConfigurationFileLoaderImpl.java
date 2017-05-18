@@ -294,13 +294,13 @@ final class ConfigurationFileLoaderImpl implements ConfigurationFileLoader {
     }
 
     private void logHttpConnectionResult(final Configuration configuration) {
-        log(HTTP_CONNECTION_LOG_INTERVAL, configuration.getConnectionHandlersLogInterval());
-        log(HTTP_CONNECTION_TERMINATION_TIMEOUT, configuration.getConnectionHandlersTerminationTimeout());
+        log(HTTP_CONNECTION_LOG_INTERVAL, configuration.getHttpConnectionLogInterval());
+        log(HTTP_CONNECTION_TERMINATION_TIMEOUT, configuration.getHttpConnectionTerminationTimeout());
     }
 
     private void logHttpHeaderResult(final Configuration configuration) {
-        log(HTTP_HEADER_REQUEST_RECEIVE_TIMEOUT, configuration.getHttpRequestHeaderReceiveTimeout());
-        log(HTTP_HEADER_RESPONSE_RECEIVE_TIMEOUT, configuration.getHttpResponseHeaderReceiveTimeout());
+        log(HTTP_HEADER_REQUEST_RECEIVE_TIMEOUT, configuration.getHttpHeaderRequestReceiveTimeout());
+        log(HTTP_HEADER_RESPONSE_RECEIVE_TIMEOUT, configuration.getHttpHeaderResponseReceiveTimeout());
         log(HTTP_HEADER_MAX_SIZE, configuration.getMaxHttpHeaderSize());
     }
 

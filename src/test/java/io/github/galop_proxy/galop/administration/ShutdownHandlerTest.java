@@ -28,7 +28,7 @@ public class ShutdownHandlerTest {
     @Before
     public void setUp() throws InterruptedException {
         configuration = mock(Configuration.class);
-        when(configuration.getConnectionHandlersTerminationTimeout()).thenReturn(TERMINATION_TIMEOUT);
+        when(configuration.getHttpConnectionTerminationTimeout()).thenReturn(TERMINATION_TIMEOUT);
         server = mock(Server.class);
         executorService = mock(ExecutorService.class);
         when(executorService.awaitTermination(anyLong(), any())).thenReturn(true);

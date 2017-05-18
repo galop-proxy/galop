@@ -87,8 +87,8 @@ public class HttpExchangeHandlerImplTest {
 
     private Configuration mockConfiguration() {
         final Configuration configuration = mock(Configuration.class);
-        when(configuration.getHttpRequestHeaderReceiveTimeout()).thenReturn(REQUEST_TIMEOUT);
-        when(configuration.getHttpResponseHeaderReceiveTimeout()).thenReturn(RESPONSE_TIMEOUT);
+        when(configuration.getHttpHeaderRequestReceiveTimeout()).thenReturn(REQUEST_TIMEOUT);
+        when(configuration.getHttpHeaderResponseReceiveTimeout()).thenReturn(RESPONSE_TIMEOUT);
         when(configuration.getMaxHttpHeaderSize()).thenReturn(MAX_HEADER_SIZE);
         return configuration;
     }

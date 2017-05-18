@@ -50,7 +50,7 @@ final class ShutdownHandler extends Thread {
     private void waitForConnectionHandlersToTerminate() {
         try {
 
-            final long terminationTimeout = configuration.getConnectionHandlersTerminationTimeout();
+            final long terminationTimeout = configuration.getHttpConnectionTerminationTimeout();
             LOGGER.info("Wait for the connection handlers to terminate... (Timeout: " + terminationTimeout + ")");
 
             executorService.shutdownNow();

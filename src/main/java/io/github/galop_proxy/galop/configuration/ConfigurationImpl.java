@@ -53,7 +53,7 @@ final class ConfigurationImpl implements Configuration {
     }
 
     @Override
-    public long getConnectionHandlersLogInterval() {
+    public long getHttpConnectionLogInterval() {
         return connectionHandlersLogInterval;
     }
 
@@ -62,7 +62,7 @@ final class ConfigurationImpl implements Configuration {
     }
 
     @Override
-    public long getConnectionHandlersTerminationTimeout() {
+    public long getHttpConnectionTerminationTimeout() {
         return connectionHandlersTerminationTimeout;
     }
 
@@ -71,7 +71,7 @@ final class ConfigurationImpl implements Configuration {
     }
 
     @Override
-    public long getHttpRequestHeaderReceiveTimeout() {
+    public long getHttpHeaderRequestReceiveTimeout() {
         return httpRequestHeaderReceiveTimeout;
     }
 
@@ -80,7 +80,7 @@ final class ConfigurationImpl implements Configuration {
     }
 
     @Override
-    public long getHttpResponseHeaderReceiveTimeout() {
+    public long getHttpHeaderResponseReceiveTimeout() {
         return httpResponseHeaderReceiveTimeout;
     }
 

@@ -32,4 +32,26 @@ public class ConfigurationModuleTest {
                 injector.getInstance(ConfigurationFileLoader.class));
     }
 
+    @Test
+    public void configure_bindsProxyConfigurationFactory() {
+        assertNotNull(injector.getInstance(ProxyConfigurationFactory.class));
+    }
+
+    @Test
+    public void configure_bindsProxyConfigurationFactoryAsSingleton() {
+        assertSame(injector.getInstance(ProxyConfigurationFactory.class),
+                injector.getInstance(ProxyConfigurationFactory.class));
+    }
+
+    @Test
+    public void configure_bindsTargetConfigurationFactory() {
+        assertNotNull(injector.getInstance(TargetConfigurationFactory.class));
+    }
+
+    @Test
+    public void configure_bindsTargetConfigurationFactoryAsSingleton() {
+        assertSame(injector.getInstance(TargetConfigurationFactory.class),
+                injector.getInstance(TargetConfigurationFactory.class));
+    }
+
 }

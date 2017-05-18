@@ -51,49 +51,49 @@ public class ConfigurationImplTest {
     @Test
     public void getConnectionHandlersLogInterval_withoutConfiguredProperty_returnsDefaultValue() {
         assertEquals(ConfigurationDefaults.HTTP_CONNECTION_LOG_INTERVAL,
-                configuration.getConnectionHandlersLogInterval());
+                configuration.getHttpConnectionLogInterval());
     }
 
     @Test
     public void getConnectionHandlersLogInterval_withConfiguredProperty_returnsConfiguredValue() {
         configuration.setConnectionHandlersLogInterval(10000);
-        assertEquals(10000, configuration.getConnectionHandlersLogInterval());
+        assertEquals(10000, configuration.getHttpConnectionLogInterval());
     }
 
     @Test
     public void getConnectionHandlersTerminationTimeout_withoutConfiguredProperty_returnsDefaultValue() {
         assertEquals(ConfigurationDefaults.HTTP_CONNECTION_TERMINATION_TIMEOUT,
-                configuration.getConnectionHandlersTerminationTimeout());
+                configuration.getHttpConnectionTerminationTimeout());
     }
 
     @Test
     public void getConnectionHandlersTerminationTimeout_withConfiguredProperty_returnsConfiguredValue() {
         configuration.setConnectionHandlersTerminationTimeout(60000);
-        assertEquals(60000, configuration.getConnectionHandlersTerminationTimeout());
+        assertEquals(60000, configuration.getHttpConnectionTerminationTimeout());
     }
 
     @Test
     public void getHttpRequestHeaderReceiveTimeout_withoutConfiguredProperty_returnsDefaultValue() {
         assertEquals(ConfigurationDefaults.HTTP_HEADER_REQUEST_RECEIVE_TIMEOUT,
-                configuration.getHttpRequestHeaderReceiveTimeout());
+                configuration.getHttpHeaderRequestReceiveTimeout());
     }
 
     @Test
     public void getHttpRequestHeaderReceiveTimeout_withConfiguredProperty_returnsConfiguredValue() {
         configuration.setHttpRequestHeaderReceiveTimeout(30000);
-        assertEquals(30000, configuration.getHttpRequestHeaderReceiveTimeout());
+        assertEquals(30000, configuration.getHttpHeaderRequestReceiveTimeout());
     }
 
     @Test
     public void getHttpResponseHeaderReceiveTimeout_withoutConfiguredProperty_returnsDefaultValue() {
         assertEquals(ConfigurationDefaults.HTTP_HEADER_RESPONSE_RECEIVE_TIMEOUT,
-                configuration.getHttpResponseHeaderReceiveTimeout());
+                configuration.getHttpHeaderResponseReceiveTimeout());
     }
 
     @Test
     public void getHttpResponseHeaderReceiveTimeout_withConfiguredProperty_returnsConfiguredValue() {
         configuration.setHttpResponseHeaderReceiveTimeout(120000);
-        assertEquals(120000, configuration.getHttpResponseHeaderReceiveTimeout());
+        assertEquals(120000, configuration.getHttpHeaderResponseReceiveTimeout());
     }
 
     @Test

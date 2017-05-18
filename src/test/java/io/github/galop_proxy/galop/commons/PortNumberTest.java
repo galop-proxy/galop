@@ -70,4 +70,52 @@ public class PortNumberTest {
         assertEquals("80", portNumber.toString());
     }
 
+    // hashCode:
+
+    @Test
+    public void hashCode_fromTwoEqualPortNumbers_areEqual() {
+        final PortNumber portNumber1 = new PortNumber(80);
+        final PortNumber portNumber2 = new PortNumber(80);
+        assertEquals(portNumber1.hashCode(), portNumber2.hashCode());
+    }
+
+    // equals:
+
+    @Test
+    public void equals_withPortNumberWithSameValue_returnsTrue() {
+        final PortNumber portNumber1 = new PortNumber(80);
+        final PortNumber portNumber2 = new PortNumber(80);
+        assertTrue(portNumber1.equals(portNumber2));
+        assertTrue(portNumber2.equals(portNumber1));
+    }
+
+    @Test
+    public void equals_withPortNumberWithDifferentValue_returnsFalse() {
+        final PortNumber portNumber1 = new PortNumber(80);
+        final PortNumber portNumber2 = new PortNumber(443);
+        assertFalse(portNumber1.equals(portNumber2));
+        assertFalse(portNumber2.equals(portNumber1));
+    }
+
+    @Test
+    @SuppressWarnings("EqualsWithItself")
+    public void equals_withSameObject_returnsTrue() {
+        final PortNumber portNumber = new PortNumber(80);
+        assertTrue(portNumber.equals(portNumber));
+    }
+
+    @Test
+    @SuppressWarnings("ObjectEqualsNull")
+    public void equals_withNull_returnsFalse() {
+        final PortNumber portNumber = new PortNumber(8080);
+        assertFalse(portNumber.equals(null));
+    }
+
+    @Test
+    @SuppressWarnings("EqualsBetweenInconvertibleTypes")
+    public void equals_withDifferentClass_returnsFalse() {
+        final PortNumber portNumber = new PortNumber(443);
+        assertFalse(portNumber.equals(443));
+    }
+
 }

@@ -55,10 +55,10 @@ public class ConfigurationFileLoaderImplTest {
         assertEquals("localhost", configuration.getTargetAddress().getHostName());
         assertEquals(8080, configuration.getTargetPort().getValue());
         assertEquals(20000, configuration.getTargetConnectionTimeout());
-        assertEquals(30000, configuration.getConnectionHandlersLogInterval());
-        assertEquals(15000, configuration.getConnectionHandlersTerminationTimeout());
-        assertEquals(45000, configuration.getHttpRequestHeaderReceiveTimeout());
-        assertEquals(120000, configuration.getHttpResponseHeaderReceiveTimeout());
+        assertEquals(30000, configuration.getHttpConnectionLogInterval());
+        assertEquals(15000, configuration.getHttpConnectionTerminationTimeout());
+        assertEquals(45000, configuration.getHttpHeaderRequestReceiveTimeout());
+        assertEquals(120000, configuration.getHttpHeaderResponseReceiveTimeout());
         assertEquals(255, configuration.getMaxHttpHeaderSize());
 
     }
@@ -73,10 +73,10 @@ public class ConfigurationFileLoaderImplTest {
         assertEquals("localhost", configuration.getTargetAddress().getHostName());
         assertEquals(8080, configuration.getTargetPort().getValue());
         assertEquals(TARGET_CONNECTION_TIMEOUT, configuration.getTargetConnectionTimeout());
-        assertEquals(HTTP_CONNECTION_LOG_INTERVAL, configuration.getConnectionHandlersLogInterval());
-        assertEquals(HTTP_CONNECTION_TERMINATION_TIMEOUT, configuration.getConnectionHandlersTerminationTimeout());
-        assertEquals(HTTP_HEADER_REQUEST_RECEIVE_TIMEOUT, configuration.getHttpRequestHeaderReceiveTimeout());
-        assertEquals(HTTP_HEADER_RESPONSE_RECEIVE_TIMEOUT, configuration.getHttpResponseHeaderReceiveTimeout());
+        assertEquals(HTTP_CONNECTION_LOG_INTERVAL, configuration.getHttpConnectionLogInterval());
+        assertEquals(HTTP_CONNECTION_TERMINATION_TIMEOUT, configuration.getHttpConnectionTerminationTimeout());
+        assertEquals(HTTP_HEADER_REQUEST_RECEIVE_TIMEOUT, configuration.getHttpHeaderRequestReceiveTimeout());
+        assertEquals(HTTP_HEADER_RESPONSE_RECEIVE_TIMEOUT, configuration.getHttpHeaderResponseReceiveTimeout());
         assertEquals(HTTP_HEADER_MAX_SIZE, configuration.getMaxHttpHeaderSize());
 
     }

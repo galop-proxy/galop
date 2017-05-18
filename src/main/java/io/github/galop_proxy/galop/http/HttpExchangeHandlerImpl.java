@@ -54,7 +54,7 @@ final class HttpExchangeHandlerImpl implements HttpExchangeHandler {
 
     private Result parseRequestHeader(final InputStream inputStream, final Configuration configuration,
                                       final Runnable startCallback) throws Exception {
-        final long timeout = configuration.getHttpRequestHeaderReceiveTimeout();
+        final long timeout = configuration.getHttpHeaderRequestReceiveTimeout();
         final int maxHeaderSize = configuration.getMaxHttpHeaderSize();
         return executeWithTimeout(() -> httpHeaderParser.parse(inputStream, maxHeaderSize, startCallback), timeout);
     }
@@ -98,7 +98,7 @@ final class HttpExchangeHandlerImpl implements HttpExchangeHandler {
 
     private Result parseResponseHeader(final InputStream inputStream, final Configuration configuration)
             throws Exception {
-        final long timeout = configuration.getHttpResponseHeaderReceiveTimeout();
+        final long timeout = configuration.getHttpHeaderResponseReceiveTimeout();
         final int maxHeaderSize = configuration.getMaxHttpHeaderSize();
         return executeWithTimeout(() -> httpHeaderParser.parse(inputStream, maxHeaderSize), timeout);
     }

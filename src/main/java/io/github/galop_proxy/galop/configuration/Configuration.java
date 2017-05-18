@@ -14,13 +14,13 @@ public interface Configuration {
 
     int getTargetConnectionTimeout();
 
-    long getConnectionHandlersLogInterval();
+    long getHttpConnectionLogInterval();
 
-    long getConnectionHandlersTerminationTimeout();
+    long getHttpConnectionTerminationTimeout();
 
-    long getHttpRequestHeaderReceiveTimeout();
+    long getHttpHeaderRequestReceiveTimeout();
 
-    long getHttpResponseHeaderReceiveTimeout();
+    long getHttpHeaderResponseReceiveTimeout();
 
     int getMaxHttpHeaderSize();
 
