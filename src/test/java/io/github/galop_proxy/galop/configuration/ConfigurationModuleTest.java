@@ -54,4 +54,15 @@ public class ConfigurationModuleTest {
                 injector.getInstance(TargetConfigurationFactory.class));
     }
 
+    @Test
+    public void configure_bindsHttpConnectionConfigurationFactory() {
+        assertNotNull(injector.getInstance(HttpConnectionConfigurationFactory.class));
+    }
+
+    @Test
+    public void configure_bindsHttpConnectionConfigurationFactoryAsSingleton() {
+        assertSame(injector.getInstance(HttpConnectionConfigurationFactory.class),
+                injector.getInstance(HttpConnectionConfigurationFactory.class));
+    }
+
 }
