@@ -67,25 +67,26 @@ final class HttpHeaderParserImpl implements HttpHeaderParser {
             throw new IllegalArgumentException("InputStream must support mark.");
         }
 
-        final int maxHttpHeaderSize;
-
-        if (request) {
-            maxHttpHeaderSize = requestConfiguration.getMaxSize();
-        } else {
-            maxHttpHeaderSize = responseConfiguration.getMaxSize();
-        }
-
+        final int maxHttpHeaderSize = getMaxHttpHeaderSize(request);
         final LimitedInputStream limitedInputStream = new LimitedInputStream(inputStream, maxHttpHeaderSize);
         inputStream.mark(maxHttpHeaderSize);
 
-        final Result result = parseRequest(limitedInputStream, maxHttpHeaderSize, startParsingCallback);
+        final Result result = parseHeader(limitedInputStream, maxHttpHeaderSize, startParsingCallback);
         inputStream.reset();
         return result;
 
     }
 
-    private Result parseRequest(final LimitedInputStream limitedInputStream, final int maxHttpHeaderSize,
-                                final Runnable startParsingCallback) throws IOException {
+    private int getMaxHttpHeaderSize(final boolean request) {
+        if (request) {
+            return requestConfiguration.getMaxSize();
+        } else {
+            return responseConfiguration.getMaxSize();
+        }
+    }
+
+    private Result parseHeader(final LimitedInputStream limitedInputStream, final int maxHttpHeaderSize,
+                               final Runnable startParsingCallback) throws IOException {
 
         boolean firstByte = true;
 

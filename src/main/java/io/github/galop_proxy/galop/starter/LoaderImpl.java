@@ -42,6 +42,12 @@ final class LoaderImpl implements Loader {
             return;
         }
 
+        loadConfiguration(args);
+
+    }
+
+    private void loadConfiguration(final String[] args) {
+
         final Configuration configuration;
 
         try {
@@ -51,11 +57,14 @@ final class LoaderImpl implements Loader {
             return;
         }
 
+        initStarter(configuration);
+
+    }
+
+    private void initStarter(final Configuration configuration) {
         final Injector childInjector = injector.createChildInjector(new LoadedModule(configuration));
         final Starter starter = childInjector.getInstance(Starter.class);
-
         starter.start();
-
     }
 
 }

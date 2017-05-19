@@ -20,10 +20,18 @@ final class LoadedModule extends AbstractModule {
 
     @Override
     protected void configure() {
+        installModules();
+        bindStarter();
+    }
+
+    private void installModules() {
         install(new LoadedConfigurationModule(configuration));
         install(new HttpModule());
         install(new ProxyModule());
         install(new AdministrationModule());
+    }
+
+    private void bindStarter() {
         bind(Starter.class).to(StarterImpl.class).in(Singleton.class);
     }
 

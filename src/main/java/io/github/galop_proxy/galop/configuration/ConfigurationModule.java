@@ -12,10 +12,22 @@ public final class ConfigurationModule extends AbstractModule {
     }
 
     private void bindConfigurationFactories() {
-        bind(ConfigurationFactory.class).to(ConfigurationFactoryImpl.class).in(Singleton.class);
-        bind(ProxyConfigurationFactory.class).to(ProxyConfigurationFactoryImpl.class).in(Singleton.class);
-        bind(TargetConfigurationFactory.class).to(TargetConfigurationFactoryImpl.class).in(Singleton.class);
+        bindConfigurationFactory();
+        bindProxyConfigurationFactory();
+        bindTargetConfigurationFactory();
         bindHttpConfigurationFactories();
+    }
+
+    private void bindConfigurationFactory() {
+        bind(ConfigurationFactory.class).to(ConfigurationFactoryImpl.class).in(Singleton.class);
+    }
+
+    private void bindProxyConfigurationFactory() {
+        bind(ProxyConfigurationFactory.class).to(ProxyConfigurationFactoryImpl.class).in(Singleton.class);
+    }
+
+    private void bindTargetConfigurationFactory() {
+        bind(TargetConfigurationFactory.class).to(TargetConfigurationFactoryImpl.class).in(Singleton.class);
     }
 
     private void bindHttpConfigurationFactories() {

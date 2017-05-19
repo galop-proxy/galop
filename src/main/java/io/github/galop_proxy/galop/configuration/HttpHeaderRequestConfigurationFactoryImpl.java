@@ -4,6 +4,7 @@ import java.util.Map;
 
 import static io.github.galop_proxy.galop.configuration.ConfigurationPropertyKeys.HTTP_HEADER_REQUEST_MAX_SIZE;
 import static io.github.galop_proxy.galop.configuration.ConfigurationPropertyKeys.HTTP_HEADER_REQUEST_RECEIVE_TIMEOUT;
+import static io.github.galop_proxy.galop.configuration.FactoryUtils.parseMaxSize;
 import static io.github.galop_proxy.galop.configuration.FactoryUtils.parseTimeout;
 import static java.util.Objects.requireNonNull;
 
@@ -13,7 +14,7 @@ final class HttpHeaderRequestConfigurationFactoryImpl implements HttpHeaderReque
     public HttpHeaderRequestConfiguration parse(final Map<String, String> properties) throws InvalidConfigurationException {
         requireNonNull(properties, "properties must not be null.");
         final long receiveTimeout = parseReceiveTimeout(properties);
-        final int maxSize = parseMaxSize(properties);
+        final int maxSize = parseReceiveMaxSize(properties);
         return new HttpHeaderRequestConfigurationImpl(receiveTimeout, maxSize);
     }
 
@@ -22,8 +23,8 @@ final class HttpHeaderRequestConfigurationFactoryImpl implements HttpHeaderReque
                 ConfigurationDefaults.HTTP_HEADER_REQUEST_RECEIVE_TIMEOUT);
     }
 
-    private int parseMaxSize(final Map<String, String> properties) throws InvalidConfigurationException {
-        return FactoryUtils.parseMaxSize(properties, HTTP_HEADER_REQUEST_MAX_SIZE,
+    private int parseReceiveMaxSize(final Map<String, String> properties) throws InvalidConfigurationException {
+        return parseMaxSize(properties, HTTP_HEADER_REQUEST_MAX_SIZE,
                 ConfigurationDefaults.HTTP_HEADER_REQUEST_MAX_SIZE);
     }
 
