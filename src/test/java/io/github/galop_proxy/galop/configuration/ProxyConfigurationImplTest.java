@@ -12,12 +12,14 @@ import static org.junit.Assert.assertEquals;
 public class ProxyConfigurationImplTest {
 
     private PortNumber port;
+    private int backlogSize;
     private ProxyConfiguration configuration;
 
     @Before
     public void setUp() {
         port = new PortNumber(8080);
-        configuration = new ProxyConfigurationImpl(port);
+        backlogSize = 50;
+        configuration = new ProxyConfigurationImpl(port, backlogSize);
     }
 
     @Test
@@ -25,9 +27,14 @@ public class ProxyConfigurationImplTest {
         assertEquals(port, configuration.getPort());
     }
 
+    @Test
+    public void getBacklogSize_returnsConfiguredBacklogSize() {
+        assertEquals(backlogSize, configuration.getBacklogSize());
+    }
+
     @Test(expected = NullPointerException.class)
     public void constructor_withoutPort_throwsNullPointerException() {
-        new ProxyConfigurationImpl(null);
+        new ProxyConfigurationImpl(null, backlogSize);
     }
 
 }

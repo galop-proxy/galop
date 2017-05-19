@@ -6,4 +6,6 @@ public interface ProxyConfiguration {
 
     PortNumber getPort();
 
+    int getBacklogSize();
+
 }

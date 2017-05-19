@@ -2,6 +2,8 @@ package io.github.galop_proxy.galop.configuration;
 
 final class ConfigurationDefaults {
 
+    static final int PROXY_BACKLOG_SIZE = 50;
+
     static final int TARGET_CONNECTION_TIMEOUT = 15000;
 
     static final long HTTP_CONNECTION_LOG_INTERVAL = 60000;
