@@ -19,7 +19,7 @@ final class ProxySocketFactoryImpl implements ProxySocketFactory {
 
     @Override
     public ServerSocket create() throws IOException {
-        return new ServerSocket(configuration.getPort().getValue());
+        return new ServerSocket(configuration.getPort().getValue(), configuration.getBacklogSize());
     }
 
 }
