@@ -102,8 +102,12 @@ In addition, the following optional properties are available:
   the client. If the time is exceeded, the HTTP status code 504 (Gateway Time-out)
   will be sent to the client. The time must be specified in milliseconds.
   The default value is 90000 milliseconds.
-- **security.max_http_header_size:**
-  The maximum allowed size of an HTTP header in bytes. Any HTTP request or
+- **http.header.request.max_size:**
+  The maximum allowed size of an HTTP request header in bytes. Any HTTP
+  request that contains a larger header is rejected by GALOP. The default
+  value is 8192 bytes. The smallest size that can be configured is 255 bytes.
+- **http.header.response.max_size:**
+  The maximum allowed size of an HTTP response header in bytes. Any HTTP
   response that contains a larger header is rejected by GALOP. The default
   value is 8192 bytes. The smallest size that can be configured is 255 bytes.
 
@@ -119,7 +123,8 @@ http.connection.termination_timeout=120000
 http.connection.log_interval=30000
 http.header.request.receive_timeout=100000
 http.header.response.receive_timeout=180000
-security.max_http_header_size=16384
+http.header.request.max_size=16384
+http.header.response.max_size=16384
 ```
 
 

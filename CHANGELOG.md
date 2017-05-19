@@ -19,6 +19,10 @@
   
 ### Changed
 
+- The maximum allowed size of an HTTP header can be configured separately for
+  requests and responses.
+- The property `security.max_http_header_size` has been replaced by the new
+  properties `http.header.request.max_size` and `http.header.response.max_size`.
 - The following configuration properties have been renamed:
     - `proxy_port` to `proxy.port`
     - `target_address` to `target.address`
