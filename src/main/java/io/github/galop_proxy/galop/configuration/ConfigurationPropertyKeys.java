@@ -16,9 +16,6 @@ final class ConfigurationPropertyKeys {
     static final String HTTP_HEADER_RESPONSE_RECEIVE_TIMEOUT = "http.header.response.receive_timeout";
     static final String HTTP_HEADER_RESPONSE_MAX_SIZE = "http.header.response.max_size";
 
-    static final String HTTP_HEADER_MAX_SIZE = "security.max_http_header_size";
-
-
     private ConfigurationPropertyKeys() {
         throw new AssertionError("No instances");
     }
