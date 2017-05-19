@@ -1,9 +1,7 @@
 package io.github.galop_proxy.galop.configuration;
 
-import io.github.galop_proxy.galop.commons.InetAddressFactory;
 import io.github.galop_proxy.galop.commons.PortNumber;
 
-import java.net.InetAddress;
 import java.util.Map;
 
 final class FactoryUtils {
