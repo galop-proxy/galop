@@ -9,25 +9,19 @@ import static org.mockito.Mockito.when;
 public abstract class AbstractConfigurationTest {
 
     protected Configuration configuration;
-    protected ProxyConfiguration proxyConfiguration;
-    protected TargetConfiguration targetConfiguration;
-    protected HttpConfiguration httpConfiguration;
-    protected HttpConnectionConfiguration httpConnectionConfiguration;
-    protected HttpHeaderConfiguration httpHeaderConfiguration;
-    protected HttpHeaderRequestConfiguration httpHeaderRequestConfiguration;
-    protected HttpHeaderResponseConfiguration httpHeaderResponseConfiguration;
 
     @Before
     public void setUp() {
 
         configuration = mock(Configuration.class);
-        proxyConfiguration = mock(ProxyConfiguration.class);
-        targetConfiguration = mock(TargetConfiguration.class);
-        httpConfiguration = mock(HttpConfiguration.class);
-        httpConnectionConfiguration = mock(HttpConnectionConfiguration.class);
-        httpHeaderConfiguration = mock(HttpHeaderConfiguration.class);
-        httpHeaderRequestConfiguration = mock(HttpHeaderRequestConfiguration.class);
-        httpHeaderResponseConfiguration = mock(HttpHeaderResponseConfiguration.class);
+
+        final ProxyConfiguration proxyConfiguration = mock(ProxyConfiguration.class);
+        final TargetConfiguration targetConfiguration = mock(TargetConfiguration.class);
+        final HttpConfiguration httpConfiguration = mock(HttpConfiguration.class);
+        final HttpConnectionConfiguration httpConnectionConfiguration = mock(HttpConnectionConfiguration.class);
+        final HttpHeaderConfiguration httpHeaderConfiguration = mock(HttpHeaderConfiguration.class);
+        final HttpHeaderRequestConfiguration httpHeaderRequestConfiguration = mock(HttpHeaderRequestConfiguration.class);
+        final HttpHeaderResponseConfiguration httpHeaderResponseConfiguration = mock(HttpHeaderResponseConfiguration.class);
 
         when(configuration.getProxy()).thenReturn(proxyConfiguration);
         when(configuration.getTarget()).thenReturn(targetConfiguration);

@@ -1,6 +1,11 @@
 package io.github.galop_proxy.galop.configuration;
 
+import java.net.InetAddress;
+
 final class ConfigurationDefaults {
+
+    static final int PROXY_BACKLOG_SIZE = 50;
+    static final InetAddress PROXY_BIND_ADDRESS = null;
 
     static final int TARGET_CONNECTION_TIMEOUT = 15000;
 

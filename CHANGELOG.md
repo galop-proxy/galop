@@ -16,6 +16,9 @@
 - If the server does not send a full HTTP response header to the client within
   a configured time, the proxy sends the HTTP status code 504 (Gateway Time-out)
   to the client.
+- The requested maximum number of pending connections on the proxy socket can be
+  configured.
+- The local address the proxy socket will bind to can be configured.
   
 ### Changed
 

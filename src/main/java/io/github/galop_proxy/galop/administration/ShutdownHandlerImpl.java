@@ -15,7 +15,7 @@ import static java.util.Objects.requireNonNull;
 
 final class ShutdownHandlerImpl extends Thread implements ShutdownHandler {
 
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger(ShutdownHandler.class);
 
     private final HttpConnectionConfiguration configuration;
     private final Server server;
@@ -53,7 +53,7 @@ final class ShutdownHandlerImpl extends Thread implements ShutdownHandler {
         try {
 
             final long terminationTimeout = configuration.getTerminationTimeout();
-            LOGGER.info("Wait for the connection handlers to terminate... (Timeout: " + terminationTimeout + ")");
+            LOGGER.info("Waiting for connection handlers to terminate... (Timeout: " + terminationTimeout + ")");
 
             executorService.shutdownNow();
 

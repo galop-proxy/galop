@@ -5,6 +5,7 @@ import org.apache.logging.log4j.Logger;
 
 import javax.inject.Inject;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.HashMap;
@@ -32,16 +33,19 @@ final class ConfigurationFileLoaderImpl implements ConfigurationFileLoader {
 
         LOGGER.info("Loading configuration file: " + path.toAbsolutePath());
 
-        try {
+        try (final FileInputStream fileInputStream = new FileInputStream(path.toFile())) {
 
             final Properties properties = new Properties();
-            properties.load(new FileInputStream(path.toFile()));
+            properties.load(fileInputStream);
 
             final Configuration configuration = configurationFactory.parse(convertToMap(properties));
             logConfiguration(configuration);
             return configuration;
 
-        } catch (final Exception ex) {
+        } catch (final FileNotFoundException ex) {
+            LOGGER.error("Could not find configuration file: " + path.toAbsolutePath());
+            throw ex;
+        } catch (final IOException | InvalidConfigurationException | RuntimeException ex) {
             LOGGER.error("Could not parse configuration file: " + ex.getMessage());
             throw ex;
         }
@@ -63,6 +67,8 @@ final class ConfigurationFileLoaderImpl implements ConfigurationFileLoader {
 
     private void logProxyConfiguration(final ProxyConfiguration configuration) {
         log(PROXY_PORT, configuration.getPort());
+        log(PROXY_BACKLOG_SIZE, configuration.getBacklogSize());
+        log(PROXY_BIND_ADDRESS, configuration.getBindAddress());
     }
 
     private void logTargetConfiguration(final TargetConfiguration configuration) {

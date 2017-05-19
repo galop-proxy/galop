@@ -14,8 +14,8 @@ final class ConnectionHandlerImpl implements ConnectionHandler {
     private final Socket source;
     private final Socket target;
 
-    private boolean currentlyHandlingRequestOrResponse;
-    private boolean connectionShouldBeClosed;
+    private volatile boolean currentlyHandlingRequestOrResponse;
+    private volatile boolean connectionShouldBeClosed;
 
     ConnectionHandlerImpl(final HttpExchangeHandler httpExchangeHandler, final Socket source, final Socket target) {
         this.httpExchangeHandler = requireNonNull(httpExchangeHandler, "httpExchangeHandler must not be null.");
