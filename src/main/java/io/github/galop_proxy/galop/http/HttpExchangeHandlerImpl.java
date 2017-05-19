@@ -12,6 +12,7 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.Socket;
+import java.util.Locale;
 import java.util.concurrent.*;
 
 import static java.util.Objects.requireNonNull;
@@ -149,8 +150,14 @@ final class HttpExchangeHandlerImpl implements HttpExchangeHandler {
             final byte[] response = HttpResponse.createWithStatus(statusCode).build();
             IOUtils.write(response, source.getOutputStream());
         } catch (final Exception ex) {
-            LOGGER.warn("Could not send HTTP status code " + statusCode + " to the client.", ex);
+            if (!"socket is closed".equals(getNormalizedMessage(ex))) {
+                LOGGER.warn("Could not send HTTP status code " + statusCode + " to the client.", ex);
+            }
         }
+    }
+
+    private String getNormalizedMessage(final Exception ex) {
+        return String.valueOf(ex.getMessage()).toLowerCase(Locale.ENGLISH);
     }
 
 }
