@@ -6,6 +6,7 @@ import io.github.galop_proxy.galop.configuration.HttpHeaderResponseConfiguration
 
 import javax.inject.Inject;
 import java.io.*;
+import java.util.Locale;
 
 import static java.util.Objects.requireNonNull;
 
@@ -115,7 +116,9 @@ final class HttpHeaderParserImpl implements HttpHeaderParser {
 
                 if (currentByteIndex != 0) {
 
-                    final String line = new String(bytes, 0, currentByteIndex, HttpConstants.HEADER_CHARSET).toLowerCase();
+                    final String line = new String(bytes, 0, currentByteIndex, HttpConstants.HEADER_CHARSET)
+                            .toLowerCase(Locale.ENGLISH);
+
                     currentByteIndex = 0;
 
                     if (line.startsWith(HttpConstants.HEADER_CONTENT_LENGTH_PREFIX)) {

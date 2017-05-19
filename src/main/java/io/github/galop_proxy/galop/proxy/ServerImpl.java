@@ -13,6 +13,7 @@ import java.net.ConnectException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
+import java.util.Locale;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutorService;
 
@@ -101,13 +102,17 @@ final class ServerImpl implements Server {
 
     private void handleUnexpectedException(final Exception ex, final Socket source, final Socket target) {
 
-        if (!"socket closed".equals(String.valueOf(ex.getMessage()).toLowerCase())) {
+        if (!"socket closed".equals(getNormalizedMessage(ex))) {
             LOGGER.error("An error occurred while processing a new connection.", ex);
         }
 
         IOUtils.closeQuietly(source);
         IOUtils.closeQuietly(target);
 
+    }
+
+    private String getNormalizedMessage(final Exception ex) {
+        return String.valueOf(ex.getMessage()).toLowerCase(Locale.ENGLISH);
     }
 
     @Override

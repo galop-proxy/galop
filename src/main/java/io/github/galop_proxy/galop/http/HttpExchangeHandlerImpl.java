@@ -149,7 +149,7 @@ final class HttpExchangeHandlerImpl implements HttpExchangeHandler {
             final byte[] response = HttpResponse.createWithStatus(statusCode).build();
             IOUtils.write(response, source.getOutputStream());
         } catch (final Exception ex) {
-            // Can be ignored.
+            LOGGER.warn("Could not send HTTP status code " + statusCode + " to the client.", ex);
         }
     }
 
