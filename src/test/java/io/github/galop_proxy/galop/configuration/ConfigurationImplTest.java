@@ -1,110 +1,57 @@
 package io.github.galop_proxy.galop.configuration;
 
-import io.github.galop_proxy.galop.commons.PortNumber;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests the class {@link ConfigurationImpl}.
  */
 public class ConfigurationImplTest {
 
-    private ConfigurationImpl configuration;
+    private ProxyConfiguration proxy;
+    private TargetConfiguration target;
+    private HttpConfiguration http;
+    private Configuration configuration;
 
     @Before
-    public void setUp() throws UnknownHostException {
-        configuration = new ConfigurationImpl(
-                new PortNumber(8080), InetAddress.getLocalHost(), new PortNumber(80));
+    public void setUp() {
+        proxy = mock(ProxyConfiguration.class);
+        target = mock(TargetConfiguration.class);
+        http = mock(HttpConfiguration.class);
+        configuration = new ConfigurationImpl(proxy, target, http);
     }
 
     @Test
-    public void getProxyPort_returnsConfiguredProxyPort() {
-        assertEquals(8080, configuration.getProxyPort().getValue());
+    public void getProxy_returnsGivenProxyConfiguration() {
+        assertSame(proxy, configuration.getProxy());
     }
 
     @Test
-    public void getTargetAddress_returnsConfiguredTargetAddress() throws UnknownHostException {
-        assertEquals(InetAddress.getLocalHost(), configuration.getTargetAddress());
+    public void getTarget_returnsGivenTargetConfiguration() {
+        assertSame(target, configuration.getTarget());
     }
 
     @Test
-    public void getTargetPort_returnsConfiguredTargetPort() {
-        assertEquals(80, configuration.getTargetPort().getValue());
+    public void getHttp_returnsGivenHttpConfiguration() {
+        assertSame(http, configuration.getHttp());
     }
 
-    @Test
-    public void getTargetConnectionTimeout_withoutConfiguredProperty_returnsDefaultValue() {
-        assertEquals(ConfigurationDefaults.TARGET_CONNECTION_TIMEOUT, configuration.getTargetConnectionTimeout());
+    @Test(expected = NullPointerException.class)
+    public void constructor_withoutProxyConfiguration_throwsNullPointerException() {
+        new ConfigurationImpl(null, target, http);
     }
 
-    @Test
-    public void getTargetConnectionTimeout_withConfiguredProperty_returnsConfiguredValue() {
-        configuration.setTargetConnectionTimeout(1000);
-        assertEquals(1000, configuration.getTargetConnectionTimeout());
+    @Test(expected = NullPointerException.class)
+    public void constructor_withoutTargetConfiguration_throwsNullPointerException() {
+        new ConfigurationImpl(proxy, null, http);
     }
 
-    @Test
-    public void getConnectionHandlersLogInterval_withoutConfiguredProperty_returnsDefaultValue() {
-        assertEquals(ConfigurationDefaults.HTTP_CONNECTION_LOG_INTERVAL,
-                configuration.getConnectionHandlersLogInterval());
-    }
-
-    @Test
-    public void getConnectionHandlersLogInterval_withConfiguredProperty_returnsConfiguredValue() {
-        configuration.setConnectionHandlersLogInterval(10000);
-        assertEquals(10000, configuration.getConnectionHandlersLogInterval());
-    }
-
-    @Test
-    public void getConnectionHandlersTerminationTimeout_withoutConfiguredProperty_returnsDefaultValue() {
-        assertEquals(ConfigurationDefaults.HTTP_CONNECTION_TERMINATION_TIMEOUT,
-                configuration.getConnectionHandlersTerminationTimeout());
-    }
-
-    @Test
-    public void getConnectionHandlersTerminationTimeout_withConfiguredProperty_returnsConfiguredValue() {
-        configuration.setConnectionHandlersTerminationTimeout(60000);
-        assertEquals(60000, configuration.getConnectionHandlersTerminationTimeout());
-    }
-
-    @Test
-    public void getHttpRequestHeaderReceiveTimeout_withoutConfiguredProperty_returnsDefaultValue() {
-        assertEquals(ConfigurationDefaults.HTTP_REQUEST_HEADER_RECEIVE_TIMEOUT,
-                configuration.getHttpRequestHeaderReceiveTimeout());
-    }
-
-    @Test
-    public void getHttpRequestHeaderReceiveTimeout_withConfiguredProperty_returnsConfiguredValue() {
-        configuration.setHttpRequestHeaderReceiveTimeout(30000);
-        assertEquals(30000, configuration.getHttpRequestHeaderReceiveTimeout());
-    }
-
-    @Test
-    public void getHttpResponseHeaderReceiveTimeout_withoutConfiguredProperty_returnsDefaultValue() {
-        assertEquals(ConfigurationDefaults.HTTP_RESPONSE_HEADER_RECEIVE_TIMEOUT,
-                configuration.getHttpResponseHeaderReceiveTimeout());
-    }
-
-    @Test
-    public void getHttpResponseHeaderReceiveTimeout_withConfiguredProperty_returnsConfiguredValue() {
-        configuration.setHttpResponseHeaderReceiveTimeout(120000);
-        assertEquals(120000, configuration.getHttpResponseHeaderReceiveTimeout());
-    }
-
-    @Test
-    public void getMaxHttpHeaderSize_withoutConfiguredProperty_returnsDefaultValue() {
-        assertEquals(ConfigurationDefaults.HTTP_HEADER_MAX_SIZE, configuration.getMaxHttpHeaderSize());
-    }
-
-    @Test
-    public void getMaxHttpHeaderSize_withConfiguredProperty_returnsConfiguredValue() {
-        configuration.setMaxHttpHeaderSize(1024);
-        assertEquals(1024, configuration.getMaxHttpHeaderSize());
+    @Test(expected = NullPointerException.class)
+    public void constructor_withoutHttpConfiguration_throwsNullPointerException() {
+        new ConfigurationImpl(proxy, target, null);
     }
 
 }

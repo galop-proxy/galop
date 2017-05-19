@@ -1,101 +1,32 @@
 package io.github.galop_proxy.galop.configuration;
 
-import io.github.galop_proxy.galop.commons.PortNumber;
-
-import java.net.InetAddress;
-
 import static java.util.Objects.requireNonNull;
 
 final class ConfigurationImpl implements Configuration {
 
-    private final PortNumber proxyPort;
-    private final InetAddress targetAddress;
-    private final PortNumber targetPort;
+    private final ProxyConfiguration proxy;
+    private final TargetConfiguration target;
+    private final HttpConfiguration http;
 
-    private int targetConnectionTimeout = ConfigurationDefaults.TARGET_CONNECTION_TIMEOUT;
-
-    private long connectionHandlersLogInterval = ConfigurationDefaults.HTTP_CONNECTION_LOG_INTERVAL;
-    private long connectionHandlersTerminationTimeout = ConfigurationDefaults.HTTP_CONNECTION_TERMINATION_TIMEOUT;
-
-    private long httpRequestHeaderReceiveTimeout = ConfigurationDefaults.HTTP_REQUEST_HEADER_RECEIVE_TIMEOUT;
-    private long httpResponseHeaderReceiveTimeout = ConfigurationDefaults.HTTP_RESPONSE_HEADER_RECEIVE_TIMEOUT;
-
-    private int maxHttpHeaderSize = ConfigurationDefaults.HTTP_HEADER_MAX_SIZE;
-
-    ConfigurationImpl(final PortNumber proxyPort, final InetAddress targetAddress, final PortNumber targetPort) {
-        this.proxyPort = requireNonNull(proxyPort, "proxyPort must not be null.");
-        this.targetAddress = requireNonNull(targetAddress, "targetAddress must not be null.");
-        this.targetPort = requireNonNull(targetPort, "targetPort must not be null.");
+    ConfigurationImpl(final ProxyConfiguration proxy, final TargetConfiguration target, final HttpConfiguration http) {
+        this.proxy = requireNonNull(proxy, "proxy must not be null.");
+        this.target = requireNonNull(target, "target must not be null.");
+        this.http = requireNonNull(http, "http must not be null.");
     }
 
     @Override
-    public PortNumber getProxyPort() {
-        return proxyPort;
+    public ProxyConfiguration getProxy() {
+        return proxy;
     }
 
     @Override
-    public InetAddress getTargetAddress() {
-        return targetAddress;
+    public TargetConfiguration getTarget() {
+        return target;
     }
 
     @Override
-    public PortNumber getTargetPort() {
-        return targetPort;
+    public HttpConfiguration getHttp() {
+        return http;
     }
-
-    @Override
-    public int getTargetConnectionTimeout() {
-        return targetConnectionTimeout;
-    }
-
-    void setTargetConnectionTimeout(final int targetConnectionTimeout) {
-        this.targetConnectionTimeout = targetConnectionTimeout;
-    }
-
-    @Override
-    public long getConnectionHandlersLogInterval() {
-        return connectionHandlersLogInterval;
-    }
-
-    void setConnectionHandlersLogInterval(final long connectionHandlersLogInterval) {
-        this.connectionHandlersLogInterval = connectionHandlersLogInterval;
-    }
-
-    @Override
-    public long getConnectionHandlersTerminationTimeout() {
-        return connectionHandlersTerminationTimeout;
-    }
-
-    void setConnectionHandlersTerminationTimeout(final long connectionHandlersTerminationTimeout) {
-        this.connectionHandlersTerminationTimeout = connectionHandlersTerminationTimeout;
-    }
-
-    @Override
-    public long getHttpRequestHeaderReceiveTimeout() {
-        return httpRequestHeaderReceiveTimeout;
-    }
-
-    void setHttpRequestHeaderReceiveTimeout(final long httpRequestHeaderReceiveTimeout) {
-        this.httpRequestHeaderReceiveTimeout = httpRequestHeaderReceiveTimeout;
-    }
-
-    @Override
-    public long getHttpResponseHeaderReceiveTimeout() {
-        return httpResponseHeaderReceiveTimeout;
-    }
-
-    void setHttpResponseHeaderReceiveTimeout(final long httpResponseHeaderReceiveTimeout) {
-        this.httpResponseHeaderReceiveTimeout = httpResponseHeaderReceiveTimeout;
-    }
-
-    @Override
-    public int getMaxHttpHeaderSize() {
-        return maxHttpHeaderSize;
-    }
-
-    void setMaxHttpHeaderSize(final int maxHttpHeaderSize) {
-        this.maxHttpHeaderSize = maxHttpHeaderSize;
-    }
-
 
 }

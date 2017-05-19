@@ -1,15 +1,13 @@
 package io.github.galop_proxy.galop.proxy;
 
 import com.google.common.collect.MapMaker;
-import io.github.galop_proxy.galop.commons.ServerSocketFactory;
-import io.github.galop_proxy.galop.commons.SocketFactory;
-import io.github.galop_proxy.galop.configuration.Configuration;
 import io.github.galop_proxy.galop.http.HttpResponse;
 import io.github.galop_proxy.galop.http.HttpStatusCode;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.inject.Inject;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.ServerSocket;
@@ -26,21 +24,19 @@ final class ServerImpl implements Server {
 
     private static final Logger LOGGER = LogManager.getLogger(Server.class);
 
-    private final Configuration config;
-    private final ServerSocketFactory serverSocketFactory;
-    private final SocketFactory socketFactory;
+    private final ProxySocketFactory proxySocketFactory;
+    private final TargetSocketFactory targetSocketFactory;
     private final ConnectionHandlerFactory connectionHandlerFactory;
     private final ExecutorService executorService;
     private final ConcurrentMap<ConnectionHandler, Long> connectionHandlers;
 
     private ServerSocket serverSocket;
 
-    ServerImpl(final Configuration configuration, final ServerSocketFactory serverSocketFactory,
-               final SocketFactory socketFactory, final ConnectionHandlerFactory connectionHandlerFactory,
-               final ExecutorService executorService) {
-        this.config = requireNonNull(configuration, "configuration must not be null.");
-        this.serverSocketFactory = requireNonNull(serverSocketFactory, "serverSocketFactory must not be null.");
-        this.socketFactory = requireNonNull(socketFactory, "socketFactory must not be null.");
+    @Inject
+    ServerImpl(final ProxySocketFactory proxySocketFactory, final TargetSocketFactory targetSocketFactory,
+               final ConnectionHandlerFactory connectionHandlerFactory, final ExecutorService executorService) {
+        this.proxySocketFactory = requireNonNull(proxySocketFactory, "proxySocketFactory must not be null.");
+        this.targetSocketFactory = requireNonNull(targetSocketFactory, "targetSocketFactory must not be null.");
         this.connectionHandlerFactory = requireNonNull(connectionHandlerFactory,
                 "connectionHandlerFactory must not be null.");
         this.executorService = requireNonNull(executorService, "executorService must not be null.");
@@ -60,8 +56,7 @@ final class ServerImpl implements Server {
             try {
 
                 source = serverSocket.accept();
-                target = socketFactory.create(
-                        config.getTargetAddress(), config.getTargetPort(), config.getTargetConnectionTimeout());
+                target = targetSocketFactory.create();
 
                 handleNewConnection(source, target);
 
@@ -79,8 +74,8 @@ final class ServerImpl implements Server {
 
     private void initServerSocket() {
         try {
-            LOGGER.info("Initialize server socket on port " + config.getProxyPort() + "...");
-            serverSocket = serverSocketFactory.create(config.getProxyPort());
+            LOGGER.info("Initialize server socket...");
+            serverSocket = proxySocketFactory.create();
             LOGGER.info("Server socket initialized.");
         } catch (final IOException ex) {
             throw new RuntimeException("Could not initialize server socket: " + ex.getMessage(), ex);
@@ -88,7 +83,7 @@ final class ServerImpl implements Server {
     }
 
     private void handleNewConnection(final Socket source, final Socket target) {
-        final ConnectionHandler handler = connectionHandlerFactory.create(config, source, target);
+        final ConnectionHandler handler = connectionHandlerFactory.create(source, target);
         connectionHandlers.put(handler, System.currentTimeMillis());
         executorService.execute(handler);
     }

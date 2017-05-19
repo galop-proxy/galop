@@ -1,7 +1,10 @@
 package io.github.galop_proxy.galop.http;
 
 import io.github.galop_proxy.galop.commons.LimitedInputStream;
+import io.github.galop_proxy.galop.configuration.HttpHeaderRequestConfiguration;
+import io.github.galop_proxy.galop.configuration.HttpHeaderResponseConfiguration;
 
+import javax.inject.Inject;
 import java.io.*;
 
 import static java.util.Objects.requireNonNull;
@@ -37,14 +40,26 @@ final class HttpHeaderParserImpl implements HttpHeaderParser {
 
     }
 
-    @Override
-    public Result parse(final InputStream inputStream, final int maxHttpHeaderSize) throws IOException {
-        return parse(inputStream, maxHttpHeaderSize, null);
+    private final HttpHeaderRequestConfiguration requestConfiguration;
+    private final HttpHeaderResponseConfiguration responseConfiguration;
+
+    @Inject
+    HttpHeaderParserImpl(final HttpHeaderRequestConfiguration requestConfiguration,
+                         final HttpHeaderResponseConfiguration responseConfiguration) {
+        this.requestConfiguration = requireNonNull(requestConfiguration,
+                "requestConfiguration must not be null.");
+        this.responseConfiguration = requireNonNull(responseConfiguration,
+                "responseConfiguration must not be null.");
     }
 
     @Override
-    public Result parse(final InputStream inputStream, final int maxHttpHeaderSize,
-                        final Runnable startParsingCallback) throws IOException {
+    public Result parse(final InputStream inputStream, final boolean request) throws IOException {
+        return parse(inputStream, request, null);
+    }
+
+    @Override
+    public Result parse(final InputStream inputStream, final boolean request, final Runnable startParsingCallback)
+            throws IOException {
 
         requireNonNull(inputStream, "inputStream must not be null.");
 
@@ -52,17 +67,26 @@ final class HttpHeaderParserImpl implements HttpHeaderParser {
             throw new IllegalArgumentException("InputStream must support mark.");
         }
 
+        final int maxHttpHeaderSize = getMaxHttpHeaderSize(request);
         final LimitedInputStream limitedInputStream = new LimitedInputStream(inputStream, maxHttpHeaderSize);
         inputStream.mark(maxHttpHeaderSize);
 
-        final Result result = parseRequest(limitedInputStream, maxHttpHeaderSize, startParsingCallback);
+        final Result result = parseHeader(limitedInputStream, maxHttpHeaderSize, startParsingCallback);
         inputStream.reset();
         return result;
 
     }
 
-    private Result parseRequest(final LimitedInputStream limitedInputStream, final int maxHttpHeaderSize,
-                                final Runnable startParsingCallback) throws IOException {
+    private int getMaxHttpHeaderSize(final boolean request) {
+        if (request) {
+            return requestConfiguration.getMaxSize();
+        } else {
+            return responseConfiguration.getMaxSize();
+        }
+    }
+
+    private Result parseHeader(final LimitedInputStream limitedInputStream, final int maxHttpHeaderSize,
+                               final Runnable startParsingCallback) throws IOException {
 
         boolean firstByte = true;
 

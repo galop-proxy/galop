@@ -2,6 +2,8 @@ package io.github.galop_proxy.galop;
 
 import com.google.common.base.Strings;
 import com.google.inject.Guice;
+import io.github.galop_proxy.galop.starter.Loader;
+import io.github.galop_proxy.galop.starter.LoadingModule;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -11,7 +13,7 @@ class EntryPoint {
 
     public static void main(final String[] args) {
         printWelcomeScreen();
-        Guice.createInjector(new GalopModule()).getInstance(Starter.class).start(args);
+        Guice.createInjector(new LoadingModule()).getInstance(Loader.class).load(args);
     }
 
     private static void printWelcomeScreen() {

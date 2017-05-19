@@ -1,7 +1,6 @@
 package io.github.galop_proxy.galop.proxy;
 
 import io.github.galop_proxy.galop.http.*;
-import io.github.galop_proxy.galop.configuration.Configuration;
 import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
@@ -12,17 +11,14 @@ import static java.util.Objects.requireNonNull;
 final class ConnectionHandlerImpl implements ConnectionHandler {
 
     private final HttpExchangeHandler httpExchangeHandler;
-    private final Configuration configuration;
     private final Socket source;
     private final Socket target;
 
     private boolean currentlyHandlingRequestOrResponse;
     private boolean connectionShouldBeClosed;
 
-    ConnectionHandlerImpl(final HttpExchangeHandler httpExchangeHandler, final Configuration configuration,
-                          final Socket source, final Socket target) {
+    ConnectionHandlerImpl(final HttpExchangeHandler httpExchangeHandler, final Socket source, final Socket target) {
         this.httpExchangeHandler = requireNonNull(httpExchangeHandler, "httpExchangeHandler must not be null.");
-        this.configuration = requireNonNull(configuration, "configuration must not be null.");
         this.source = requireNonNull(source, "source must not be null.");
         this.target = requireNonNull(target, "target must not be null.");
     }
@@ -46,11 +42,11 @@ final class ConnectionHandlerImpl implements ConnectionHandler {
     }
 
     private void handleRequest() throws Exception {
-        httpExchangeHandler.handleRequest(source, target, configuration, this::markStartHandlingRequest);
+        httpExchangeHandler.handleRequest(source, target, this::markStartHandlingRequest);
     }
 
     private void handleResponse() throws Exception {
-        httpExchangeHandler.handleResponse(source, target, configuration, this::markEndHandlingResponse);
+        httpExchangeHandler.handleResponse(source, target, this::markEndHandlingResponse);
     }
 
     private synchronized void markStartHandlingRequest() {

@@ -1,7 +1,6 @@
 package io.github.galop_proxy.galop.proxy;
 
 import io.github.galop_proxy.galop.http.HttpExchangeHandler;
-import io.github.galop_proxy.galop.configuration.Configuration;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -30,10 +29,9 @@ public class ConnectionHandlerFactoryImplTest {
 
     @Test
     public void create_returnsRunnableConnectionHandler() {
-        final Configuration configuration = mock(Configuration.class);
         final Socket source = mock(Socket.class);
         final Socket target = mock(Socket.class);
-        assertNotNull(factory.create(configuration, source, target));
+        assertNotNull(factory.create(source, target));
     }
 
 }

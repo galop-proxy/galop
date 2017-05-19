@@ -1,9 +1,5 @@
 package io.github.galop_proxy.galop.proxy;
 
-import io.github.galop_proxy.galop.commons.PortNumber;
-import io.github.galop_proxy.galop.commons.ServerSocketFactory;
-import io.github.galop_proxy.galop.commons.SocketFactory;
-import io.github.galop_proxy.galop.configuration.Configuration;
 import io.github.galop_proxy.galop.http.HttpStatusCode;
 import org.junit.Before;
 import org.junit.Test;
@@ -21,16 +17,11 @@ import static org.mockito.Mockito.*;
  */
 public class ServerImplTest {
 
-    private static final PortNumber SERVER_PORT = new PortNumber(80);
-    private static final InetAddress TARGET_ADDRESS = mock(InetAddress.class);
-    private static final PortNumber TARGET_PORT = new PortNumber(8080);
-
-    private Configuration configuration;
-    private ServerSocketFactory serverSocketFactory;
-    private SocketFactory socketFactory;
+    private ProxySocketFactory proxySocketFactory;
+    private TargetSocketFactory targetSocketFactory;
     private ConnectionHandlerFactory connectionHandlerFactory;
     private ExecutorService executorService;
-    private ServerImpl server;
+    private Server server;
 
     private ServerSocket serverSocket;
     private Socket source;
@@ -40,31 +31,25 @@ public class ServerImplTest {
     @Before
     public void setUp() throws IOException {
 
-        configuration = mock(Configuration.class);
-        when(configuration.getProxyPort()).thenReturn(SERVER_PORT);
-        when(configuration.getTargetAddress()).thenReturn(TARGET_ADDRESS);
-        when(configuration.getTargetPort()).thenReturn(TARGET_PORT);
+        proxySocketFactory = mock(ProxySocketFactory.class);
+        targetSocketFactory = mock(TargetSocketFactory.class);
+        connectionHandlerFactory = mock(ConnectionHandlerFactory.class);
+        executorService = mock(ExecutorService.class);
+        server = new ServerImpl(proxySocketFactory, targetSocketFactory, connectionHandlerFactory, executorService);
 
-        serverSocketFactory = mock(ServerSocketFactory.class);
         serverSocket = mock(ServerSocket.class);
-        when(serverSocketFactory.create(SERVER_PORT)).thenReturn(serverSocket);
+        when(proxySocketFactory.create()).thenReturn(serverSocket);
 
         source = mock(Socket.class);
         when(serverSocket.accept()).thenReturn(source);
         final ByteArrayOutputStream sourceOutputStream = new ByteArrayOutputStream();
         when(source.getOutputStream()).thenReturn(sourceOutputStream);
 
-        socketFactory = mock(SocketFactory.class);
         target = mock(Socket.class);
-        when(socketFactory.create(TARGET_ADDRESS, TARGET_PORT, 0)).thenReturn(target);
+        when(targetSocketFactory.create()).thenReturn(target);
 
-        connectionHandlerFactory = mock(ConnectionHandlerFactory.class);
         connectionHandler = mock(ConnectionHandler.class);
-        when(connectionHandlerFactory.create(configuration, source, target)).thenReturn(connectionHandler);
-
-        executorService = mock(ExecutorService.class);
-        server = new ServerImpl(configuration, serverSocketFactory, socketFactory, connectionHandlerFactory,
-                executorService);
+        when(connectionHandlerFactory.create(source, target)).thenReturn(connectionHandler);
 
     }
 
@@ -74,7 +59,7 @@ public class ServerImplTest {
     public void run_createsAndExecutesNewConnectionHandlers() {
         when(serverSocket.isClosed()).thenReturn(false).thenReturn(true);
         server.run();
-        verify(connectionHandlerFactory).create(configuration, source, target);
+        verify(connectionHandlerFactory).create(source, target);
         verify(executorService).execute(connectionHandler);
     }
 
@@ -82,13 +67,12 @@ public class ServerImplTest {
     public void run_afterHandlingANewConnections_waitsForNewConnections() {
 
         final ConnectionHandler secondConnectionHandler = mock(ConnectionHandler.class);
-        when(connectionHandlerFactory.create(any(), any(), any())).thenReturn(connectionHandler,
-                secondConnectionHandler);
+        when(connectionHandlerFactory.create(any(), any())).thenReturn(connectionHandler, secondConnectionHandler);
         when(serverSocket.isClosed()).thenReturn(false).thenReturn(false).thenReturn(true);
 
         server.run();
 
-        verify(connectionHandlerFactory, times(2)).create(configuration, source, target);
+        verify(connectionHandlerFactory, times(2)).create(source, target);
         verify(executorService).execute(connectionHandler);
         verify(executorService).execute(secondConnectionHandler);
 
@@ -98,7 +82,7 @@ public class ServerImplTest {
 
     @Test(expected = RuntimeException.class)
     public void run_whenConfiguredServerPortIsAlreadyInUse_throwsRuntimeException() throws IOException {
-        doThrow(IOException.class).when(serverSocketFactory).create(SERVER_PORT);
+        doThrow(IOException.class).when(proxySocketFactory).create();
         server.run();
     }
 
@@ -106,7 +90,7 @@ public class ServerImplTest {
     public void run_whenCannotConnectToTarget_sendsServerUnavailableMessageToClientAndClosesConnectionSocket()
             throws IOException {
 
-        doThrow(ConnectException.class).when(socketFactory).create(any(), any(), anyInt());
+        doThrow(ConnectException.class).when(targetSocketFactory).create();
         when(serverSocket.isClosed()).thenReturn(false).thenReturn(true);
 
         server.run();
@@ -120,7 +104,7 @@ public class ServerImplTest {
     public void run_whenTimeoutWhileConnectingToTarget_sendsGatewayTimeoutMessageToClientAndClosesConnectionSocket()
             throws IOException {
 
-        doThrow(SocketTimeoutException.class).when(socketFactory).create(any(), any(), anyInt());
+        doThrow(SocketTimeoutException.class).when(targetSocketFactory).create();
         when(serverSocket.isClosed()).thenReturn(false).thenReturn(true);
 
         server.run();
@@ -134,7 +118,7 @@ public class ServerImplTest {
     public void run_whenAnErrorOccurredWhileSendingAnErrorMessageToClient_ignoresErrorAndClosesConnectionSocketQuietly()
             throws IOException {
 
-        doThrow(ConnectException.class).when(socketFactory).create(any(), any(), anyInt());
+        doThrow(ConnectException.class).when(targetSocketFactory).create();
         doThrow(Exception.class).when(source).getOutputStream();
         when(serverSocket.isClosed()).thenReturn(false).thenReturn(true);
 
@@ -148,7 +132,7 @@ public class ServerImplTest {
     public void run_whenAnErrorOccurredWhileSendingAnErrorMessageToClient_continuesHandlingNewConnections()
             throws IOException {
 
-        doThrow(ConnectException.class).when(socketFactory).create(any(), any(), anyInt());
+        doThrow(ConnectException.class).when(targetSocketFactory).create();
         doThrow(Exception.class).when(source).getOutputStream();
         when(serverSocket.isClosed()).thenReturn(false).thenReturn(false).thenReturn(true);
 
@@ -176,7 +160,7 @@ public class ServerImplTest {
     public void run_whenAnErrorOccurredWhileProcessingANewConnection_continuesHandlingNewConnections() {
 
         final ConnectionHandler faultyConnectionHandler = mock(ConnectionHandler.class);
-        when(connectionHandlerFactory.create(any(), any(), any()))
+        when(connectionHandlerFactory.create(any(), any()))
                 .thenReturn(faultyConnectionHandler).thenReturn(connectionHandler);
         doThrow(Exception.class).when(executorService).execute(faultyConnectionHandler);
         when(serverSocket.isClosed()).thenReturn(false).thenReturn(false).thenReturn(true);
@@ -206,31 +190,26 @@ public class ServerImplTest {
         verify(connectionHandler).close();
     }
 
-    // Constructor:
+    // constructor:
 
     @Test(expected = NullPointerException.class)
-    public void constructor_withoutConfiguration_throwsNullPointerException() {
-        new ServerImpl(null, serverSocketFactory, socketFactory, connectionHandlerFactory, executorService);
+    public void constructor_withoutProxySocketFactory_throwsNullPointerException() {
+        new ServerImpl(null, targetSocketFactory, connectionHandlerFactory, executorService);
     }
 
     @Test(expected = NullPointerException.class)
-    public void constructor_withoutServerSocketFactory_throwsNullPointerException() {
-        new ServerImpl(configuration, null, socketFactory, connectionHandlerFactory, executorService);
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void constructor_withoutSocketFactory_throwsNullPointerException() {
-        new ServerImpl(configuration, serverSocketFactory, null, connectionHandlerFactory, executorService);
+    public void constructor_withoutTargetSocketFactory_throwsNullPointerException() {
+        new ServerImpl(proxySocketFactory, null, connectionHandlerFactory, executorService);
     }
 
     @Test(expected = NullPointerException.class)
     public void constructor_withoutConnectionHandlerFactory_throwsNullPointerException() {
-        new ServerImpl(configuration, serverSocketFactory, socketFactory, null, executorService);
+        new ServerImpl(proxySocketFactory, targetSocketFactory, null, executorService);
     }
 
     @Test(expected = NullPointerException.class)
     public void constructor_withoutExecutorService_throwsNullPointerException() {
-        new ServerImpl(configuration, serverSocketFactory, socketFactory, connectionHandlerFactory, null);
+        new ServerImpl(proxySocketFactory, targetSocketFactory, connectionHandlerFactory, null);
     }
 
     // Helper method:

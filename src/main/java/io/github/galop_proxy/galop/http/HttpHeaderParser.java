@@ -15,9 +15,8 @@ interface HttpHeaderParser {
 
     }
 
-    Result parse(InputStream inputStream, int maxHttpHeaderSize) throws IOException;
+    Result parse(InputStream inputStream, boolean request) throws IOException;
 
-    Result parse(InputStream inputStream, int maxHttpHeaderSize, Runnable startParsingCallback)
-            throws IOException;
+    Result parse(InputStream inputStream, boolean request, Runnable startParsingCallback) throws IOException;
 
 }

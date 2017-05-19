@@ -45,4 +45,25 @@ public final class PortNumber {
         return Integer.toString(value);
     }
 
+    @Override
+    public int hashCode() {
+        return value;
+    }
+
+    @Override
+    public boolean equals(final Object other) {
+
+        if (this == other) {
+            return true;
+        }
+
+        if (other == null || getClass() != other.getClass()) {
+            return false;
+        }
+
+        final PortNumber that = (PortNumber) other;
+        return value == that.value;
+
+    }
+
 }

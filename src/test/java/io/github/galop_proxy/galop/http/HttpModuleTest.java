@@ -2,7 +2,9 @@ package io.github.galop_proxy.galop.http;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+import io.github.galop_proxy.galop.AbstractConfigurationTest;
 import io.github.galop_proxy.galop.commons.CommonsModule;
+import io.github.galop_proxy.galop.configuration.LoadedConfigurationModule;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -12,13 +14,15 @@ import static org.junit.Assert.assertSame;
 /**
  * Tests the class {@link HttpModule}.
  */
-public class HttpModuleTest {
+public class HttpModuleTest extends AbstractConfigurationTest {
 
     private Injector injector;
 
     @Before
     public void setUp() {
-        injector = Guice.createInjector(new CommonsModule(), new HttpModule());
+        super.setUp();
+        injector = Guice.createInjector(
+                new CommonsModule(), new LoadedConfigurationModule(configuration), new HttpModule());
     }
 
     @Test
