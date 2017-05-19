@@ -4,6 +4,7 @@ final class ConfigurationPropertyKeys {
 
     static final String PROXY_PORT = "proxy.port";
     static final String PROXY_BACKLOG_SIZE = "proxy.backlog_size";
+    static final String PROXY_BIND_ADDRESS = "proxy.bind_address";
 
     static final String TARGET_ADDRESS = "target.address";
     static final String TARGET_PORT = "target.port";

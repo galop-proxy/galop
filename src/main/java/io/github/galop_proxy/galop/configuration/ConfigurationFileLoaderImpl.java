@@ -68,6 +68,7 @@ final class ConfigurationFileLoaderImpl implements ConfigurationFileLoader {
     private void logProxyConfiguration(final ProxyConfiguration configuration) {
         log(PROXY_PORT, configuration.getPort());
         log(PROXY_BACKLOG_SIZE, configuration.getBacklogSize());
+        log(PROXY_BIND_ADDRESS, configuration.getBindAddress());
     }
 
     private void logTargetConfiguration(final TargetConfiguration configuration) {
