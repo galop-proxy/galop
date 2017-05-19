@@ -1,0 +1,31 @@
+package io.github.galop_proxy.galop.starter;
+
+import com.google.inject.AbstractModule;
+import com.google.inject.Singleton;
+import io.github.galop_proxy.galop.administration.AdministrationModule;
+import io.github.galop_proxy.galop.commons.CommonsModule;
+import io.github.galop_proxy.galop.configuration.Configuration;
+import io.github.galop_proxy.galop.configuration.LoadedConfigurationModule;
+import io.github.galop_proxy.galop.http.HttpModule;
+import io.github.galop_proxy.galop.proxy.ProxyModule;
+
+import static java.util.Objects.requireNonNull;
+
+final class LoadedModule extends AbstractModule {
+
+    private final Configuration configuration;
+
+    LoadedModule(final Configuration configuration) {
+        this.configuration = requireNonNull(configuration, "configuration must not be null.");
+    }
+
+    @Override
+    protected void configure() {
+        install(new LoadedConfigurationModule(configuration));
+        install(new HttpModule());
+        install(new ProxyModule());
+        install(new AdministrationModule());
+        bind(Starter.class).to(StarterImpl.class).in(Singleton.class);
+    }
+
+}

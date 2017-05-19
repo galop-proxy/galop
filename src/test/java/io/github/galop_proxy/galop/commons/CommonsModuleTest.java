@@ -28,26 +28,6 @@ public class CommonsModuleTest {
     }
 
     @Test
-    public void configure_bindsSocketFactory() {
-        assertNotNull(injector.getInstance(SocketFactory.class));
-    }
-
-    @Test
-    public void configure_bindsSocketFactoryAsSingleton() {
-        assertSame(injector.getInstance(SocketFactory.class), injector.getInstance(SocketFactory.class));
-    }
-
-    @Test
-    public void configure_bindsServerSocketFactory() {
-        assertNotNull(injector.getInstance(ServerSocketFactory.class));
-    }
-
-    @Test
-    public void configure_bindsServerSocketFactoryAsSingleton() {
-        assertSame(injector.getInstance(ServerSocketFactory.class), injector.getInstance(ServerSocketFactory.class));
-    }
-
-    @Test
     public void configure_bindsInetAddressFactory() {
         assertNotNull(injector.getInstance(InetAddressFactory.class));
     }

@@ -32,9 +32,9 @@ public class HttpHeaderConfigurationFactoryImplTest {
         final Map<String, String> properties = new HashMap<>();
 
         final HttpHeaderRequestConfiguration requestConfiguration = mock(HttpHeaderRequestConfiguration.class);
-        when(requestConfigurationFactory.parse(properties)).thenReturn(requestConfiguration);
-
         final HttpHeaderResponseConfiguration responseConfiguration = mock(HttpHeaderResponseConfiguration.class);
+
+        when(requestConfigurationFactory.parse(properties)).thenReturn(requestConfiguration);
         when(responseConfigurationFactory.parse(properties)).thenReturn(responseConfiguration);
 
         final HttpHeaderConfiguration configuration = factory.parse(properties);

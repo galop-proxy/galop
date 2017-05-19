@@ -1,7 +1,6 @@
 package io.github.galop_proxy.galop.proxy;
 
 import io.github.galop_proxy.galop.http.HttpExchangeHandler;
-import io.github.galop_proxy.galop.configuration.Configuration;
 
 import javax.inject.Inject;
 import java.net.Socket;
@@ -18,8 +17,8 @@ final class ConnectionHandlerFactoryImpl implements ConnectionHandlerFactory {
     }
 
     @Override
-    public ConnectionHandler create(final Configuration configuration, final Socket source, final Socket target) {
-        return new ConnectionHandlerImpl(httpExchangeHandler, configuration, source, target);
+    public ConnectionHandler create(final Socket source, final Socket target) {
+        return new ConnectionHandlerImpl(httpExchangeHandler, source, target);
     }
 
 }

@@ -1,5 +1,7 @@
 package io.github.galop_proxy.galop.http;
 
+import io.github.galop_proxy.galop.configuration.HttpHeaderRequestConfiguration;
+import io.github.galop_proxy.galop.configuration.HttpHeaderResponseConfiguration;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -19,7 +21,7 @@ public class HttpHeaderParserImplTest {
 
     private static final int MAX_HTTP_HEADER_SIZE = 255;
 
-    private HttpHeaderParserImpl parser;
+    private HttpHeaderParser parser;
 
     private String httpGetRequest;
     private long httpGetRequestLength;
@@ -31,7 +33,12 @@ public class HttpHeaderParserImplTest {
     @Before
     public void setUp() {
 
-        parser = new HttpHeaderParserImpl();
+        final HttpHeaderRequestConfiguration requestConfiguration = mock(HttpHeaderRequestConfiguration.class);
+        final HttpHeaderResponseConfiguration responseConfiguration = mock(HttpHeaderResponseConfiguration.class);
+        when(requestConfiguration.getMaxSize()).thenReturn(MAX_HTTP_HEADER_SIZE);
+        when(responseConfiguration.getMaxSize()).thenReturn(MAX_HTTP_HEADER_SIZE);
+
+        parser = new HttpHeaderParserImpl(requestConfiguration, responseConfiguration);
 
         httpGetRequest = HttpTestUtils.createGetRequest();
         httpGetRequestLength = httpGetRequest.length();
@@ -52,20 +59,20 @@ public class HttpHeaderParserImplTest {
 
     @Test
     public void parse_withoutContentLength_returnsLengthOfHeader() throws IOException {
-        final HttpHeaderParser.Result result = parser.parse(httpGetRequestInputStream, MAX_HTTP_HEADER_SIZE);
+        final HttpHeaderParser.Result result = parser.parse(httpGetRequestInputStream, true);
         assertResult(false, httpGetRequestLength, httpGetRequestLength, result);
     }
 
     @Test
     public void parse_withContentLength_returnsLengthOfHeaderAndContent() throws IOException {
-        final HttpHeaderParser.Result result = parser.parse(httpResponseInputStream, MAX_HTTP_HEADER_SIZE);
+        final HttpHeaderParser.Result result = parser.parse(httpResponseInputStream, false);
         assertResult(httpResponseLength, result);
     }
 
     @Test
     public void parse_marksAndResetsReadActions() throws IOException {
 
-        parser.parse(httpGetRequestInputStream, MAX_HTTP_HEADER_SIZE);
+        parser.parse(httpGetRequestInputStream, true);
 
         verify(httpGetRequestInputStream).mark(anyInt());
         verify(httpGetRequestInputStream).reset();
@@ -80,14 +87,14 @@ public class HttpHeaderParserImplTest {
     public void parse_withInvalidContentLength_throwsInvalidHttpHeaderException() throws IOException {
         final String response = HttpTestUtils.createResponse("<h1>Invalid Content-Length</h1>", "a");
         final InputStream responseInputStream = createInputStream(response);
-        parser.parse(responseInputStream, MAX_HTTP_HEADER_SIZE);
+        parser.parse(responseInputStream, false);
     }
 
     @Test(expected = InvalidHttpHeaderException.class)
     public void parse_withContentLengthLessThanZero_throwsInvalidHttpHeaderException() throws IOException {
         final String response = HttpTestUtils.createResponse("<h1>Invalid Content-Length</h1>", "-1");
         final InputStream responseInputStream = createInputStream(response);
-        parser.parse(responseInputStream, MAX_HTTP_HEADER_SIZE);
+        parser.parse(responseInputStream, false);
     }
 
     // Callback:
@@ -97,7 +104,7 @@ public class HttpHeaderParserImplTest {
 
         final Runnable callback = mock(Runnable.class);
 
-        parser.parse(httpGetRequestInputStream, MAX_HTTP_HEADER_SIZE, callback);
+        parser.parse(httpGetRequestInputStream, true, callback);
 
         final InOrder inOrder = inOrder(httpGetRequestInputStream, callback);
         inOrder.verify(httpGetRequestInputStream).read();
@@ -115,7 +122,7 @@ public class HttpHeaderParserImplTest {
         final String response = HttpTestUtils.createResponse(responseContent, responseContent.getBytes().length + "", "identity");
         final InputStream responseInputStream = createInputStream(response);
 
-        final HttpHeaderParser.Result result = parser.parse(responseInputStream, MAX_HTTP_HEADER_SIZE);
+        final HttpHeaderParser.Result result = parser.parse(responseInputStream, false);
         assertResult((long) response.getBytes().length, result);
 
     }
@@ -129,7 +136,7 @@ public class HttpHeaderParserImplTest {
         final long expectedHeaderLength = response.getBytes().length - responseContent.getBytes().length;
         final InputStream responseInputStream = createInputStream(response);
 
-        final HttpHeaderParser.Result result = parser.parse(responseInputStream, MAX_HTTP_HEADER_SIZE);
+        final HttpHeaderParser.Result result = parser.parse(responseInputStream, false);
         assertResult(true, expectedHeaderLength, null, result);
 
     }
@@ -138,7 +145,7 @@ public class HttpHeaderParserImplTest {
     public void parse_withUnknownTransferEncoding_throwsUnsupportedTransferEncodingException() throws IOException {
         final String response = HttpTestUtils.createResponse("<h1>Unknown Transfer-Encoding</h1>", null, "unknown");
         final InputStream responseInputStream = createInputStream(response);
-        parser.parse(responseInputStream, MAX_HTTP_HEADER_SIZE);
+        parser.parse(responseInputStream, false);
     }
 
     // Case-insensitive header field names:
@@ -150,7 +157,7 @@ public class HttpHeaderParserImplTest {
                 + "TRANSFER-ENCODING:" + HttpConstants.SPACE + "chunked" + HttpConstants.NEW_LINE + HttpConstants.NEW_LINE;
         final InputStream responseInputStream = createInputStream(response);
 
-        final HttpHeaderParser.Result result = parser.parse(responseInputStream, MAX_HTTP_HEADER_SIZE);
+        final HttpHeaderParser.Result result = parser.parse(responseInputStream, false);
 
         assertTrue(result.isChunkedTransferEncoding());
         assertEquals(response.getBytes().length, result.getHeaderLength());
@@ -162,14 +169,14 @@ public class HttpHeaderParserImplTest {
 
     @Test(expected = NullPointerException.class)
     public void parse_withoutInputStream_throwsNullPointerException() throws IOException {
-        parser.parse(null, MAX_HTTP_HEADER_SIZE);
+        parser.parse(null, true);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void parse_withInputStreamThatDoesNotSupportMark_throwsIllegalArgumentException() throws IOException {
         final InputStream inputStream = mock(InputStream.class);
         when(inputStream.markSupported()).thenReturn(false);
-        parser.parse(inputStream, MAX_HTTP_HEADER_SIZE);
+        parser.parse(inputStream, true);
     }
 
     // Helper method:

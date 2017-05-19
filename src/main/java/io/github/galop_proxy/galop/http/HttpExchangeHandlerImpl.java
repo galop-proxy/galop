@@ -1,7 +1,7 @@
 package io.github.galop_proxy.galop.http;
 
 import io.github.galop_proxy.galop.commons.ByteLimitExceededException;
-import io.github.galop_proxy.galop.configuration.Configuration;
+import io.github.galop_proxy.galop.configuration.HttpHeaderConfiguration;
 import io.github.galop_proxy.galop.http.HttpHeaderParser.Result;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
@@ -20,13 +20,15 @@ final class HttpExchangeHandlerImpl implements HttpExchangeHandler {
 
     private static final Logger LOGGER = LogManager.getLogger(HttpExchangeHandler.class);
 
+    private final HttpHeaderConfiguration httpHeaderConfiguration;
     private final HttpHeaderParser httpHeaderParser;
     private final HttpMessageHandler httpMessageHandler;
     private final ExecutorService executorService;
 
     @Inject
-    HttpExchangeHandlerImpl(final HttpHeaderParser httpHeaderParser, final HttpMessageHandler httpMessageHandler,
-                            final ExecutorService executorService) {
+    HttpExchangeHandlerImpl(final HttpHeaderConfiguration httpHeaderConfiguration, final HttpHeaderParser httpHeaderParser,
+                            final HttpMessageHandler httpMessageHandler, final ExecutorService executorService) {
+        this.httpHeaderConfiguration = requireNonNull(httpHeaderConfiguration, "httpHeaderConfiguration must not be null.");
         this.httpHeaderParser = requireNonNull(httpHeaderParser, "httpHeaderParser must not be null.");
         this.httpMessageHandler = requireNonNull(httpMessageHandler, "httpMessageHandler must not be null.");
         this.executorService = requireNonNull(executorService, "executorService must not be null.");
@@ -35,15 +37,15 @@ final class HttpExchangeHandlerImpl implements HttpExchangeHandler {
     // Handle request:
 
     @Override
-    public void handleRequest(final Socket source, final Socket target, final Configuration configuration,
-                              final Runnable startHandlingRequestCallback) throws Exception {
+    public void handleRequest(final Socket source, final Socket target, final Runnable startHandlingRequestCallback)
+            throws Exception {
 
-        validateParameters(source, target, configuration, startHandlingRequestCallback);
+        validateParameters(source, target, startHandlingRequestCallback);
 
         final InputStream inputStream = new BufferedInputStream(source.getInputStream());
 
         try {
-            final Result header = parseRequestHeader(inputStream, configuration, startHandlingRequestCallback);
+            final Result header = parseRequestHeader(inputStream, startHandlingRequestCallback);
             httpMessageHandler.handle(header, inputStream, target.getOutputStream());
         } catch (final Exception ex) {
             handleRequestError(ex, source);
@@ -52,11 +54,9 @@ final class HttpExchangeHandlerImpl implements HttpExchangeHandler {
 
     }
 
-    private Result parseRequestHeader(final InputStream inputStream, final Configuration configuration,
-                                      final Runnable startCallback) throws Exception {
-        final long timeout = configuration.getHttpHeaderRequestReceiveTimeout();
-        final int maxHeaderSize = configuration.getMaxHttpHeaderSize();
-        return executeWithTimeout(() -> httpHeaderParser.parse(inputStream, maxHeaderSize, startCallback), timeout);
+    private Result parseRequestHeader(final InputStream inputStream, final Runnable startCallback) throws Exception {
+        final long timeout = httpHeaderConfiguration.getRequest().getReceiveTimeout();
+        return executeWithTimeout(() -> httpHeaderParser.parse(inputStream, true, startCallback), timeout);
     }
 
     private void handleRequestError(final Exception ex, final Socket source) {
@@ -78,15 +78,15 @@ final class HttpExchangeHandlerImpl implements HttpExchangeHandler {
     // Handle response:
 
     @Override
-    public void handleResponse(final Socket source, final Socket target, final Configuration configuration,
-                               final Runnable endHandlingResponseCallback) throws Exception {
+    public void handleResponse(final Socket source, final Socket target, final Runnable endHandlingResponseCallback)
+            throws Exception {
 
-        validateParameters(source, target, configuration, endHandlingResponseCallback);
+        validateParameters(source, target, endHandlingResponseCallback);
 
         final InputStream inputStream = new BufferedInputStream(target.getInputStream());
 
         try {
-            final Result header = parseResponseHeader(inputStream, configuration);
+            final Result header = parseResponseHeader(inputStream);
             httpMessageHandler.handle(header, inputStream, source.getOutputStream());
             endHandlingResponseCallback.run();
         } catch (final Exception ex) {
@@ -96,11 +96,9 @@ final class HttpExchangeHandlerImpl implements HttpExchangeHandler {
 
     }
 
-    private Result parseResponseHeader(final InputStream inputStream, final Configuration configuration)
-            throws Exception {
-        final long timeout = configuration.getHttpHeaderResponseReceiveTimeout();
-        final int maxHeaderSize = configuration.getMaxHttpHeaderSize();
-        return executeWithTimeout(() -> httpHeaderParser.parse(inputStream, maxHeaderSize), timeout);
+    private Result parseResponseHeader(final InputStream inputStream) throws Exception {
+        final long timeout = httpHeaderConfiguration.getResponse().getReceiveTimeout();
+        return executeWithTimeout(() -> httpHeaderParser.parse(inputStream, false), timeout);
     }
 
     private void handleResponseError(final Exception ex, final Socket source) {
@@ -119,11 +117,9 @@ final class HttpExchangeHandlerImpl implements HttpExchangeHandler {
 
     // Helper methods:
 
-    private void validateParameters(final Socket source, final Socket target, final Configuration configuration,
-                                    final Runnable callback) {
+    private void validateParameters(final Socket source, final Socket target, final Runnable callback) {
         requireNonNull(source, "source must not be null");
         requireNonNull(target, "target must not be null");
-        requireNonNull(configuration, "configuration must not be null");
         requireNonNull(callback, "callback must not be null.");
     }
 

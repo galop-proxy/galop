@@ -33,6 +33,17 @@ public class ConfigurationModuleTest {
     }
 
     @Test
+    public void configure_bindsConfigurationFactory() {
+        assertNotNull(injector.getInstance(ConfigurationFactory.class));
+    }
+
+    @Test
+    public void configure_bindsConfigurationFactoryAsSingleton() {
+        assertSame(injector.getInstance(ConfigurationFactory.class),
+                injector.getInstance(ConfigurationFactory.class));
+    }
+
+    @Test
     public void configure_bindsProxyConfigurationFactory() {
         assertNotNull(injector.getInstance(ProxyConfigurationFactory.class));
     }
@@ -55,6 +66,17 @@ public class ConfigurationModuleTest {
     }
 
     @Test
+    public void configure_bindsHttpConfigurationFactory() {
+        assertNotNull(injector.getInstance(HttpConfigurationFactory.class));
+    }
+
+    @Test
+    public void configure_bindsHttpConfigurationFactoryAsSingleton() {
+        assertSame(injector.getInstance(HttpConfigurationFactory.class),
+                injector.getInstance(HttpConfigurationFactory.class));
+    }
+
+    @Test
     public void configure_bindsHttpConnectionConfigurationFactory() {
         assertNotNull(injector.getInstance(HttpConnectionConfigurationFactory.class));
     }
@@ -63,6 +85,17 @@ public class ConfigurationModuleTest {
     public void configure_bindsHttpConnectionConfigurationFactoryAsSingleton() {
         assertSame(injector.getInstance(HttpConnectionConfigurationFactory.class),
                 injector.getInstance(HttpConnectionConfigurationFactory.class));
+    }
+
+    @Test
+    public void configure_bindsHttpHeaderConfigurationFactory() {
+        assertNotNull(injector.getInstance(HttpHeaderConfigurationFactory.class));
+    }
+
+    @Test
+    public void configure_bindsHttpHeaderConfigurationFactoryAsSingleton() {
+        assertSame(injector.getInstance(HttpHeaderConfigurationFactory.class),
+                injector.getInstance(HttpHeaderConfigurationFactory.class));
     }
 
     @Test
@@ -85,17 +118,6 @@ public class ConfigurationModuleTest {
     public void configure_bindsHttpHeaderResponseConfigurationFactoryAsSingleton() {
         assertSame(injector.getInstance(HttpHeaderResponseConfigurationFactory.class),
                 injector.getInstance(HttpHeaderResponseConfigurationFactory.class));
-    }
-
-    @Test
-    public void configure_bindsHttpHeaderConfigurationFactory() {
-        assertNotNull(injector.getInstance(HttpHeaderConfigurationFactory.class));
-    }
-
-    @Test
-    public void configure_bindsHttpHeaderConfigurationFactoryAsSingleton() {
-        assertSame(injector.getInstance(HttpHeaderConfigurationFactory.class),
-                injector.getInstance(HttpHeaderConfigurationFactory.class));
     }
 
 }

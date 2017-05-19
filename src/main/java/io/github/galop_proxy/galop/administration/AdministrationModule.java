@@ -7,8 +7,8 @@ public final class AdministrationModule extends AbstractModule {
 
     @Override
     protected void configure() {
-        bind(MonitorFactory.class).to(MonitorFactoryImpl.class).in(Singleton.class);
-        bind(ShutdownHandlerFactory.class).to(ShutdownHandlerFactoryImpl.class).in(Singleton.class);
+        bind(Monitor.class).to(MonitorImpl.class).in(Singleton.class);
+        bind(ShutdownHandler.class).to(ShutdownHandlerImpl.class).in(Singleton.class);
     }
 
 }
