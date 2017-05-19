@@ -18,6 +18,7 @@
   to the client.
 - The requested maximum number of pending connections on the proxy socket can be
   configured.
+- The local address the proxy socket will bind to can be configured.
   
 ### Changed
 
