@@ -75,7 +75,7 @@ final class ShutdownHandlerImpl extends Thread implements ShutdownHandler {
         try {
             LOGGER.info("Interrupt monitor...");
             monitor.interrupt();
-            LOGGER.info("MonitorImpl interrupted.");
+            LOGGER.info("Monitor interrupted.");
         } catch (final Exception ex) {
             logError("An error occurred while interrupting the monitor.", ex);
         }
