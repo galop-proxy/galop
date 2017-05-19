@@ -15,7 +15,7 @@ import static java.util.Objects.requireNonNull;
 
 final class ShutdownHandlerImpl extends Thread implements ShutdownHandler {
 
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger(ShutdownHandler.class);
 
     private final HttpConnectionConfiguration configuration;
     private final Server server;

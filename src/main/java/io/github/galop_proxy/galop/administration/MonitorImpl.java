@@ -12,7 +12,7 @@ import static java.util.Objects.requireNonNull;
 
 final class MonitorImpl extends Thread implements Monitor {
 
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger(Monitor.class);
 
     private final ThreadPoolExecutor threadPool;
     private final long logInterval;
