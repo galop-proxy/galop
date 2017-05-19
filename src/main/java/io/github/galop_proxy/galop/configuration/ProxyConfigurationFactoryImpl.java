@@ -59,7 +59,7 @@ final class ProxyConfigurationFactoryImpl implements ProxyConfigurationFactory {
 
         final String addressAsString = properties.get(PROXY_BIND_ADDRESS);
 
-        if (addressAsString == null) {
+        if (addressAsString == null || addressAsString.trim().isEmpty()) {
             return ConfigurationDefaults.PROXY_BIND_ADDRESS;
         }
 

@@ -77,6 +77,13 @@ public class ProxyConfigurationFactoryImplTest {
         assertEquals(ConfigurationDefaults.PROXY_BIND_ADDRESS, configuration.getBindAddress());
     }
 
+    @Test
+    public void parse_withEmptyBindAddress_returnsDefaultValue() throws InvalidConfigurationException {
+        properties.put(PROXY_BIND_ADDRESS, "");
+        configuration = factory.parse(properties);
+        assertEquals(ConfigurationDefaults.PROXY_BIND_ADDRESS, configuration.getBindAddress());
+    }
+
     // Invalid configuration:
 
     @Test(expected = NullPointerException.class)
