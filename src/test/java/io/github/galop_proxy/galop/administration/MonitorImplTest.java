@@ -8,6 +8,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.*;
 
 /**
@@ -36,10 +37,20 @@ public class MonitorImplTest {
 
     @Test(timeout = 10000)
     public void interrupt_shutDownsMonitor() {
+
         monitor.start();
         verify(((ThreadPoolExecutor) executorService), timeout(10000).atLeastOnce()).getActiveCount();
         monitor.interrupt();
-        while (monitor.isAlive());
+
+        while (monitor.isAlive()) {
+            try {
+                Thread.sleep(100);
+            } catch (final InterruptedException ex) {
+                fail("Unexpected InterruptedException.");
+                break;
+            }
+        }
+
     }
 
     // Constructor:

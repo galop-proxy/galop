@@ -100,6 +100,7 @@ public class HttpHeaderParserImplTest {
     // Callback:
 
     @Test
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     public void parse_withCallback_callsCallbackAsSoonAsTheFirstByteWasRead() throws IOException {
 
         final Runnable callback = mock(Runnable.class);
