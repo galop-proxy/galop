@@ -14,6 +14,7 @@ import java.io.InputStream;
 import java.net.Socket;
 import java.util.Locale;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static java.util.Objects.requireNonNull;
 
@@ -86,25 +87,31 @@ final class HttpExchangeHandlerImpl implements HttpExchangeHandler {
 
         final InputStream inputStream = new BufferedInputStream(target.getInputStream());
 
+        final AtomicBoolean sendingResponseStarted = new AtomicBoolean(false);
+
         try {
-            final Result header = parseResponseHeader(inputStream);
+            final Result header = parseResponseHeader(inputStream, () -> sendingResponseStarted.set(true));
             httpMessageHandler.handle(header, inputStream, source.getOutputStream());
             endHandlingResponseCallback.run();
         } catch (final Exception ex) {
-            handleResponseError(ex, source);
+            handleResponseError(ex, source, sendingResponseStarted.get());
             throw ex;
         }
 
     }
 
-    private Result parseResponseHeader(final InputStream inputStream) throws Exception {
+    private Result parseResponseHeader(final InputStream inputStream, final Runnable startCallback) throws Exception {
         final long timeout = httpHeaderConfiguration.getResponse().getReceiveTimeout();
-        return executeWithTimeout(() -> httpHeaderParser.parse(inputStream, false), timeout);
+        return executeWithTimeout(() -> httpHeaderParser.parse(inputStream, false, startCallback), timeout);
     }
 
-    private void handleResponseError(final Exception ex, final Socket source) {
+    private void handleResponseError(final Exception ex, final Socket source, final boolean sendingResponseStarted) {
 
         LOGGER.error("An error occurred while processing the server response.", ex);
+
+        if (sendingResponseStarted) {
+            return;
+        }
 
         if (ex instanceof InterruptedException) {
             sendHttpStatusToClient(HttpStatusCode.SERVICE_UNAVAILABLE, source);
