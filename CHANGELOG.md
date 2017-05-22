@@ -1,6 +1,17 @@
 # Changelog
 
 
+## 0.4.1 - 2017-05-22
+
+### Fixed
+
+- If an error occurs while transferring the server's HTTP response to the client,
+  GALOP is trying to send a suitable HTTP status code to the client. If parts of
+  the HTTP response have already been sent to the client, so far they are mixed
+  with this HTTP status code. Instead, GALOP now close the connection so that no
+  invalid response is sent to the client.
+
+
 ## 0.4.0 - 2017-05-19
 
 ### Added
