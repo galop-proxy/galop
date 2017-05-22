@@ -67,7 +67,8 @@ public class LimitedInputStreamTest {
         assertEquals(exampleBytes[1], limitedInputStream.read());
     }
 
-    @Test(expected = ByteLimitExceededException.class)
+    @Test(expected = ByteLimitExceededException.class, timeout = 10000)
+    @SuppressWarnings("StatementWithEmptyBody")
     public void read_whenBytesLimitWasExceeded_throwsByteLimitExceededException() throws IOException {
         while (limitedInputStreamLimitToLow.read() != -1);
     }
@@ -80,7 +81,8 @@ public class LimitedInputStreamTest {
         assertEquals(exampleBytes[1], bytes[1]);
     }
 
-    @Test(expected = ByteLimitExceededException.class)
+    @Test(expected = ByteLimitExceededException.class, timeout = 10000)
+    @SuppressWarnings("StatementWithEmptyBody")
     public void readMultipleBytes_whenBytesLimitWasExceeded_throwsByteLimitExceededException() throws IOException {
         while (limitedInputStreamLimitToLow.read(new byte[2]) != -1);
     }

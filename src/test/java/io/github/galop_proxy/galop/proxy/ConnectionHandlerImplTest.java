@@ -42,7 +42,7 @@ public class ConnectionHandlerImplTest {
     private Object answerHandler(final InvocationOnMock invocation) {
         final Runnable callback = (Runnable) invocation.getArguments()[2];
         callback.run();
-        return null;
+        return invocation;
     }
 
     // Constructor:

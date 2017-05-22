@@ -223,7 +223,7 @@ public class HttpExchangeHandlerImplTest {
     @Test
     public void handleResponse_withoutClientOrServerErrors_callsParserAndHandler() throws Exception {
         handler.handleResponse(source, target, callback);
-        verify(httpHeaderParser).parse(any(), eq(false));
+        verify(httpHeaderParser).parse(any(), eq(false), any());
         verify(httpMessageHandler).handle(same(headerResult), any(), any());
         verify(callback).run();
         verify(future).get(RESPONSE_TIMEOUT, TimeUnit.MILLISECONDS);
@@ -232,7 +232,7 @@ public class HttpExchangeHandlerImplTest {
     @Test
     public void handleResponse_withInvalidResponseHeader_sendsStatusCode502ToClient() throws Exception {
 
-        doThrow(Exception.class).when(httpHeaderParser).parse(any(), anyBoolean());
+        doThrow(Exception.class).when(httpHeaderParser).parse(any(), anyBoolean(), any());
 
         try {
             handler.handleResponse(source, target, callback);
@@ -272,9 +272,9 @@ public class HttpExchangeHandlerImplTest {
     }
 
     @Test
-    public void handleResponse_whenAnErrorOccurredWhileSendingToClient_sendsStatusCode502ToClient() throws Exception {
+    public void handleResponse_whenAnErrorOccurredBeforeSendingToClient_sendsStatusCode502ToClient() throws Exception {
 
-        doThrow(Exception.class).when(httpMessageHandler).handle(any(), any(), any());
+        doThrow(Exception.class).when(httpHeaderParser).parse(any(), anyBoolean(), any());
 
         try {
             handler.handleResponse(source, target, callback);
@@ -286,7 +286,27 @@ public class HttpExchangeHandlerImplTest {
     }
 
     @Test
-    public void handleRequest_whenAnUnexpectedErrorOccurredWhileParsingHeader_treatErrorAsInvalidResponseHeaderError()
+    public void handleResponse_whenAnErrorOccurredWhileSendingToClient_sendsNoStatusCodeToClient() throws Exception {
+
+        doAnswer(invocation -> {
+            final Runnable callback = (Runnable) invocation.getArguments()[2];
+            callback.run();
+            return null;
+        }).when(httpHeaderParser).parse(any(), anyBoolean(), any());
+
+        doThrow(Exception.class).when(httpMessageHandler).handle(any(), any(), any());
+
+        try {
+            handler.handleResponse(source, target, callback);
+            fail("Exception expected.");
+        } catch (final Exception ex) {
+            assertTrue(sourceOutputStream.toString().isEmpty());
+        }
+
+    }
+
+    @Test
+    public void handleResponse_whenAnUnexpectedErrorOccurredWhileParsingHeader_treatErrorAsInvalidResponseHeaderError()
             throws  Exception{
 
         doThrow(new ExecutionException(new NullPointerException())).when(future).get(anyLong(), any());
