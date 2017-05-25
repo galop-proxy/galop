@@ -31,7 +31,7 @@ final class MonitorImpl extends Thread implements Monitor {
         this.threadPool = (ThreadPoolExecutor) executorService;
         this.logInterval = configuration.getLogInterval();
 
-        setName("MonitorImpl");
+        setName("Monitor");
 
     }
 
