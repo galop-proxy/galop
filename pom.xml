@@ -6,7 +6,7 @@
 
     <groupId>io.github.galop_proxy</groupId>
     <artifactId>galop</artifactId>
-    <version>0.4.1</version>
+    <version>0.4.2</version>
 
     <url>https://github.com/galop-proxy/galop</url>
     <licenses>

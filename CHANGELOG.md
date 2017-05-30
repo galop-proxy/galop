@@ -1,7 +1,7 @@
 # Changelog
 
 
-## [Unreleased]
+## 0.4.2 - 2017-05-30
 
 ### Fixed
 
