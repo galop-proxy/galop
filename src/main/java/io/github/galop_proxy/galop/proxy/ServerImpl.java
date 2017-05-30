@@ -1,6 +1,5 @@
 package io.github.galop_proxy.galop.proxy;
 
-import com.google.common.collect.MapMaker;
 import io.github.galop_proxy.galop.http.HttpResponse;
 import io.github.galop_proxy.galop.http.HttpStatusCode;
 import org.apache.commons.io.IOUtils;
@@ -13,8 +12,10 @@ import java.net.ConnectException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
+import java.util.Collections;
 import java.util.Locale;
-import java.util.concurrent.ConcurrentMap;
+import java.util.Set;
+import java.util.WeakHashMap;
 import java.util.concurrent.ExecutorService;
 
 import static io.github.galop_proxy.galop.http.HttpStatusCode.GATEWAY_TIMEOUT;
@@ -29,7 +30,7 @@ final class ServerImpl implements Server {
     private final TargetSocketFactory targetSocketFactory;
     private final ConnectionHandlerFactory connectionHandlerFactory;
     private final ExecutorService executorService;
-    private final ConcurrentMap<ConnectionHandler, Long> connectionHandlers;
+    private final Set<ConnectionHandler> connectionHandlers;
 
     private ServerSocket serverSocket;
 
@@ -41,7 +42,7 @@ final class ServerImpl implements Server {
         this.connectionHandlerFactory = requireNonNull(connectionHandlerFactory,
                 "connectionHandlerFactory must not be null.");
         this.executorService = requireNonNull(executorService, "executorService must not be null.");
-        this.connectionHandlers = new MapMaker().weakKeys().makeMap();
+        this.connectionHandlers = Collections.newSetFromMap(new WeakHashMap<>());
     }
 
     @Override
@@ -83,10 +84,16 @@ final class ServerImpl implements Server {
         }
     }
 
-    private void handleNewConnection(final Socket source, final Socket target) {
-        final ConnectionHandler handler = connectionHandlerFactory.create(source, target);
-        connectionHandlers.put(handler, System.currentTimeMillis());
-        executorService.execute(handler);
+    private synchronized void handleNewConnection(final Socket source, final Socket target) {
+        if (!serverSocket.isClosed()) {
+            final ConnectionHandler handler = connectionHandlerFactory.create(source, target);
+            connectionHandlers.add(handler);
+            executorService.execute(handler);
+        } else {
+            IOUtils.closeQuietly(source);
+            IOUtils.closeQuietly(target);
+        }
+
     }
 
     private void handleServerError(final HttpStatusCode httpStatusCode, final Socket source) {
@@ -117,8 +124,13 @@ final class ServerImpl implements Server {
 
     @Override
     public void close() throws IOException {
-        IOUtils.closeQuietly(serverSocket);
-        connectionHandlers.keySet().forEach(IOUtils::closeQuietly);
+
+        synchronized (this) {
+            IOUtils.closeQuietly(serverSocket);
+        }
+
+        connectionHandlers.forEach(IOUtils::closeQuietly);
+
     }
 
 }

@@ -57,7 +57,7 @@ public class ServerImplTest {
 
     @Test
     public void run_createsAndExecutesNewConnectionHandlers() {
-        when(serverSocket.isClosed()).thenReturn(false).thenReturn(true);
+        when(serverSocket.isClosed()).thenReturn(false).thenReturn(false).thenReturn(true);
         server.run();
         verify(connectionHandlerFactory).create(source, target);
         verify(executorService).execute(connectionHandler);
@@ -68,13 +68,27 @@ public class ServerImplTest {
 
         final ConnectionHandler secondConnectionHandler = mock(ConnectionHandler.class);
         when(connectionHandlerFactory.create(any(), any())).thenReturn(connectionHandler, secondConnectionHandler);
-        when(serverSocket.isClosed()).thenReturn(false).thenReturn(false).thenReturn(true);
+        when(serverSocket.isClosed()).thenReturn(false).thenReturn(false).thenReturn(false).thenReturn(false).thenReturn(true);
 
         server.run();
 
         verify(connectionHandlerFactory, times(2)).create(source, target);
         verify(executorService).execute(connectionHandler);
         verify(executorService).execute(secondConnectionHandler);
+
+    }
+
+    @Test
+    public void run_handleNewConnectionAfterServerSocketWasClosed_closesNewConnection() throws IOException {
+
+        when(serverSocket.isClosed()).thenReturn(false).thenReturn(true);
+
+        server.run();
+
+        verify(connectionHandlerFactory, never()).create(any(), any());
+        verify(executorService, never()).execute(any());
+        verify(source).close();
+        verify(target).close();
 
     }
 
@@ -147,7 +161,7 @@ public class ServerImplTest {
             throws IOException {
 
         doThrow(Exception.class).when(executorService).execute(any());
-        when(serverSocket.isClosed()).thenReturn(false).thenReturn(true);
+        when(serverSocket.isClosed()).thenReturn(false).thenReturn(false).thenReturn(true);
 
         server.run();
 
@@ -163,7 +177,7 @@ public class ServerImplTest {
         when(connectionHandlerFactory.create(any(), any()))
                 .thenReturn(faultyConnectionHandler).thenReturn(connectionHandler);
         doThrow(Exception.class).when(executorService).execute(faultyConnectionHandler);
-        when(serverSocket.isClosed()).thenReturn(false).thenReturn(false).thenReturn(true);
+        when(serverSocket.isClosed()).thenReturn(false).thenReturn(false).thenReturn(false).thenReturn(false).thenReturn(true);
 
         server.run();
 
@@ -184,7 +198,7 @@ public class ServerImplTest {
 
     @Test
     public void close_closesAllActiveConnectionHandlers() throws IOException {
-        when(serverSocket.isClosed()).thenReturn(false).thenReturn(true);
+        when(serverSocket.isClosed()).thenReturn(false).thenReturn(false).thenReturn(true);
         server.run();
         server.close();
         verify(connectionHandler).close();
