@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [Unreleased]
+
+### Fixed
+
+- Name of the monitor thread corrected.
+
+
 ## 0.4.1 - 2017-05-22
 
 ### Fixed
