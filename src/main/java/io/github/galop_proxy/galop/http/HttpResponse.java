@@ -5,7 +5,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
-import static java.util.Objects.requireNonNull;
+import static io.github.galop_proxy.galop.commons.Preconditions.checkNotNull;
 
 public final class HttpResponse {
 
@@ -23,7 +23,7 @@ public final class HttpResponse {
     }
 
     private HttpResponse(final HttpStatusCode statusCode) {
-        this.statusCode = requireNonNull(statusCode, "statusCode must not be null.");
+        this.statusCode = checkNotNull(statusCode, "statusCode");
     }
 
     public HttpResponse dateTime(final ZonedDateTime dateTime) {

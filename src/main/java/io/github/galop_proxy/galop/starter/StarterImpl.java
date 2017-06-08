@@ -8,7 +8,7 @@ import org.apache.logging.log4j.Logger;
 
 import javax.inject.Inject;
 
-import static java.util.Objects.requireNonNull;
+import static io.github.galop_proxy.galop.commons.Preconditions.checkNotNull;
 
 final class StarterImpl implements Starter {
 
@@ -22,10 +22,10 @@ final class StarterImpl implements Starter {
     @Inject
     StarterImpl(final Runtime runtime, final ShutdownHandler shutdownHandler, final Monitor monitor,
                 final Server server) {
-        this.runtime = requireNonNull(runtime, "runtime must not be null.");
-        this.shutdownHandler = requireNonNull(shutdownHandler, "shutdownHandler must not be null.");
-        this.monitor = requireNonNull(monitor, "monitor must not be null.");
-        this.server = requireNonNull(server, "server must not be null.");
+        this.runtime = checkNotNull(runtime, "runtime");
+        this.shutdownHandler = checkNotNull(shutdownHandler, "shutdownHandler");
+        this.monitor = checkNotNull(monitor, "monitor");
+        this.server = checkNotNull(server, "server");
     }
 
     @Override

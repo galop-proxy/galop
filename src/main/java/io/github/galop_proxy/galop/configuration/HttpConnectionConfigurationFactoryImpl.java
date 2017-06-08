@@ -2,16 +2,16 @@ package io.github.galop_proxy.galop.configuration;
 
 import java.util.Map;
 
+import static io.github.galop_proxy.galop.commons.Preconditions.checkNotNull;
 import static io.github.galop_proxy.galop.configuration.ConfigurationPropertyKeys.HTTP_CONNECTION_LOG_INTERVAL;
 import static io.github.galop_proxy.galop.configuration.ConfigurationPropertyKeys.HTTP_CONNECTION_TERMINATION_TIMEOUT;
 import static io.github.galop_proxy.galop.configuration.FactoryUtils.parseTimeout;
-import static java.util.Objects.requireNonNull;
 
 final class HttpConnectionConfigurationFactoryImpl implements HttpConnectionConfigurationFactory {
 
     @Override
     public HttpConnectionConfiguration parse(final Map<String, String> properties) throws InvalidConfigurationException {
-        requireNonNull(properties, "properties must not be null.");
+        checkNotNull(properties, "properties");
         final long logInterval = parseLogInterval(properties);
         final long terminationTimeout = parseTerminationTimeout(properties);
         return new HttpConnectionConfigurationImpl(logInterval, terminationTimeout);

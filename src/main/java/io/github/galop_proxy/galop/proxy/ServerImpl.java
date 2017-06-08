@@ -18,9 +18,9 @@ import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.concurrent.ExecutorService;
 
+import static io.github.galop_proxy.galop.commons.Preconditions.checkNotNull;
 import static io.github.galop_proxy.galop.http.HttpStatusCode.GATEWAY_TIMEOUT;
 import static io.github.galop_proxy.galop.http.HttpStatusCode.SERVICE_UNAVAILABLE;
-import static java.util.Objects.requireNonNull;
 
 final class ServerImpl implements Server {
 
@@ -37,11 +37,10 @@ final class ServerImpl implements Server {
     @Inject
     ServerImpl(final ProxySocketFactory proxySocketFactory, final TargetSocketFactory targetSocketFactory,
                final ConnectionHandlerFactory connectionHandlerFactory, final ExecutorService executorService) {
-        this.proxySocketFactory = requireNonNull(proxySocketFactory, "proxySocketFactory must not be null.");
-        this.targetSocketFactory = requireNonNull(targetSocketFactory, "targetSocketFactory must not be null.");
-        this.connectionHandlerFactory = requireNonNull(connectionHandlerFactory,
-                "connectionHandlerFactory must not be null.");
-        this.executorService = requireNonNull(executorService, "executorService must not be null.");
+        this.proxySocketFactory = checkNotNull(proxySocketFactory, "proxySocketFactory");
+        this.targetSocketFactory = checkNotNull(targetSocketFactory, "targetSocketFactory");
+        this.connectionHandlerFactory = checkNotNull(connectionHandlerFactory, "connectionHandlerFactory");
+        this.executorService = checkNotNull(executorService, "executorService");
         this.connectionHandlers = Collections.newSetFromMap(new WeakHashMap<>());
     }
 

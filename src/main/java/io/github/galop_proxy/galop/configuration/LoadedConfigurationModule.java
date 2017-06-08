@@ -2,14 +2,14 @@ package io.github.galop_proxy.galop.configuration;
 
 import com.google.inject.AbstractModule;
 
-import static java.util.Objects.requireNonNull;
+import static io.github.galop_proxy.galop.commons.Preconditions.checkNotNull;
 
 public final class LoadedConfigurationModule extends AbstractModule {
 
     private final Configuration configuration;
 
     public LoadedConfigurationModule(final Configuration configuration) {
-        this.configuration = requireNonNull(configuration, "configuration must not be null.");
+        this.configuration = checkNotNull(configuration, "configuration");
     }
 
     @Override

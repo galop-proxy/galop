@@ -6,7 +6,7 @@ import javax.inject.Inject;
 import java.io.IOException;
 import java.net.ServerSocket;
 
-import static java.util.Objects.requireNonNull;
+import static io.github.galop_proxy.galop.commons.Preconditions.checkNotNull;
 
 final class ProxySocketFactoryImpl implements ProxySocketFactory {
 
@@ -14,7 +14,7 @@ final class ProxySocketFactoryImpl implements ProxySocketFactory {
 
     @Inject
     ProxySocketFactoryImpl(final ProxyConfiguration configuration) {
-        this.configuration = requireNonNull(configuration, "configuration must not be null.");
+        this.configuration = checkNotNull(configuration, "configuration");
     }
 
     @Override

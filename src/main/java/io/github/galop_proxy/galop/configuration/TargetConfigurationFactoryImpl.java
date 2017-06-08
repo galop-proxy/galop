@@ -7,10 +7,10 @@ import javax.inject.Inject;
 import java.net.InetAddress;
 import java.util.Map;
 
+import static io.github.galop_proxy.galop.commons.Preconditions.checkNotNull;
 import static io.github.galop_proxy.galop.configuration.ConfigurationPropertyKeys.TARGET_ADDRESS;
 import static io.github.galop_proxy.galop.configuration.ConfigurationPropertyKeys.TARGET_CONNECTION_TIMEOUT;
 import static io.github.galop_proxy.galop.configuration.ConfigurationPropertyKeys.TARGET_PORT;
-import static java.util.Objects.requireNonNull;
 
 final class TargetConfigurationFactoryImpl implements TargetConfigurationFactory {
 
@@ -18,12 +18,12 @@ final class TargetConfigurationFactoryImpl implements TargetConfigurationFactory
 
     @Inject
     TargetConfigurationFactoryImpl(final InetAddressFactory inetAddressFactory) {
-        this.inetAddressFactory = requireNonNull(inetAddressFactory, "inetAddressFactory must not be null.");
+        this.inetAddressFactory = checkNotNull(inetAddressFactory, "inetAddressFactory");
     }
 
     @Override
     public TargetConfiguration parse(final Map<String, String> properties) throws InvalidConfigurationException {
-        requireNonNull(properties, "properties must not be null.");
+        checkNotNull(properties, "properties");
         final InetAddress address = parseAddress(properties);
         final PortNumber port = parsePort(properties);
         final int connectionTimeout = parseConnectionTimeout(properties);

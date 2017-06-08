@@ -11,7 +11,7 @@ import javax.inject.Inject;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import static java.util.Objects.requireNonNull;
+import static io.github.galop_proxy.galop.commons.Preconditions.checkNotNull;
 
 final class ShutdownHandlerImpl extends Thread implements ShutdownHandler {
 
@@ -25,10 +25,10 @@ final class ShutdownHandlerImpl extends Thread implements ShutdownHandler {
     @Inject
     ShutdownHandlerImpl(final HttpConnectionConfiguration configuration, final Server server,
                         final ExecutorService executorService, final Thread monitor) {
-        this.configuration = requireNonNull(configuration, "configuration must not be null.");
-        this.server = requireNonNull(server, "server must not be null.");
-        this.executorService = requireNonNull(executorService, "executorService must not be null.");
-        this.monitor = requireNonNull(monitor, "monitor must not be null.");
+        this.configuration = checkNotNull(configuration, "configuration");
+        this.server = checkNotNull(server, "server");
+        this.executorService = checkNotNull(executorService, "executorService");
+        this.monitor = checkNotNull(monitor, "monitor");
     }
 
     @Override

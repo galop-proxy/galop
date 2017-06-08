@@ -3,7 +3,7 @@ package io.github.galop_proxy.galop.configuration;
 import javax.inject.Inject;
 import java.util.Map;
 
-import static java.util.Objects.requireNonNull;
+import static io.github.galop_proxy.galop.commons.Preconditions.checkNotNull;
 
 final class ConfigurationFactoryImpl implements ConfigurationFactory {
 
@@ -14,18 +14,15 @@ final class ConfigurationFactoryImpl implements ConfigurationFactory {
     @Inject
     ConfigurationFactoryImpl(final ProxyConfigurationFactory proxyConfigurationFactory,
                              final TargetConfigurationFactory targetConfigurationFactory,
-                             HttpConfigurationFactory httpConfigurationFactory) {
-        this.proxyConfigurationFactory = requireNonNull(proxyConfigurationFactory,
-                "proxyConfigurationFactory must not be null.");
-        this.targetConfigurationFactory = requireNonNull(targetConfigurationFactory,
-                "targetConfigurationFactory must not be null.");
-        this.httpConfigurationFactory = requireNonNull(httpConfigurationFactory,
-                "httpConfigurationFactory must not be null.");
+                             final HttpConfigurationFactory httpConfigurationFactory) {
+        this.proxyConfigurationFactory = checkNotNull(proxyConfigurationFactory, "proxyConfigurationFactory");
+        this.targetConfigurationFactory = checkNotNull(targetConfigurationFactory, "targetConfigurationFactory");
+        this.httpConfigurationFactory = checkNotNull(httpConfigurationFactory, "httpConfigurationFactory");
     }
 
     @Override
     public Configuration parse(final Map<String, String> properties) throws InvalidConfigurationException {
-        requireNonNull(properties, "properties must not be null.");
+        checkNotNull(properties, "properties");
         final ProxyConfiguration proxy = proxyConfigurationFactory.parse(properties);
         final TargetConfiguration target = targetConfigurationFactory.parse(properties);
         final HttpConfiguration http = httpConfigurationFactory.parse(properties);

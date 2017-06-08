@@ -8,7 +8,7 @@ import javax.inject.Inject;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ThreadPoolExecutor;
 
-import static java.util.Objects.requireNonNull;
+import static io.github.galop_proxy.galop.commons.Preconditions.checkNotNull;
 
 final class MonitorImpl extends Thread implements Monitor {
 
@@ -20,8 +20,8 @@ final class MonitorImpl extends Thread implements Monitor {
     @Inject
     MonitorImpl(final HttpConnectionConfiguration configuration, final ExecutorService executorService) {
 
-        requireNonNull(configuration, "configuration must not be null.");
-        requireNonNull(executorService, "executorService must not be null.");
+        checkNotNull(configuration, "configuration");
+        checkNotNull(executorService, "executorService");
 
         if (!(executorService instanceof ThreadPoolExecutor)) {
             throw new IllegalArgumentException("Not supported ExecutorService. "

@@ -2,17 +2,17 @@ package io.github.galop_proxy.galop.configuration;
 
 import java.util.Map;
 
+import static io.github.galop_proxy.galop.commons.Preconditions.checkNotNull;
 import static io.github.galop_proxy.galop.configuration.ConfigurationPropertyKeys.HTTP_HEADER_RESPONSE_MAX_SIZE;
 import static io.github.galop_proxy.galop.configuration.ConfigurationPropertyKeys.HTTP_HEADER_RESPONSE_RECEIVE_TIMEOUT;
 import static io.github.galop_proxy.galop.configuration.FactoryUtils.parseMaxSize;
 import static io.github.galop_proxy.galop.configuration.FactoryUtils.parseTimeout;
-import static java.util.Objects.requireNonNull;
 
 final class HttpHeaderResponseConfigurationFactoryImpl implements HttpHeaderResponseConfigurationFactory {
 
     @Override
     public HttpHeaderResponseConfiguration parse(final Map<String, String> properties) throws InvalidConfigurationException {
-        requireNonNull(properties, "properties must not be null.");
+        checkNotNull(properties, "properties");
         final long receiveTimeout = parseResponseReceiveTimeout(properties);
         final int maxSize = parseResponseMaxSize(properties);
         return new HttpHeaderResponseConfigurationImpl(receiveTimeout, maxSize);

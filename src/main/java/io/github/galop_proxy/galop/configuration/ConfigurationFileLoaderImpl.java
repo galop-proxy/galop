@@ -12,8 +12,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import static io.github.galop_proxy.galop.commons.Preconditions.checkNotNull;
 import static io.github.galop_proxy.galop.configuration.ConfigurationPropertyKeys.*;
-import static java.util.Objects.requireNonNull;
 
 final class ConfigurationFileLoaderImpl implements ConfigurationFileLoader {
 
@@ -23,13 +23,13 @@ final class ConfigurationFileLoaderImpl implements ConfigurationFileLoader {
 
     @Inject
     ConfigurationFileLoaderImpl(final ConfigurationFactory configurationFactory) {
-        this.configurationFactory = requireNonNull(configurationFactory, "configurationFactory must not be null.");
+        this.configurationFactory = checkNotNull(configurationFactory, "configurationFactory");
     }
 
     @Override
     public Configuration load(final Path path) throws IOException, InvalidConfigurationException {
 
-        requireNonNull(path, "path must not be null.");
+        checkNotNull(path, "path");
 
         LOGGER.info("Loading configuration file: " + path.toAbsolutePath());
 

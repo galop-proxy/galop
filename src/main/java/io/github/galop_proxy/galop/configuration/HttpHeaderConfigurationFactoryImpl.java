@@ -3,7 +3,7 @@ package io.github.galop_proxy.galop.configuration;
 import javax.inject.Inject;
 import java.util.Map;
 
-import static java.util.Objects.requireNonNull;
+import static io.github.galop_proxy.galop.commons.Preconditions.checkNotNull;
 
 final class HttpHeaderConfigurationFactoryImpl implements HttpHeaderConfigurationFactory {
 
@@ -13,15 +13,13 @@ final class HttpHeaderConfigurationFactoryImpl implements HttpHeaderConfiguratio
     @Inject
     HttpHeaderConfigurationFactoryImpl(final HttpHeaderRequestConfigurationFactory requestConfigurationFactory,
                                        final HttpHeaderResponseConfigurationFactory responseConfigurationFactory) {
-        this.requestConfigurationFactory = requireNonNull(requestConfigurationFactory,
-                "requestConfigurationFactory must not be null.");
-        this.responseConfigurationFactory = requireNonNull(responseConfigurationFactory,
-                "responseConfigurationFactory must not be null.");
+        this.requestConfigurationFactory = checkNotNull(requestConfigurationFactory, "requestConfigurationFactory");
+        this.responseConfigurationFactory = checkNotNull(responseConfigurationFactory, "responseConfigurationFactory");
     }
 
     @Override
     public HttpHeaderConfiguration parse(final Map<String, String> properties) throws InvalidConfigurationException {
-        requireNonNull(properties, "properties must not be null.");
+        checkNotNull(properties, "properties");
         final HttpHeaderRequestConfiguration request = requestConfigurationFactory.parse(properties);
         final HttpHeaderResponseConfiguration response = responseConfigurationFactory.parse(properties);
         return new HttpHeaderConfigurationImpl(request, response);

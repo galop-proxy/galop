@@ -16,7 +16,7 @@ import java.util.Locale;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static java.util.Objects.requireNonNull;
+import static io.github.galop_proxy.galop.commons.Preconditions.checkNotNull;
 
 final class HttpExchangeHandlerImpl implements HttpExchangeHandler {
 
@@ -30,10 +30,10 @@ final class HttpExchangeHandlerImpl implements HttpExchangeHandler {
     @Inject
     HttpExchangeHandlerImpl(final HttpHeaderConfiguration httpHeaderConfiguration, final HttpHeaderParser httpHeaderParser,
                             final HttpMessageHandler httpMessageHandler, final ExecutorService executorService) {
-        this.httpHeaderConfiguration = requireNonNull(httpHeaderConfiguration, "httpHeaderConfiguration must not be null.");
-        this.httpHeaderParser = requireNonNull(httpHeaderParser, "httpHeaderParser must not be null.");
-        this.httpMessageHandler = requireNonNull(httpMessageHandler, "httpMessageHandler must not be null.");
-        this.executorService = requireNonNull(executorService, "executorService must not be null.");
+        this.httpHeaderConfiguration = checkNotNull(httpHeaderConfiguration, "httpHeaderConfiguration");
+        this.httpHeaderParser = checkNotNull(httpHeaderParser, "httpHeaderParser");
+        this.httpMessageHandler = checkNotNull(httpMessageHandler, "httpMessageHandler");
+        this.executorService = checkNotNull(executorService, "executorService");
     }
 
     // Handle request:
@@ -126,9 +126,9 @@ final class HttpExchangeHandlerImpl implements HttpExchangeHandler {
     // Helper methods:
 
     private void validateParameters(final Socket source, final Socket target, final Runnable callback) {
-        requireNonNull(source, "source must not be null");
-        requireNonNull(target, "target must not be null");
-        requireNonNull(callback, "callback must not be null.");
+        checkNotNull(source, "source");
+        checkNotNull(target, "target");
+        checkNotNull(callback, "callback");
     }
 
     private <V> V executeWithTimeout(final Callable<V> task, final long timeout)

@@ -7,8 +7,8 @@ import javax.inject.Inject;
 import java.net.InetAddress;
 import java.util.Map;
 
+import static io.github.galop_proxy.galop.commons.Preconditions.checkNotNull;
 import static io.github.galop_proxy.galop.configuration.ConfigurationPropertyKeys.*;
-import static java.util.Objects.requireNonNull;
 
 final class ProxyConfigurationFactoryImpl implements ProxyConfigurationFactory {
 
@@ -16,12 +16,12 @@ final class ProxyConfigurationFactoryImpl implements ProxyConfigurationFactory {
 
     @Inject
     ProxyConfigurationFactoryImpl(final InetAddressFactory inetAddressFactory) {
-        this.inetAddressFactory = requireNonNull(inetAddressFactory, "inetAddressFactory must not be null.");
+        this.inetAddressFactory = checkNotNull(inetAddressFactory, "inetAddressFactory");
     }
 
     @Override
     public ProxyConfiguration parse(final Map<String, String> properties) throws InvalidConfigurationException {
-        requireNonNull(properties, "properties must not be null.");
+        checkNotNull(properties, "properties");
         final PortNumber port = parsePort(properties);
         final int backlogSize = parseBacklogSize(properties);
         final InetAddress bindAddress = parseBindAddress(properties);

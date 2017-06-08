@@ -4,7 +4,7 @@ import io.github.galop_proxy.galop.commons.PortNumber;
 
 import java.net.InetAddress;
 
-import static java.util.Objects.requireNonNull;
+import static io.github.galop_proxy.galop.commons.Preconditions.checkNotNull;
 
 final class TargetConfigurationImpl implements TargetConfiguration {
 
@@ -13,8 +13,8 @@ final class TargetConfigurationImpl implements TargetConfiguration {
     private final int connectionTimeout;
 
     TargetConfigurationImpl(final InetAddress address, final PortNumber port, final int connectionTimeout) {
-        this.address = requireNonNull(address, "address must not be null.");
-        this.port = requireNonNull(port, "port must not be null.");
+        this.address = checkNotNull(address, "address");
+        this.port = checkNotNull(port, "port");
         this.connectionTimeout = connectionTimeout;
     }
 

@@ -10,7 +10,7 @@ import javax.inject.Inject;
 
 import java.nio.file.Paths;
 
-import static java.util.Objects.requireNonNull;
+import static io.github.galop_proxy.galop.commons.Preconditions.checkNotNull;
 
 final class LoaderImpl implements Loader {
 
@@ -23,9 +23,9 @@ final class LoaderImpl implements Loader {
 
     @Inject
     LoaderImpl(final ConfigurationFileLoader configurationFileLoader, final Runtime runtime, final Injector injector) {
-        this.configurationFileLoader = requireNonNull(configurationFileLoader, "configurationFileLoader must not be null.");
-        this.runtime = requireNonNull(runtime, "runtime must not be null.");
-        this.injector = requireNonNull(injector, "injector must not be null.");
+        this.configurationFileLoader = checkNotNull(configurationFileLoader, "configurationFileLoader");
+        this.runtime = checkNotNull(runtime, "runtime");
+        this.injector = checkNotNull(injector, "injector");
     }
 
     @Override

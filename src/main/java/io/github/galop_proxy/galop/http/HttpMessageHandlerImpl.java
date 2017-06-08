@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import static java.util.Objects.requireNonNull;
+import static io.github.galop_proxy.galop.commons.Preconditions.checkNotNull;
 
 final class HttpMessageHandlerImpl implements HttpMessageHandler {
 
@@ -14,9 +14,9 @@ final class HttpMessageHandlerImpl implements HttpMessageHandler {
     public void handle(final HttpHeaderParser.Result header, final InputStream inputStream,
                        final OutputStream outputStream) throws IOException {
 
-        requireNonNull(header, "header must not be null.");
-        requireNonNull(inputStream, "inputStream must not be null.");
-        requireNonNull(outputStream, "outputStream must not be null.");
+        checkNotNull(header, "header");
+        checkNotNull(inputStream, "inputStream");
+        checkNotNull(outputStream, "outputStream");
 
         if (header.isChunkedTransferEncoding()) {
             handleChunkedTransferEncoding(header, inputStream, outputStream);

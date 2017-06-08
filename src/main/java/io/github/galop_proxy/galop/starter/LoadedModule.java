@@ -8,14 +8,14 @@ import io.github.galop_proxy.galop.configuration.LoadedConfigurationModule;
 import io.github.galop_proxy.galop.http.HttpModule;
 import io.github.galop_proxy.galop.proxy.ProxyModule;
 
-import static java.util.Objects.requireNonNull;
+import static io.github.galop_proxy.galop.commons.Preconditions.checkNotNull;
 
 final class LoadedModule extends AbstractModule {
 
     private final Configuration configuration;
 
     LoadedModule(final Configuration configuration) {
-        this.configuration = requireNonNull(configuration, "configuration must not be null.");
+        this.configuration = checkNotNull(configuration, "configuration");
     }
 
     @Override

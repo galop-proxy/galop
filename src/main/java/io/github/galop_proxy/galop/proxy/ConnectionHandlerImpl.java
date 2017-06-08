@@ -6,7 +6,7 @@ import org.apache.commons.io.IOUtils;
 import java.io.IOException;
 import java.net.Socket;
 
-import static java.util.Objects.requireNonNull;
+import static io.github.galop_proxy.galop.commons.Preconditions.checkNotNull;
 
 final class ConnectionHandlerImpl implements ConnectionHandler {
 
@@ -18,9 +18,9 @@ final class ConnectionHandlerImpl implements ConnectionHandler {
     private volatile boolean connectionShouldBeClosed;
 
     ConnectionHandlerImpl(final HttpExchangeHandler httpExchangeHandler, final Socket source, final Socket target) {
-        this.httpExchangeHandler = requireNonNull(httpExchangeHandler, "httpExchangeHandler must not be null.");
-        this.source = requireNonNull(source, "source must not be null.");
-        this.target = requireNonNull(target, "target must not be null.");
+        this.httpExchangeHandler = checkNotNull(httpExchangeHandler, "httpExchangeHandler");
+        this.source = checkNotNull(source, "source");
+        this.target = checkNotNull(target, "target");
     }
 
     @Override

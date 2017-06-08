@@ -3,7 +3,7 @@ package io.github.galop_proxy.galop.commons;
 import java.io.IOException;
 import java.io.InputStream;
 
-import static java.util.Objects.requireNonNull;
+import static io.github.galop_proxy.galop.commons.Preconditions.checkNotNull;
 
 public class LimitedInputStream extends InputStream {
 
@@ -13,7 +13,7 @@ public class LimitedInputStream extends InputStream {
 
     public LimitedInputStream(final InputStream original, final long bytesLimit) {
 
-        this.original = requireNonNull(original, "original must not be null.");
+        this.original = checkNotNull(original, "original");
 
         if (bytesLimit < 0) {
             throw new IllegalArgumentException("bytesLimit must be at least 0.");

@@ -8,7 +8,7 @@ import javax.inject.Inject;
 import java.io.*;
 import java.util.Locale;
 
-import static java.util.Objects.requireNonNull;
+import static io.github.galop_proxy.galop.commons.Preconditions.checkNotNull;
 
 final class HttpHeaderParserImpl implements HttpHeaderParser {
 
@@ -47,10 +47,8 @@ final class HttpHeaderParserImpl implements HttpHeaderParser {
     @Inject
     HttpHeaderParserImpl(final HttpHeaderRequestConfiguration requestConfiguration,
                          final HttpHeaderResponseConfiguration responseConfiguration) {
-        this.requestConfiguration = requireNonNull(requestConfiguration,
-                "requestConfiguration must not be null.");
-        this.responseConfiguration = requireNonNull(responseConfiguration,
-                "responseConfiguration must not be null.");
+        this.requestConfiguration = checkNotNull(requestConfiguration, "requestConfiguration");
+        this.responseConfiguration = checkNotNull(responseConfiguration, "responseConfiguration");
     }
 
     @Override
@@ -62,7 +60,7 @@ final class HttpHeaderParserImpl implements HttpHeaderParser {
     public Result parse(final InputStream inputStream, final boolean request, final Runnable startParsingCallback)
             throws IOException {
 
-        requireNonNull(inputStream, "inputStream must not be null.");
+        checkNotNull(inputStream, "inputStream");
 
         if (!inputStream.markSupported()) {
             throw new IllegalArgumentException("InputStream must support mark.");

@@ -8,7 +8,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 
-import static java.util.Objects.requireNonNull;
+import static io.github.galop_proxy.galop.commons.Preconditions.checkNotNull;
 
 final class TargetSocketFactoryImpl implements TargetSocketFactory {
 
@@ -16,7 +16,7 @@ final class TargetSocketFactoryImpl implements TargetSocketFactory {
 
     @Inject
     TargetSocketFactoryImpl(final TargetConfiguration configuration) {
-        this.configuration = requireNonNull(configuration, "configuration must not be null.");
+        this.configuration = checkNotNull(configuration, "configuration");
     }
 
     @Override

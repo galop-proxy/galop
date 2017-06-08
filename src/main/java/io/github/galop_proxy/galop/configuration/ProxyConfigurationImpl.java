@@ -4,7 +4,7 @@ import io.github.galop_proxy.galop.commons.PortNumber;
 
 import java.net.InetAddress;
 
-import static java.util.Objects.requireNonNull;
+import static io.github.galop_proxy.galop.commons.Preconditions.checkNotNull;
 
 final class ProxyConfigurationImpl implements ProxyConfiguration {
 
@@ -13,7 +13,7 @@ final class ProxyConfigurationImpl implements ProxyConfiguration {
     private final InetAddress bindAddress;
 
     ProxyConfigurationImpl(final PortNumber port, final int backlogSize, final InetAddress bindAddress) {
-        this.port = requireNonNull(port, "port must not be null.");
+        this.port = checkNotNull(port, "port");
         this.backlogSize = backlogSize;
         this.bindAddress = bindAddress;
     }

@@ -5,7 +5,7 @@ import io.github.galop_proxy.galop.http.HttpExchangeHandler;
 import javax.inject.Inject;
 import java.net.Socket;
 
-import static java.util.Objects.requireNonNull;
+import static io.github.galop_proxy.galop.commons.Preconditions.checkNotNull;
 
 final class ConnectionHandlerFactoryImpl implements ConnectionHandlerFactory {
 
@@ -13,7 +13,7 @@ final class ConnectionHandlerFactoryImpl implements ConnectionHandlerFactory {
 
     @Inject
     ConnectionHandlerFactoryImpl(final HttpExchangeHandler httpExchangeHandler) {
-        this.httpExchangeHandler = requireNonNull(httpExchangeHandler, "httpExchangeHandler must not be null.");
+        this.httpExchangeHandler = checkNotNull(httpExchangeHandler, "httpExchangeHandler");
     }
 
     @Override

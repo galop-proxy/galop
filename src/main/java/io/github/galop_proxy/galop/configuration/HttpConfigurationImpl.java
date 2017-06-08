@@ -1,6 +1,6 @@
 package io.github.galop_proxy.galop.configuration;
 
-import static java.util.Objects.requireNonNull;
+import static io.github.galop_proxy.galop.commons.Preconditions.checkNotNull;
 
 final class HttpConfigurationImpl implements HttpConfiguration {
 
@@ -8,8 +8,8 @@ final class HttpConfigurationImpl implements HttpConfiguration {
     private final HttpHeaderConfiguration header;
 
     HttpConfigurationImpl(final HttpConnectionConfiguration connection,  final HttpHeaderConfiguration header) {
-        this.connection = requireNonNull(connection, "connection must not be null.");
-        this.header = requireNonNull(header, "header must not be null.");
+        this.connection = checkNotNull(connection, "connection");
+        this.header = checkNotNull(header, "header");
     }
 
     @Override
