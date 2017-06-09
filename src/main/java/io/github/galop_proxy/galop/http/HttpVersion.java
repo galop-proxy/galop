@@ -48,11 +48,11 @@ final class HttpVersion implements Comparable<HttpVersion> {
     }
 
     @Override
-    public int compareTo(final HttpVersion httpVersion) {
+    public int compareTo(final HttpVersion other) {
 
-        if (isGreaterThan(httpVersion)) {
+        if (isGreaterThan(other)) {
             return 1;
-        } else if (isLowerThan(httpVersion)) {
+        } else if (isLowerThan(other)) {
             return -1;
         } else {
             return 0;
