@@ -4,7 +4,7 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import io.github.galop_proxy.galop.AbstractConfigurationTest;
 import io.github.galop_proxy.galop.administration.Monitor;
-import io.github.galop_proxy.galop.commons.CommonsModule;
+import io.github.galop_proxy.galop.network.NetworkModule;
 import io.github.galop_proxy.galop.configuration.Configuration;
 import io.github.galop_proxy.galop.http.HttpExchangeHandler;
 import io.github.galop_proxy.galop.proxy.Server;
@@ -24,7 +24,7 @@ public class LoadedModuleTest extends AbstractConfigurationTest {
     @Before
     public void setUp() {
         super.setUp();
-        injector = Guice.createInjector(new CommonsModule(), new LoadedModule(configuration));
+        injector = Guice.createInjector(new NetworkModule(), new LoadedModule(configuration));
     }
 
     @Test

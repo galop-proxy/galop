@@ -5,7 +5,7 @@ import io.github.galop_proxy.galop.http.HttpExchangeHandler;
 import javax.inject.Inject;
 import java.net.Socket;
 
-import static io.github.galop_proxy.galop.commons.Preconditions.checkNotNull;
+import static io.github.galop_proxy.api.commons.Preconditions.checkNotNull;
 
 final class ConnectionHandlerFactoryImpl implements ConnectionHandlerFactory {
 

@@ -1,11 +1,11 @@
-package io.github.galop_proxy.galop.commons;
+package io.github.galop_proxy.api.commons;
 
 import org.junit.Test;
 
 import java.lang.reflect.Constructor;
 
-import static io.github.galop_proxy.galop.commons.Preconditions.checkNotNegative;
-import static io.github.galop_proxy.galop.commons.Preconditions.checkNotNull;
+import static io.github.galop_proxy.api.commons.Preconditions.checkNotNegative;
+import static io.github.galop_proxy.api.commons.Preconditions.checkNotNull;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.fail;

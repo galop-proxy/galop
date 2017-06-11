@@ -1,7 +1,8 @@
-package io.github.galop_proxy.galop.commons;
+package io.github.galop_proxy.galop.network;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+import io.github.galop_proxy.api.network.InetAddressFactory;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -11,15 +12,15 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 
 /**
- * Tests the class {@link CommonsModule}.
+ * Tests the class {@link NetworkModule}.
  */
-public class CommonsModuleTest {
+public class NetworkModuleTest {
 
     private Injector injector;
 
     @Before
     public void setUp() {
-        injector = Guice.createInjector(new CommonsModule());
+        injector = Guice.createInjector(new NetworkModule());
     }
 
     @Test

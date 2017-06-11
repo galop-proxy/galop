@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import static io.github.galop_proxy.galop.commons.Preconditions.checkNotNull;
+import static io.github.galop_proxy.api.commons.Preconditions.checkNotNull;
 
 final class HttpMessageHandlerImpl implements HttpMessageHandler {
 

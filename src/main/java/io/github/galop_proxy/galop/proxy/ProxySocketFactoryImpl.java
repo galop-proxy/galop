@@ -6,7 +6,7 @@ import javax.inject.Inject;
 import java.io.IOException;
 import java.net.ServerSocket;
 
-import static io.github.galop_proxy.galop.commons.Preconditions.checkNotNull;
+import static io.github.galop_proxy.api.commons.Preconditions.checkNotNull;
 
 final class ProxySocketFactoryImpl implements ProxySocketFactory {
 

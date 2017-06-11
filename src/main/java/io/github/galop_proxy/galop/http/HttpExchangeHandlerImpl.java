@@ -1,6 +1,5 @@
 package io.github.galop_proxy.galop.http;
 
-import io.github.galop_proxy.galop.commons.ByteLimitExceededException;
 import io.github.galop_proxy.galop.configuration.HttpHeaderConfiguration;
 import io.github.galop_proxy.galop.http.HttpHeaderParser.Result;
 import org.apache.commons.io.IOUtils;
@@ -16,7 +15,7 @@ import java.util.Locale;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static io.github.galop_proxy.galop.commons.Preconditions.checkNotNull;
+import static io.github.galop_proxy.api.commons.Preconditions.checkNotNull;
 
 final class HttpExchangeHandlerImpl implements HttpExchangeHandler {
 

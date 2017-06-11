@@ -2,7 +2,7 @@ package io.github.galop_proxy.galop.configuration;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import io.github.galop_proxy.galop.commons.CommonsModule;
+import io.github.galop_proxy.galop.network.NetworkModule;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -18,7 +18,7 @@ public class ConfigurationModuleTest {
 
     @Before
     public void setUp() {
-        injector = Guice.createInjector(new CommonsModule(), new ConfigurationModule());
+        injector = Guice.createInjector(new NetworkModule(), new ConfigurationModule());
     }
 
     @Test

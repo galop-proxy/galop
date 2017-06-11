@@ -10,7 +10,7 @@ import javax.inject.Inject;
 
 import java.nio.file.Paths;
 
-import static io.github.galop_proxy.galop.commons.Preconditions.checkNotNull;
+import static io.github.galop_proxy.api.commons.Preconditions.checkNotNull;
 
 final class LoaderImpl implements Loader {
 

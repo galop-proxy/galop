@@ -1,5 +1,6 @@
 package io.github.galop_proxy.galop.http;
 
+import io.github.galop_proxy.galop.http.HttpStatusCode;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -44,9 +45,9 @@ public class HttpStatusCodeTest {
         assertStatus(504, "Gateway Time-out", HttpStatusCode.GATEWAY_TIMEOUT);
     }
 
-    private void assertStatus(final int code, final String reason, final HttpStatusCode httpStatusCode) {
-        assertEquals(code, httpStatusCode.getCode());
-        assertEquals(reason, httpStatusCode.getReason());
+    private void assertStatus(final int code, final String reason, final HttpStatusCode statusCode) {
+        assertEquals(code, statusCode.getCode());
+        assertEquals(reason, statusCode.getReason());
     }
 
 }

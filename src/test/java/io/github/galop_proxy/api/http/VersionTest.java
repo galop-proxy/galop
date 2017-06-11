@@ -1,4 +1,4 @@
-package io.github.galop_proxy.galop.http;
+package io.github.galop_proxy.api.http;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -8,33 +8,33 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
- * Tests the class {@link HttpVersion}.
+ * Tests the class {@link Version}.
  */
-public class HttpVersionTest {
+public class VersionTest {
 
-    private HttpVersion v10;
-    private HttpVersion v11;
-    private HttpVersion v20;
-    private HttpVersion other;
+    private Version v10;
+    private Version v11;
+    private Version v20;
+    private Version other;
 
     @Before
     public void setUp() {
-        v10 = new HttpVersion(1, 0);
-        v11 = new HttpVersion(1, 1);
-        v20 = new HttpVersion(2, 0);
-        other = new HttpVersion(1, 1);
+        v10 = new Version(1, 0);
+        v11 = new Version(1, 1);
+        v20 = new Version(2, 0);
+        other = new Version(1, 1);
     }
 
     // Constructor:
 
     @Test(expected = IllegalArgumentException.class)
     public void constructor_withNegativeMajorNumber_throwsIllegalArgumentException() {
-        new HttpVersion(-1, 0);
+        new Version(-1, 0);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void constructor_withNegativeMinorNumber_throwsIllegalArgumentException() {
-        new HttpVersion(1, -1);
+        new Version(1, -1);
     }
 
     // Getter:
@@ -77,7 +77,7 @@ public class HttpVersionTest {
     }
 
     @Test
-    public void isGreaterThan_withSameMajorAndSameMinorNumver_returnsFalse() {
+    public void isGreaterThan_withSameMajorAndSameMinorNumber_returnsFalse() {
         assertFalse(v11.isGreaterThan(v11));
     }
 

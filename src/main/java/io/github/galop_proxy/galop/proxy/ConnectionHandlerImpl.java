@@ -6,7 +6,7 @@ import org.apache.commons.io.IOUtils;
 import java.io.IOException;
 import java.net.Socket;
 
-import static io.github.galop_proxy.galop.commons.Preconditions.checkNotNull;
+import static io.github.galop_proxy.api.commons.Preconditions.checkNotNull;
 
 final class ConnectionHandlerImpl implements ConnectionHandler {
 

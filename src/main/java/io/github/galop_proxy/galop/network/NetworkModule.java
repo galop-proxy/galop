@@ -1,12 +1,13 @@
-package io.github.galop_proxy.galop.commons;
+package io.github.galop_proxy.galop.network;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Singleton;
+import io.github.galop_proxy.api.network.InetAddressFactory;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public final class CommonsModule extends AbstractModule {
+public final class NetworkModule extends AbstractModule {
 
     @Override
     protected void configure() {

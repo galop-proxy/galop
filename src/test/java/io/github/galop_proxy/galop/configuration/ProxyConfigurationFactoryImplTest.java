@@ -1,7 +1,7 @@
 package io.github.galop_proxy.galop.configuration;
 
-import io.github.galop_proxy.galop.commons.InetAddressFactory;
-import io.github.galop_proxy.galop.commons.PortNumber;
+import io.github.galop_proxy.api.network.InetAddressFactory;
+import io.github.galop_proxy.api.network.PortNumber;
 import org.junit.Before;
 import org.junit.Test;
 

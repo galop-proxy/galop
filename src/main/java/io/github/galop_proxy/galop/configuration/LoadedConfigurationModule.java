@@ -2,7 +2,7 @@ package io.github.galop_proxy.galop.configuration;
 
 import com.google.inject.AbstractModule;
 
-import static io.github.galop_proxy.galop.commons.Preconditions.checkNotNull;
+import static io.github.galop_proxy.api.commons.Preconditions.checkNotNull;
 
 public final class LoadedConfigurationModule extends AbstractModule {
 

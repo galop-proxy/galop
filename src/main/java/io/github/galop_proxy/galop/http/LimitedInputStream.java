@@ -1,17 +1,17 @@
-package io.github.galop_proxy.galop.commons;
+package io.github.galop_proxy.galop.http;
 
 import java.io.IOException;
 import java.io.InputStream;
 
-import static io.github.galop_proxy.galop.commons.Preconditions.checkNotNull;
+import static io.github.galop_proxy.api.commons.Preconditions.checkNotNull;
 
-public class LimitedInputStream extends InputStream {
+final class LimitedInputStream extends InputStream {
 
     private final InputStream original;
     private final long bytesLimit;
     private long totalNumberOfBytesRead;
 
-    public LimitedInputStream(final InputStream original, final long bytesLimit) {
+    LimitedInputStream(final InputStream original, final long bytesLimit) {
 
         this.original = checkNotNull(original, "original");
 
@@ -23,11 +23,11 @@ public class LimitedInputStream extends InputStream {
 
     }
 
-    public long getBytesLimit() {
+    long getBytesLimit() {
         return bytesLimit;
     }
 
-    public long getTotalNumberOfBytesRead() {
+    long getTotalNumberOfBytesRead() {
         return totalNumberOfBytesRead;
     }
 

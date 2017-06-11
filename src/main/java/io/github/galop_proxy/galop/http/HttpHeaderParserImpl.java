@@ -1,6 +1,5 @@
 package io.github.galop_proxy.galop.http;
 
-import io.github.galop_proxy.galop.commons.LimitedInputStream;
 import io.github.galop_proxy.galop.configuration.HttpHeaderRequestConfiguration;
 import io.github.galop_proxy.galop.configuration.HttpHeaderResponseConfiguration;
 
@@ -8,7 +7,7 @@ import javax.inject.Inject;
 import java.io.*;
 import java.util.Locale;
 
-import static io.github.galop_proxy.galop.commons.Preconditions.checkNotNull;
+import static io.github.galop_proxy.api.commons.Preconditions.checkNotNull;
 
 final class HttpHeaderParserImpl implements HttpHeaderParser {
 

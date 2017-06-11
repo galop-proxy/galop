@@ -8,7 +8,7 @@ import io.github.galop_proxy.galop.configuration.LoadedConfigurationModule;
 import io.github.galop_proxy.galop.http.HttpModule;
 import io.github.galop_proxy.galop.proxy.ProxyModule;
 
-import static io.github.galop_proxy.galop.commons.Preconditions.checkNotNull;
+import static io.github.galop_proxy.api.commons.Preconditions.checkNotNull;
 
 final class LoadedModule extends AbstractModule {
 

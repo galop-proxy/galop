@@ -3,7 +3,7 @@ package io.github.galop_proxy.galop.configuration;
 import javax.inject.Inject;
 import java.util.Map;
 
-import static io.github.galop_proxy.galop.commons.Preconditions.checkNotNull;
+import static io.github.galop_proxy.api.commons.Preconditions.checkNotNull;
 
 final class HttpConfigurationFactoryImpl implements HttpConfigurationFactory {
 

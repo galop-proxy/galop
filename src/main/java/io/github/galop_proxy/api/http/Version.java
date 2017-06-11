@@ -1,29 +1,29 @@
-package io.github.galop_proxy.galop.http;
+package io.github.galop_proxy.api.http;
 
 import java.util.Objects;
 
-import static io.github.galop_proxy.galop.commons.Preconditions.checkNotNegative;
-import static io.github.galop_proxy.galop.commons.Preconditions.checkNotNull;
+import static io.github.galop_proxy.api.commons.Preconditions.checkNotNegative;
+import static io.github.galop_proxy.api.commons.Preconditions.checkNotNull;
 
-final class HttpVersion implements Comparable<HttpVersion> {
+public final class Version implements Comparable<Version> {
 
     private final int major;
     private final int minor;
 
-    HttpVersion(final int major, final int minor) {
+    public Version(final int major, final int minor) {
         this.major = checkNotNegative(major, "major");
         this.minor = checkNotNegative(minor, "minor");
     }
 
-    int getMajor() {
+    public int getMajor() {
         return major;
     }
 
-    int getMinor() {
+    public int getMinor() {
         return minor;
     }
 
-    boolean isGreaterThan(final HttpVersion other) {
+    public boolean isGreaterThan(final Version other) {
 
         checkNotNull(other, "other");
 
@@ -35,7 +35,7 @@ final class HttpVersion implements Comparable<HttpVersion> {
 
     }
 
-    boolean isLowerThan(final HttpVersion other) {
+    public boolean isLowerThan(final Version other) {
 
         checkNotNull(other, "other");
 
@@ -48,7 +48,7 @@ final class HttpVersion implements Comparable<HttpVersion> {
     }
 
     @Override
-    public int compareTo(final HttpVersion other) {
+    public int compareTo(final Version other) {
 
         if (isGreaterThan(other)) {
             return 1;
@@ -71,7 +71,7 @@ final class HttpVersion implements Comparable<HttpVersion> {
             return false;
         }
 
-        final HttpVersion that = (HttpVersion) other;
+        final Version that = (Version) other;
 
         return major == that.major &&
                 minor == that.minor;

@@ -1,6 +1,5 @@
 package io.github.galop_proxy.galop.http;
 
-import io.github.galop_proxy.galop.commons.ByteLimitExceededException;
 import io.github.galop_proxy.galop.configuration.HttpHeaderConfiguration;
 import io.github.galop_proxy.galop.configuration.HttpHeaderRequestConfiguration;
 import io.github.galop_proxy.galop.configuration.HttpHeaderResponseConfiguration;

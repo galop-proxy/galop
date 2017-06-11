@@ -2,7 +2,7 @@ package io.github.galop_proxy.galop.configuration;
 
 import java.util.Map;
 
-import static io.github.galop_proxy.galop.commons.Preconditions.checkNotNull;
+import static io.github.galop_proxy.api.commons.Preconditions.checkNotNull;
 import static io.github.galop_proxy.galop.configuration.ConfigurationPropertyKeys.HTTP_HEADER_REQUEST_MAX_SIZE;
 import static io.github.galop_proxy.galop.configuration.ConfigurationPropertyKeys.HTTP_HEADER_REQUEST_RECEIVE_TIMEOUT;
 import static io.github.galop_proxy.galop.configuration.FactoryUtils.parseMaxSize;

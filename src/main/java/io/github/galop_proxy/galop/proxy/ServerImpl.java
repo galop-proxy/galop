@@ -18,7 +18,7 @@ import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.concurrent.ExecutorService;
 
-import static io.github.galop_proxy.galop.commons.Preconditions.checkNotNull;
+import static io.github.galop_proxy.api.commons.Preconditions.checkNotNull;
 import static io.github.galop_proxy.galop.http.HttpStatusCode.GATEWAY_TIMEOUT;
 import static io.github.galop_proxy.galop.http.HttpStatusCode.SERVICE_UNAVAILABLE;
 

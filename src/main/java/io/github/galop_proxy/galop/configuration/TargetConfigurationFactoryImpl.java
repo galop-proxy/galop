@@ -1,13 +1,13 @@
 package io.github.galop_proxy.galop.configuration;
 
-import io.github.galop_proxy.galop.commons.InetAddressFactory;
-import io.github.galop_proxy.galop.commons.PortNumber;
+import io.github.galop_proxy.api.network.InetAddressFactory;
+import io.github.galop_proxy.api.network.PortNumber;
 
 import javax.inject.Inject;
 import java.net.InetAddress;
 import java.util.Map;
 
-import static io.github.galop_proxy.galop.commons.Preconditions.checkNotNull;
+import static io.github.galop_proxy.api.commons.Preconditions.checkNotNull;
 import static io.github.galop_proxy.galop.configuration.ConfigurationPropertyKeys.TARGET_ADDRESS;
 import static io.github.galop_proxy.galop.configuration.ConfigurationPropertyKeys.TARGET_CONNECTION_TIMEOUT;
 import static io.github.galop_proxy.galop.configuration.ConfigurationPropertyKeys.TARGET_PORT;

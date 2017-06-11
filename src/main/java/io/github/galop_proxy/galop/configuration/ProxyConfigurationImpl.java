@@ -1,10 +1,10 @@
 package io.github.galop_proxy.galop.configuration;
 
-import io.github.galop_proxy.galop.commons.PortNumber;
+import io.github.galop_proxy.api.network.PortNumber;
 
 import java.net.InetAddress;
 
-import static io.github.galop_proxy.galop.commons.Preconditions.checkNotNull;
+import static io.github.galop_proxy.api.commons.Preconditions.checkNotNull;
 
 final class ProxyConfigurationImpl implements ProxyConfiguration {
 

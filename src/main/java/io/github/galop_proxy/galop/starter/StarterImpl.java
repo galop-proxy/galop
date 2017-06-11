@@ -8,7 +8,7 @@ import org.apache.logging.log4j.Logger;
 
 import javax.inject.Inject;
 
-import static io.github.galop_proxy.galop.commons.Preconditions.checkNotNull;
+import static io.github.galop_proxy.api.commons.Preconditions.checkNotNull;
 
 final class StarterImpl implements Starter {
 

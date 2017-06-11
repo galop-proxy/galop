@@ -1,4 +1,4 @@
-package io.github.galop_proxy.galop.commons;
+package io.github.galop_proxy.galop.http;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
