@@ -1,7 +1,5 @@
 package io.github.galop_proxy.api.http;
 
-import java.util.Objects;
-
 import static io.github.galop_proxy.api.commons.Preconditions.checkNotNegative;
 import static io.github.galop_proxy.api.commons.Preconditions.checkNotNull;
 
@@ -80,7 +78,11 @@ public final class Version implements Comparable<Version> {
 
     @Override
     public int hashCode() {
-        return Objects.hash(major, minor);
+        final int hashMultiplier = 59;
+        int result = 17;
+        result = result * hashMultiplier + major;
+        result = result * hashMultiplier + minor;
+        return result;
     }
 
     @Override
