@@ -4,21 +4,21 @@ import static io.github.galop_proxy.galop.http.HttpConstants.*;
 
 final class HttpTestUtils {
 
-    public static String createGetRequest() {
+    static String createGetRequest() {
         return "GET /hello-world.html " + HTTP_VERSION + NEW_LINE
                 + HEADER_HOST_PREFIX + SPACE + "www.example.com" + NEW_LINE
                 + NEW_LINE;
     }
 
-    public static String createResponse(final String content) {
+    static String createResponse(final String content) {
         return createResponse(content, content.getBytes().length + "");
     }
 
-    public static String createResponse(final String content, final String contentLength) {
+    static String createResponse(final String content, final String contentLength) {
         return createResponse(content, contentLength, null);
     }
 
-    public static String createResponse(final String content, final String contentLength,
+    static String createResponse(final String content, final String contentLength,
                                         final String transferEncoding) {
 
         final StringBuilder response  = new StringBuilder();
