@@ -1,5 +1,7 @@
 package io.github.galop_proxy.galop.http;
 
+import com.google.common.collect.Range;
+
 import java.nio.charset.Charset;
 
 class HttpConstants {
@@ -22,6 +24,8 @@ class HttpConstants {
     static final String NEW_LINE = "\r\n";
     static final char SPACE = ' ';
     static final char VALUE_SEPARATOR = ';';
+
+    static final Range<Integer> STATUS_CODE_RANGE = Range.closed(0, 999);
 
     private HttpConstants() {
         throw new AssertionError("No instances");

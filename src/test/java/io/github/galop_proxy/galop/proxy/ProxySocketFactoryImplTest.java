@@ -1,6 +1,6 @@
 package io.github.galop_proxy.galop.proxy;
 
-import io.github.galop_proxy.api.network.PortNumber;
+import io.github.galop_proxy.galop.network.PortNumber;
 import io.github.galop_proxy.galop.configuration.ProxyConfiguration;
 import org.junit.Before;
 import org.junit.Test;

@@ -20,6 +20,19 @@ public final class Preconditions {
         }
     }
 
+    public static String checkNotEmpty(final String s, final String parameterName)
+            throws NullPointerException, IllegalArgumentException {
+
+        checkNotNull(s, parameterName);
+
+        if (!s.isEmpty()) {
+            return s;
+        } else {
+            throw new IllegalArgumentException(parameterName + " must not be empty.");
+        }
+
+    }
+
     private Preconditions() {
         throw new AssertionError("No instances");
     }
