@@ -53,19 +53,19 @@ public class AbstractMessageTest {
         instance.setVersion(null);
     }
 
-    // getHeaders:
+    // getHeaderFields:
 
     @Test
-    public void getHeaders_afterObjectCreation_returnsEmptyMap() {
-        assertTrue(instance.getHeaders().isEmpty());
+    public void getHeaderFields_afterObjectCreation_returnsEmptyMap() {
+        assertTrue(instance.getHeaderFields().isEmpty());
     }
 
     @Test
-    public void getHeaders_returnsModifiableMap() {
+    public void getHeaderFields_returnsModifiableMap() {
         final String name = "hello";
         final List<String> values = Collections.singletonList("world");
-        instance.getHeaders().put(name, values);
-        assertEquals(values, instance.getHeaders().get(name));
+        instance.getHeaderFields().put(name, values);
+        assertEquals(values, instance.getHeaderFields().get(name));
     }
 
 }

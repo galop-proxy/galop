@@ -6,7 +6,8 @@ import java.nio.charset.Charset;
 
 class HttpConstants {
 
-    static final String HTTP_VERSION = "HTTP/1.1";
+    static final String HTTP_VERSION_PREFIX = "HTTP/";
+    static final String HTTP_VERSION = HTTP_VERSION_PREFIX + "1.1";
 
     static final Charset HEADER_CHARSET = Charset.forName("ASCII");
 

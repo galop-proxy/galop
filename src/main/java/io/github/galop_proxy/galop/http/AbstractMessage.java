@@ -13,11 +13,11 @@ abstract class AbstractMessage implements Message {
 
     private Version version;
 
-    private final Map<String, List<String>> headers;
+    private final Map<String, List<String>> headerFields;
 
     AbstractMessage(final Version version) {
         setVersion(version);
-        headers = new HashMap<>();
+        headerFields = new HashMap<>();
     }
 
     @Override
@@ -31,8 +31,8 @@ abstract class AbstractMessage implements Message {
     }
 
     @Override
-    public final Map<String, List<String>> getHeaders() {
-        return headers;
+    public final Map<String, List<String>> getHeaderFields() {
+        return headerFields;
     }
 
 }

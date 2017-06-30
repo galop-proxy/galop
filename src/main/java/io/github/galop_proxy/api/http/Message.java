@@ -9,6 +9,6 @@ public interface Message {
 
     void setVersion(Version version);
 
-    Map<String, List<String>> getHeaders();
+    Map<String, List<String>> getHeaderFields();
 
 }
