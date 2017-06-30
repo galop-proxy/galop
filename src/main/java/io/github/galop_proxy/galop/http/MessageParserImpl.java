@@ -19,7 +19,6 @@ import static io.github.galop_proxy.api.commons.Preconditions.checkNotNull;
 import static io.github.galop_proxy.galop.http.HttpConstants.HEADER_CHARSET;
 import static io.github.galop_proxy.galop.http.HttpConstants.HTTP_VERSION_PREFIX;
 
-// TODO Implement startParsingCallback.
 final class MessageParserImpl implements MessageParser {
 
     private final HttpHeaderRequestConfiguration requestConfiguration;
@@ -43,15 +42,16 @@ final class MessageParserImpl implements MessageParser {
         final byte[] buffer = new byte[maxHttpHeaderSize];
         final LimitedInputStream limitedInputStream = new LimitedInputStream(inputStream, maxHttpHeaderSize);
 
-        final Request request = parseRequestLine(limitedInputStream, buffer);
+        final Request request = parseRequestLine(limitedInputStream, buffer, startParsingCallback);
         parseHeaderFields(request, limitedInputStream, buffer, true);
         return request;
 
     }
 
-    private Request parseRequestLine(final InputStream inputStream, final byte[] buffer) throws IOException {
+    private Request parseRequestLine(final InputStream inputStream, final byte[] buffer,
+                                     final Runnable startParsingCallback) throws IOException {
 
-        final String[] requestLine = getNextLine(inputStream, buffer).split(" ");
+        final String[] requestLine = getNextLine(inputStream, buffer, startParsingCallback).split(" ");
 
         if (requestLine.length != 3) {
             throw new InvalidHttpHeaderException("Invalid request line.");
@@ -76,15 +76,16 @@ final class MessageParserImpl implements MessageParser {
         final byte[] buffer = new byte[maxHttpHeaderSize];
         final LimitedInputStream limitedInputStream = new LimitedInputStream(inputStream, maxHttpHeaderSize);
 
-        final Response response = parseStatusLine(limitedInputStream, buffer);
+        final Response response = parseStatusLine(limitedInputStream, buffer, startParsingCallback);
         parseHeaderFields(response, limitedInputStream, buffer, false);
         return response;
 
     }
 
-    private Response parseStatusLine(final InputStream inputStream, final byte[] buffer) throws IOException {
+    private Response parseStatusLine(final InputStream inputStream, final byte[] buffer,
+                                     final Runnable startParsingCallback) throws IOException {
 
-        final String[] statusLine = getNextLine(inputStream, buffer).split(" ");
+        final String[] statusLine = getNextLine(inputStream, buffer, startParsingCallback).split(" ");
 
         if (statusLine.length != 3 && statusLine.length != 2) {
             throw new InvalidHttpHeaderException("Invalid status line.");
@@ -132,14 +133,26 @@ final class MessageParserImpl implements MessageParser {
     }
 
     private String getNextLine(final InputStream inputStream, final byte[] buffer) throws IOException {
+        return getNextLine(inputStream, buffer, null);
+    }
+
+    private String getNextLine(final InputStream inputStream, final byte[] buffer, final Runnable startParsingCallback)
+            throws IOException {
 
         int currentByteIndex = 0;
         boolean carriageReturn = false;
         boolean lineBreak = false;
 
+        boolean firstByte = true;
+
         int currentByte;
 
         while ((currentByte = inputStream.read()) > -1) {
+
+            if (firstByte) {
+                firstByte = false;
+                handleFirstByte(startParsingCallback);
+            }
 
             buffer[currentByteIndex] = (byte) currentByte;
             currentByteIndex++;
@@ -164,6 +177,12 @@ final class MessageParserImpl implements MessageParser {
 
         return new String(buffer, 0, currentByteIndex, HEADER_CHARSET);
 
+    }
+
+    private void handleFirstByte(final Runnable startParsingCallback) {
+        if (startParsingCallback != null) {
+            startParsingCallback.run();
+        }
     }
 
     private Version parseVersion(final String version) throws InvalidHttpHeaderException {

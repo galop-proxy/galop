@@ -6,6 +6,7 @@ import io.github.galop_proxy.galop.configuration.HttpHeaderRequestConfiguration;
 import io.github.galop_proxy.galop.configuration.HttpHeaderResponseConfiguration;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.InOrder;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -15,8 +16,7 @@ import static io.github.galop_proxy.galop.http.HttpConstants.HEADER_CHARSET;
 import static io.github.galop_proxy.galop.http.HttpConstants.NEW_LINE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 /**
  * Tests the class {@link MessageParserImpl}.
@@ -108,6 +108,22 @@ public class MessageParserImplTest {
         assertHeaderField(request, HeaderFields.Request.X_FORWARDED_FOR,
                 REQUEST_X_FORWARDED_FOR_1_EXAMPLE, REQUEST_X_FORWARDED_FOR_2_EXAMPLE);
         assertHeaderField(request, HeaderFields.Request.COOKIE, "");
+    }
+
+    @Test
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    public void parseRequest_withCallback_callsCallbackAsSoonAsTheFirstByteWasRead() throws IOException {
+
+        final InputStream inputStream = spy(toInputStream(REQUEST_EXAMPLE));
+        final Runnable callback = mock(Runnable.class);
+
+        instance.parseRequest(inputStream, callback);
+
+        final InOrder inOrder = inOrder(inputStream, callback);
+        inOrder.verify(inputStream).read();
+        inOrder.verify(callback).run();
+        inOrder.verify(inputStream, atLeastOnce()).read();
+
     }
 
     @Test(expected = ByteLimitExceededException.class)
@@ -205,6 +221,22 @@ public class MessageParserImplTest {
         final String response = "HTTP/1.1 200" + NEW_LINE + NEW_LINE;
         final Response parsed = instance.parseResponse(toInputStream(response), null);
         assertEquals("", parsed.getReasonPhrase());
+    }
+
+    @Test
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    public void parseResponse_withCallback_callsCallbackAsSoonAsTheFirstByteWasRead() throws IOException {
+
+        final InputStream inputStream = spy(toInputStream(RESPONSE_EXAMPLE));
+        final Runnable callback = mock(Runnable.class);
+
+        instance.parseResponse(inputStream, callback);
+
+        final InOrder inOrder = inOrder(inputStream, callback);
+        inOrder.verify(inputStream).read();
+        inOrder.verify(callback).run();
+        inOrder.verify(inputStream, atLeastOnce()).read();
+
     }
 
     @Test(expected = ByteLimitExceededException.class)
