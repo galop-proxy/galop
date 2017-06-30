@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 import io.github.galop_proxy.api.http.*;
 import io.github.galop_proxy.galop.configuration.HttpHeaderRequestConfiguration;
 import io.github.galop_proxy.galop.configuration.HttpHeaderResponseConfiguration;
+import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InOrder;
@@ -45,8 +46,6 @@ public class MessageParserImplTest {
             + "Cookie:" + NEW_LINE // Empty value
             + NEW_LINE;
 
-    private Request request;
-
     // Response example:
 
     private static final String RESPONSE_DATE_EXAMPLE = "Fri, 30 Jun 2017 09:23:16 GMT";
@@ -62,9 +61,13 @@ public class MessageParserImplTest {
             + NEW_LINE
             + RESPONSE_CONTENT_EXAMPLE;
 
-    private Response response;
+    // Set up:
 
     private MessageParser instance;
+
+    private Request request;
+    private InputStream responseInputStream;
+    private Response response;
 
     @Before
     public void setUp() throws IOException {
@@ -77,7 +80,8 @@ public class MessageParserImplTest {
         instance = new MessageParserImpl(requestConfiguration, responseConfiguration);
 
         request = instance.parseRequest(toInputStream(REQUEST_EXAMPLE), null);
-        response = instance.parseResponse(toInputStream(RESPONSE_EXAMPLE), null);
+        responseInputStream = toInputStream(RESPONSE_EXAMPLE);
+        response = instance.parseResponse(responseInputStream, null);
 
     }
 
@@ -237,6 +241,11 @@ public class MessageParserImplTest {
         inOrder.verify(callback).run();
         inOrder.verify(inputStream, atLeastOnce()).read();
 
+    }
+
+    @Test
+    public void parseResponse_afterParsingHeader_doesNotReadMessageBody() throws IOException {
+        assertEquals(RESPONSE_CONTENT_EXAMPLE, IOUtils.toString(responseInputStream, HEADER_CHARSET));
     }
 
     @Test(expected = ByteLimitExceededException.class)

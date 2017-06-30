@@ -113,13 +113,11 @@ final class MessageParserImpl implements MessageParser {
     }
 
     private String parseReasonPhrase(final String[] statusLine) {
-
         if (statusLine.length == 3) {
             return statusLine[2];
         } else {
             return "";
         }
-
     }
 
     // Common methods:
@@ -171,7 +169,7 @@ final class MessageParserImpl implements MessageParser {
         }
 
         if (lineBreak) {
-            // Because the carriage return and the line break should be omitted.
+            // The carriage return and the line break should be omitted.
             currentByteIndex = currentByteIndex - 2;
         }
 
