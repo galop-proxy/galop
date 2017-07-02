@@ -13,6 +13,7 @@ import java.io.InputStream;
 import java.net.Socket;
 import java.util.Locale;
 import java.util.concurrent.*;
+import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static io.github.galop_proxy.api.commons.Preconditions.checkNotNull;
