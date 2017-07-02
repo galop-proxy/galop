@@ -5,14 +5,12 @@ import io.github.galop_proxy.api.http.Request;
 import io.github.galop_proxy.api.http.Response;
 import io.github.galop_proxy.galop.configuration.HttpHeaderRequestConfiguration;
 import io.github.galop_proxy.galop.configuration.HttpHeaderResponseConfiguration;
-import org.apache.commons.lang3.StringUtils;
 
 import javax.inject.Inject;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
+import java.util.Map;
 
 import static io.github.galop_proxy.api.commons.Preconditions.checkNotNull;
 import static io.github.galop_proxy.galop.http.HttpConstants.HEADER_CHARSET;
@@ -22,14 +20,16 @@ final class MessageParserImpl implements MessageParser {
     private final HttpHeaderRequestConfiguration requestConfiguration;
     private final HttpHeaderResponseConfiguration responseConfiguration;
     private final StartLineParser startLineParser;
+    private final HeaderParser headerParser;
 
     @Inject
     MessageParserImpl(final HttpHeaderRequestConfiguration requestConfiguration,
                       final HttpHeaderResponseConfiguration responseConfiguration,
-                      final StartLineParser startLineParser) {
+                      final StartLineParser startLineParser, final HeaderParser headerParser) {
         this.requestConfiguration = checkNotNull(requestConfiguration, "requestConfiguration");
         this.responseConfiguration = checkNotNull(responseConfiguration, "responseConfiguration");
         this.startLineParser = checkNotNull(startLineParser, "startLineParser");
+        this.headerParser = checkNotNull(headerParser, "headerParser");
     }
 
     // Parse request:
@@ -43,11 +43,15 @@ final class MessageParserImpl implements MessageParser {
         final byte[] buffer = new byte[maxHttpHeaderSize];
         final LimitedInputStream limitedInputStream = new LimitedInputStream(inputStream, maxHttpHeaderSize);
 
-        final Request request = startLineParser.parseRequestLine(
-                () -> getNextLine(limitedInputStream, buffer, startParsingCallback));
+        final Request request = parseRequestLine(limitedInputStream, buffer, startParsingCallback);
         parseHeaderFields(request, limitedInputStream, buffer, true);
         return request;
 
+    }
+
+    private Request parseRequestLine(final InputStream inputStream, final byte[] buffer,
+                                     final Runnable startParsingCallback) throws IOException {
+        return startLineParser.parseRequestLine(() -> getNextLine(inputStream, buffer, startParsingCallback));
     }
 
     // Parse Response:
@@ -61,11 +65,15 @@ final class MessageParserImpl implements MessageParser {
         final byte[] buffer = new byte[maxHttpHeaderSize];
         final LimitedInputStream limitedInputStream = new LimitedInputStream(inputStream, maxHttpHeaderSize);
 
-        final Response response = startLineParser.parseStatusLine(
-                () -> getNextLine(limitedInputStream, buffer, startParsingCallback));
+        final Response response = parseStatusLine(limitedInputStream, buffer, startParsingCallback);
         parseHeaderFields(response, limitedInputStream, buffer, false);
         return response;
 
+    }
+
+    private Response parseStatusLine(final InputStream inputStream, final byte[] buffer,
+                                     final Runnable startParsingCallback) throws IOException {
+        return startLineParser.parseStatusLine(() -> getNextLine(inputStream, buffer, startParsingCallback));
     }
 
     // Common methods:
@@ -138,85 +146,17 @@ final class MessageParserImpl implements MessageParser {
     private void parseHeaderFields(final Message message, final InputStream inputStream, final byte[] buffer,
                                    final boolean request) throws IOException {
 
-        String line;
+        final Callable<String, IOException> nextLine = () -> getNextLine(inputStream, buffer);
 
-        while (!(line = getNextLine(inputStream, buffer)).isEmpty()) {
-            parseHeaderField(message, line, request);
-        }
+        final Map<String, List<String>> headerFields;
 
-    }
-
-    private void parseHeaderField(final Message message, final String line, final boolean request)
-            throws InvalidHttpHeaderException {
-
-        final int colonIndex = splitHeaderFieldLine(line);
-
-        final String name = parseHeaderFieldName(line, colonIndex, request);
-        final String value = parseHeaderFieldValue(line, colonIndex);
-
-        addHeaderFieldToMessage(message, name, value);
-
-    }
-
-    private int splitHeaderFieldLine(final String line) throws InvalidHttpHeaderException {
-
-        final int colonIndex = line.indexOf(':');
-
-        if (colonIndex == -1) {
-            throw new InvalidHttpHeaderException("Invalid HTTP header field: Missing colon.");
-        }
-
-        return colonIndex;
-
-    }
-
-    private String parseHeaderFieldName(final String line, final int colonIndex, final boolean request)
-            throws InvalidHttpHeaderException {
-
-        String name = line.substring(0, colonIndex).toLowerCase(Locale.ENGLISH);
-
-        if (name.isEmpty()) {
-            throw new InvalidHttpHeaderException("Invalid HTTP header field: Empty header field name.");
-        }
-
-        if (Character.isWhitespace(name.charAt(name.length() - 1))) {
-
-            if (request) {
-                throw new InvalidHttpHeaderException("Invalid HTTP header field: "
-                        + "No whitespace is allowed between the header field-name and colon.");
-            } else {
-                name = StringUtils.stripEnd(name, null);
-            }
-
-        }
-
-        return name;
-
-    }
-
-    private String parseHeaderFieldValue(final String line, final int colonIndex) {
-
-        final String value;
-
-        if (colonIndex + 1 < line.length()) {
-            value = line.substring(colonIndex + 1).trim();
+        if (request) {
+            headerFields = headerParser.parseRequestHeaders(nextLine);
         } else {
-            value = "";
+            headerFields = headerParser.parseResponseHeaders(nextLine);
         }
 
-        return value;
-
-    }
-
-    private void addHeaderFieldToMessage(final Message message, final String name, final String value) {
-
-        if (!message.getHeaderFields().containsKey(name)) {
-            final List<String> values = new ArrayList<>();
-            values.add(value);
-            message.getHeaderFields().put(name, values);
-        } else {
-            message.getHeaderFields().get(name).add(value);
-        }
+        message.getHeaderFields().putAll(headerFields);
 
     }
 

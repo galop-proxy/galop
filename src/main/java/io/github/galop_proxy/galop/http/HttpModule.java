@@ -9,6 +9,7 @@ public final class HttpModule extends AbstractModule {
     protected void configure() {
         bind(MessageParser.class).to(MessageParserImpl.class).in(Singleton.class);
         bind(StartLineParser.class).to(StartLineParserImpl.class).in(Singleton.class);
+        bind(HeaderParser.class).to(HeaderParserImpl.class).in(Singleton.class);
         bind(HttpHeaderParser.class).to(HttpHeaderParserImpl.class).in(Singleton.class);
         bind(HttpMessageHandler.class).to(HttpMessageHandlerImpl.class).in(Singleton.class);
         bind(HttpExchangeHandler.class).to(HttpExchangeHandlerImpl.class).in(Singleton.class);

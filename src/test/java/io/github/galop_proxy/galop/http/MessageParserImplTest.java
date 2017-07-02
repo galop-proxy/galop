@@ -79,9 +79,10 @@ public class MessageParserImplTest {
 
         // TODO Mockito
         final StartLineParser startLineParser = new StartLineParserImpl();
+        final HeaderParser headerParser = new HeaderParserImpl();
 
         // TODO Constructor tests
-        instance = new MessageParserImpl(requestConfiguration, responseConfiguration, startLineParser);
+        instance = new MessageParserImpl(requestConfiguration, responseConfiguration, startLineParser, headerParser);
 
         request = instance.parseRequest(toInputStream(REQUEST_EXAMPLE), null);
         responseInputStream = toInputStream(RESPONSE_EXAMPLE);
