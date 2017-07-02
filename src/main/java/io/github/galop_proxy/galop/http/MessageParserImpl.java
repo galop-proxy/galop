@@ -113,21 +113,25 @@ final class MessageParserImpl implements MessageParser {
     }
 
     private String parseReasonPhrase(final String[] statusLine) {
+
         if (statusLine.length == 3) {
             return statusLine[2];
         } else {
             return "";
         }
+
     }
 
     // Common methods:
 
     private int getMaxHttpHeaderSize(final boolean request) {
+
         if (request) {
             return requestConfiguration.getMaxSize();
         } else {
             return responseConfiguration.getMaxSize();
         }
+
     }
 
     private String getNextLine(final InputStream inputStream, final byte[] buffer) throws IOException {
@@ -178,9 +182,11 @@ final class MessageParserImpl implements MessageParser {
     }
 
     private void handleFirstByte(final Runnable startParsingCallback) {
+
         if (startParsingCallback != null) {
             startParsingCallback.run();
         }
+
     }
 
     private Version parseVersion(final String version) throws InvalidHttpHeaderException {
@@ -215,11 +221,29 @@ final class MessageParserImpl implements MessageParser {
     private void parseHeaderField(final Message message, final String line, final boolean request)
             throws InvalidHttpHeaderException {
 
+        final int colonIndex = splitHeaderFieldLine(line);
+
+        final String name = parseHeaderFieldName(line, colonIndex, request);
+        final String value = parseHeaderFieldValue(line, colonIndex);
+
+        addHeaderFieldToMessage(message, name, value);
+
+    }
+
+    private int splitHeaderFieldLine(final String line) throws InvalidHttpHeaderException {
+
         final int colonIndex = line.indexOf(':');
 
         if (colonIndex == -1) {
             throw new InvalidHttpHeaderException("Invalid HTTP header field: Missing colon.");
         }
+
+        return colonIndex;
+
+    }
+
+    private String parseHeaderFieldName(final String line, final int colonIndex, final boolean request)
+            throws InvalidHttpHeaderException {
 
         String name = line.substring(0, colonIndex).toLowerCase(Locale.ENGLISH);
 
@@ -238,6 +262,12 @@ final class MessageParserImpl implements MessageParser {
 
         }
 
+        return name;
+
+    }
+
+    private String parseHeaderFieldValue(final String line, final int colonIndex) throws InvalidHttpHeaderException {
+
         final String value;
 
         if (colonIndex + 1 < line.length()) {
@@ -245,6 +275,12 @@ final class MessageParserImpl implements MessageParser {
         } else {
             value = "";
         }
+
+        return value;
+
+    }
+
+    private void addHeaderFieldToMessage(final Message message, final String name, final String value) {
 
         if (!message.getHeaderFields().containsKey(name)) {
             final List<String> values = new ArrayList<>();
