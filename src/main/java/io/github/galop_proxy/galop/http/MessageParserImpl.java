@@ -266,7 +266,7 @@ final class MessageParserImpl implements MessageParser {
 
     }
 
-    private String parseHeaderFieldValue(final String line, final int colonIndex) throws InvalidHttpHeaderException {
+    private String parseHeaderFieldValue(final String line, final int colonIndex) {
 
         final String value;
 

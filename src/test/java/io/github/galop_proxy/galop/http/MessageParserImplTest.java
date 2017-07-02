@@ -208,7 +208,6 @@ public class MessageParserImplTest {
         assertEquals("OK", response.getReasonPhrase());
     }
 
-
     @Test
     public void parseResponse_withWhitespaceBetweenHeaderFieldNameAndColon_removesWhiteSpace()
             throws IOException {
@@ -292,7 +291,6 @@ public class MessageParserImplTest {
         final String response = "HTTP/1.1 ABC OK" + NEW_LINE + NEW_LINE;
         instance.parseResponse(toInputStream(response), null);
     }
-
 
     @Test(expected = InvalidHttpHeaderException.class)
     public void parseResponse_withHeaderFieldWithoutColon_throwsInvalidHttpHeaderException() throws IOException {
