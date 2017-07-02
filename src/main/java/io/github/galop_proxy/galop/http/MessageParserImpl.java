@@ -3,7 +3,6 @@ package io.github.galop_proxy.galop.http;
 import io.github.galop_proxy.api.http.Message;
 import io.github.galop_proxy.api.http.Request;
 import io.github.galop_proxy.api.http.Response;
-import io.github.galop_proxy.api.http.Version;
 import io.github.galop_proxy.galop.configuration.HttpHeaderRequestConfiguration;
 import io.github.galop_proxy.galop.configuration.HttpHeaderResponseConfiguration;
 import org.apache.commons.lang3.StringUtils;
@@ -17,18 +16,20 @@ import java.util.Locale;
 
 import static io.github.galop_proxy.api.commons.Preconditions.checkNotNull;
 import static io.github.galop_proxy.galop.http.HttpConstants.HEADER_CHARSET;
-import static io.github.galop_proxy.galop.http.HttpConstants.HTTP_VERSION_PREFIX;
 
 final class MessageParserImpl implements MessageParser {
 
     private final HttpHeaderRequestConfiguration requestConfiguration;
     private final HttpHeaderResponseConfiguration responseConfiguration;
+    private final StartLineParser startLineParser;
 
     @Inject
     MessageParserImpl(final HttpHeaderRequestConfiguration requestConfiguration,
-                      final HttpHeaderResponseConfiguration responseConfiguration) {
+                      final HttpHeaderResponseConfiguration responseConfiguration,
+                      final StartLineParser startLineParser) {
         this.requestConfiguration = checkNotNull(requestConfiguration, "requestConfiguration");
         this.responseConfiguration = checkNotNull(responseConfiguration, "responseConfiguration");
+        this.startLineParser = checkNotNull(startLineParser, "startLineParser");
     }
 
     // Parse request:
@@ -42,26 +43,10 @@ final class MessageParserImpl implements MessageParser {
         final byte[] buffer = new byte[maxHttpHeaderSize];
         final LimitedInputStream limitedInputStream = new LimitedInputStream(inputStream, maxHttpHeaderSize);
 
-        final Request request = parseRequestLine(limitedInputStream, buffer, startParsingCallback);
+        final Request request = startLineParser.parseRequestLine(
+                () -> getNextLine(limitedInputStream, buffer, startParsingCallback));
         parseHeaderFields(request, limitedInputStream, buffer, true);
         return request;
-
-    }
-
-    private Request parseRequestLine(final InputStream inputStream, final byte[] buffer,
-                                     final Runnable startParsingCallback) throws IOException {
-
-        final String[] requestLine = getNextLine(inputStream, buffer, startParsingCallback).split(" ");
-
-        if (requestLine.length != 3) {
-            throw new InvalidHttpHeaderException("Invalid request line.");
-        }
-
-        final String method = requestLine[0];
-        final String requestTarget = requestLine[1];
-        final Version version = parseVersion(requestLine[2]);
-
-        return new RequestImpl(version, method, requestTarget);
 
     }
 
@@ -76,49 +61,10 @@ final class MessageParserImpl implements MessageParser {
         final byte[] buffer = new byte[maxHttpHeaderSize];
         final LimitedInputStream limitedInputStream = new LimitedInputStream(inputStream, maxHttpHeaderSize);
 
-        final Response response = parseStatusLine(limitedInputStream, buffer, startParsingCallback);
+        final Response response = startLineParser.parseStatusLine(
+                () -> getNextLine(limitedInputStream, buffer, startParsingCallback));
         parseHeaderFields(response, limitedInputStream, buffer, false);
         return response;
-
-    }
-
-    private Response parseStatusLine(final InputStream inputStream, final byte[] buffer,
-                                     final Runnable startParsingCallback) throws IOException {
-
-        final String[] statusLine = getNextLine(inputStream, buffer, startParsingCallback).split(" ");
-
-        if (statusLine.length != 3 && statusLine.length != 2) {
-            throw new InvalidHttpHeaderException("Invalid status line.");
-        }
-
-        final Version version = parseVersion(statusLine[0]);
-        final int statusCode = parseStatusCode(statusLine[1]);
-        final String reasonPhrase = parseReasonPhrase(statusLine);
-
-        return new ResponseImpl(version, statusCode, reasonPhrase);
-
-    }
-
-    private int parseStatusCode(final String statusCode) throws InvalidHttpHeaderException {
-
-        if (statusCode.length() != 3
-                || !Character.isDigit(statusCode.charAt(0))
-                || !Character.isDigit(statusCode.charAt(1))
-                || !Character.isDigit(statusCode.charAt(2))) {
-            throw new InvalidHttpHeaderException("Invalid status line: The status code must consist of three digits.");
-        }
-
-        return Integer.parseInt(statusCode);
-
-    }
-
-    private String parseReasonPhrase(final String[] statusLine) {
-
-        if (statusLine.length == 3) {
-            return statusLine[2];
-        } else {
-            return "";
-        }
 
     }
 
@@ -186,24 +132,6 @@ final class MessageParserImpl implements MessageParser {
         if (startParsingCallback != null) {
             startParsingCallback.run();
         }
-
-    }
-
-    private Version parseVersion(final String version) throws InvalidHttpHeaderException {
-
-        // "HTTP/" DIGIT "." DIGIT
-        if (version.length() != 8
-                || !version.startsWith(HTTP_VERSION_PREFIX)
-                || !Character.isDigit(version.charAt(5))
-                || version.charAt(6) != '.'
-                || !Character.isDigit(version.charAt(7))) {
-            throw new InvalidHttpHeaderException("Invalid HTTP version in request line.");
-        }
-
-        final int major = Character.getNumericValue(version.charAt(5));
-        final int minor = Character.getNumericValue(version.charAt(7));
-
-        return new Version(major, minor);
 
     }
 

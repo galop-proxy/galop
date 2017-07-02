@@ -77,7 +77,11 @@ public class MessageParserImplTest {
         when(requestConfiguration.getMaxSize()).thenReturn(MAX_HTTP_HEADER_SIZE);
         when(responseConfiguration.getMaxSize()).thenReturn(MAX_HTTP_HEADER_SIZE);
 
-        instance = new MessageParserImpl(requestConfiguration, responseConfiguration);
+        // TODO Mockito
+        final StartLineParser startLineParser = new StartLineParserImpl();
+
+        // TODO Constructor tests
+        instance = new MessageParserImpl(requestConfiguration, responseConfiguration, startLineParser);
 
         request = instance.parseRequest(toInputStream(REQUEST_EXAMPLE), null);
         responseInputStream = toInputStream(RESPONSE_EXAMPLE);
