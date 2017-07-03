@@ -57,12 +57,12 @@ public class HttpModuleTest extends AbstractConfigurationTest {
 
     @Test
     public void configure_bindsHttpMessageHandler() {
-        assertNotNull(injector.getInstance(HttpMessageHandler.class));
+        assertNotNull(injector.getInstance(MessageHandler.class));
     }
 
     @Test
     public void configure_bindsHttpMessageHandlerAsSingleton() {
-        assertSame(injector.getInstance(HttpMessageHandler.class), injector.getInstance(HttpMessageHandler.class));
+        assertSame(injector.getInstance(MessageHandler.class), injector.getInstance(MessageHandler.class));
     }
 
     @Test
@@ -77,12 +77,12 @@ public class HttpModuleTest extends AbstractConfigurationTest {
 
     @Test
     public void configure_bindsHttpExchangeHandler() {
-        assertNotNull(injector.getInstance(HttpExchangeHandler.class));
+        assertNotNull(injector.getInstance(ExchangeHandler.class));
     }
 
     @Test
     public void configure_bindsHttpExchangeHandlerAsSingleton() {
-        assertSame(injector.getInstance(HttpExchangeHandler.class), injector.getInstance(HttpExchangeHandler.class));
+        assertSame(injector.getInstance(ExchangeHandler.class), injector.getInstance(ExchangeHandler.class));
     }
 
 }

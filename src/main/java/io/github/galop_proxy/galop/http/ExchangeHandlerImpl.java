@@ -18,21 +18,21 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static io.github.galop_proxy.api.commons.Preconditions.checkNotNull;
 
-final class HttpExchangeHandlerImpl implements HttpExchangeHandler {
+final class ExchangeHandlerImpl implements ExchangeHandler {
 
-    private static final Logger LOGGER = LogManager.getLogger(HttpExchangeHandler.class);
+    private static final Logger LOGGER = LogManager.getLogger(ExchangeHandler.class);
 
     private final HttpHeaderConfiguration httpHeaderConfiguration;
     private final HttpHeaderParser httpHeaderParser;
-    private final HttpMessageHandler httpMessageHandler;
+    private final MessageHandler messageHandler;
     private final ExecutorService executorService;
 
     @Inject
-    HttpExchangeHandlerImpl(final HttpHeaderConfiguration httpHeaderConfiguration, final HttpHeaderParser httpHeaderParser,
-                            final HttpMessageHandler httpMessageHandler, final ExecutorService executorService) {
+    ExchangeHandlerImpl(final HttpHeaderConfiguration httpHeaderConfiguration, final HttpHeaderParser httpHeaderParser,
+                        final MessageHandler messageHandler, final ExecutorService executorService) {
         this.httpHeaderConfiguration = checkNotNull(httpHeaderConfiguration, "httpHeaderConfiguration");
         this.httpHeaderParser = checkNotNull(httpHeaderParser, "httpHeaderParser");
-        this.httpMessageHandler = checkNotNull(httpMessageHandler, "httpMessageHandler");
+        this.messageHandler = checkNotNull(messageHandler, "messageHandler");
         this.executorService = checkNotNull(executorService, "executorService");
     }
 
@@ -48,7 +48,7 @@ final class HttpExchangeHandlerImpl implements HttpExchangeHandler {
 
         try {
             final Result header = parseRequestHeader(inputStream, startHandlingRequestCallback);
-            httpMessageHandler.handle(header, inputStream, target.getOutputStream());
+            messageHandler.handle(header, inputStream, target.getOutputStream());
         } catch (final Exception ex) {
             handleRequestError(ex, source);
             throw ex;
@@ -64,15 +64,15 @@ final class HttpExchangeHandlerImpl implements HttpExchangeHandler {
     private void handleRequestError(final Exception ex, final Socket source) {
 
         if (ex instanceof UnsupportedTransferEncodingException) {
-            sendHttpStatusToClient(HttpStatusCode.LENGTH_REQUIRED, source);
+            sendHttpStatusToClient(StatusCode.LENGTH_REQUIRED, source);
         } else if (ex instanceof ByteLimitExceededException) {
-            sendHttpStatusToClient(HttpStatusCode.REQUEST_HEADER_FIELDS_TOO_LARGE, source);
+            sendHttpStatusToClient(StatusCode.REQUEST_HEADER_FIELDS_TOO_LARGE, source);
         } else if (ex instanceof InterruptedException) {
-            sendHttpStatusToClient(HttpStatusCode.SERVICE_UNAVAILABLE, source);
+            sendHttpStatusToClient(StatusCode.SERVICE_UNAVAILABLE, source);
         } else if (ex instanceof TimeoutException) {
-            sendHttpStatusToClient(HttpStatusCode.REQUEST_TIMEOUT, source);
+            sendHttpStatusToClient(StatusCode.REQUEST_TIMEOUT, source);
         } else {
-            sendHttpStatusToClient(HttpStatusCode.BAD_REQUEST, source);
+            sendHttpStatusToClient(StatusCode.BAD_REQUEST, source);
         }
 
     }
@@ -91,7 +91,7 @@ final class HttpExchangeHandlerImpl implements HttpExchangeHandler {
 
         try {
             final Result header = parseResponseHeader(inputStream, () -> sendingResponseStarted.set(true));
-            httpMessageHandler.handle(header, inputStream, source.getOutputStream());
+            messageHandler.handle(header, inputStream, source.getOutputStream());
             endHandlingResponseCallback.run();
         } catch (final Exception ex) {
             handleResponseError(ex, source, sendingResponseStarted.get());
@@ -114,11 +114,11 @@ final class HttpExchangeHandlerImpl implements HttpExchangeHandler {
         }
 
         if (ex instanceof InterruptedException) {
-            sendHttpStatusToClient(HttpStatusCode.SERVICE_UNAVAILABLE, source);
+            sendHttpStatusToClient(StatusCode.SERVICE_UNAVAILABLE, source);
         } else if (ex instanceof TimeoutException) {
-            sendHttpStatusToClient(HttpStatusCode.GATEWAY_TIMEOUT, source);
+            sendHttpStatusToClient(StatusCode.GATEWAY_TIMEOUT, source);
         } else {
-            sendHttpStatusToClient(HttpStatusCode.BAD_GATEWAY, source);
+            sendHttpStatusToClient(StatusCode.BAD_GATEWAY, source);
         }
 
     }
@@ -152,9 +152,9 @@ final class HttpExchangeHandlerImpl implements HttpExchangeHandler {
 
     }
 
-    private void sendHttpStatusToClient(final HttpStatusCode statusCode, final Socket source) {
+    private void sendHttpStatusToClient(final StatusCode statusCode, final Socket source) {
         try {
-            final byte[] response = HttpResponse.createWithStatus(statusCode).build();
+            final byte[] response = ResponseBuilder.createWithStatus(statusCode).build();
             IOUtils.write(response, source.getOutputStream());
         } catch (final Exception ex) {
             if (!"socket is closed".equals(getNormalizedMessage(ex))) {

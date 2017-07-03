@@ -10,16 +10,16 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
- * Tests the class {@link HttpMessageHandlerImpl}.
+ * Tests the class {@link MessageHandlerImpl}.
  */
-public class HttpMessageHandlerImplTest {
+public class MessageHandlerImplTest {
 
-    private HttpMessageHandlerImpl handler;
+    private MessageHandlerImpl handler;
     private OutputStream outputStream;
 
     @Before
     public void setUp() {
-        handler = new HttpMessageHandlerImpl();
+        handler = new MessageHandlerImpl();
         outputStream = new ByteArrayOutputStream();
     }
 
@@ -63,11 +63,11 @@ public class HttpMessageHandlerImplTest {
     @Test
     public void handle_messageWithChunkedTransferEncoding_copiesMessageToOutput() throws IOException {
 
-        final String entity = "6" + HttpConstants.NEW_LINE + "Hello " + HttpConstants.NEW_LINE
-                + "11" + HttpConstants.NEW_LINE + " wonderful world!" + HttpConstants.NEW_LINE
-                + "E" + HttpConstants.NEW_LINE + "\nHow\r\nare you?" + HttpConstants.NEW_LINE
-                + "0" + HttpConstants.NEW_LINE
-                + HttpConstants.NEW_LINE;
+        final String entity = "6" + Constants.NEW_LINE + "Hello " + Constants.NEW_LINE
+                + "11" + Constants.NEW_LINE + " wonderful world!" + Constants.NEW_LINE
+                + "E" + Constants.NEW_LINE + "\nHow\r\nare you?" + Constants.NEW_LINE
+                + "0" + Constants.NEW_LINE
+                + Constants.NEW_LINE;
         final String message = HttpTestUtils.createResponse(entity, null, "chunked");
         final long headerLength = message.getBytes().length - entity.getBytes().length;
         final HttpHeaderParser.Result result = createHeaderResult(true, headerLength, null);
@@ -85,10 +85,10 @@ public class HttpMessageHandlerImplTest {
     @Test
     public void handle_messageWithChunkedTransferEncodingAndChunkExtension_copiesMessageToOutput() throws IOException {
 
-        final String entity = "C;lorem=ipsum" + HttpConstants.NEW_LINE + "Hello world!" + HttpConstants.NEW_LINE
-                + "A;hello=world;foo=bar" + HttpConstants.NEW_LINE + "123\r\n\r\n456" + HttpConstants.NEW_LINE
-                + "0" + HttpConstants.NEW_LINE
-                + HttpConstants.NEW_LINE;
+        final String entity = "C;lorem=ipsum" + Constants.NEW_LINE + "Hello world!" + Constants.NEW_LINE
+                + "A;hello=world;foo=bar" + Constants.NEW_LINE + "123\r\n\r\n456" + Constants.NEW_LINE
+                + "0" + Constants.NEW_LINE
+                + Constants.NEW_LINE;
         final String message = HttpTestUtils.createResponse(entity, null, "chunked");
         final long headerLength = message.getBytes().length - entity.getBytes().length;
         final HttpHeaderParser.Result result = createHeaderResult(true, headerLength, null);
@@ -106,11 +106,11 @@ public class HttpMessageHandlerImplTest {
     @Test
     public void handle_messageWithChunkedTransferEncodingAndTrailerPart_copiesMessageToOutput() throws IOException {
 
-        final String entity = "B" + HttpConstants.NEW_LINE + "Lorem Ipsum" + HttpConstants.NEW_LINE
-                + "0" + HttpConstants.NEW_LINE
-                + "Example:123456789" + HttpConstants.NEW_LINE
-                + "Another: Hello world!" + HttpConstants.NEW_LINE
-                + HttpConstants.NEW_LINE;
+        final String entity = "B" + Constants.NEW_LINE + "Lorem Ipsum" + Constants.NEW_LINE
+                + "0" + Constants.NEW_LINE
+                + "Example:123456789" + Constants.NEW_LINE
+                + "Another: Hello world!" + Constants.NEW_LINE
+                + Constants.NEW_LINE;
         final String message = HttpTestUtils.createResponse(entity, null, "chunked");
         final long headerLength = message.getBytes().length - entity.getBytes().length;
         final HttpHeaderParser.Result result = createHeaderResult(true, headerLength, null);
@@ -139,7 +139,7 @@ public class HttpMessageHandlerImplTest {
 
     @Test(expected = InvalidChunkException.class)
     public void handle_withInvalidChunkSize_throwsInvalidChunkException() throws IOException {
-        final String entity = "Z" + HttpConstants.NEW_LINE; // Not a valid Hexadecimal number
+        final String entity = "Z" + Constants.NEW_LINE; // Not a valid Hexadecimal number
         final String message = HttpTestUtils.createResponse(entity, null, "chunked");
         final long headerLength = message.getBytes().length - entity.getBytes().length;
         final HttpHeaderParser.Result result = createHeaderResult(true, headerLength, null);

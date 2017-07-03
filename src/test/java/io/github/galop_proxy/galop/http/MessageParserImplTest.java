@@ -13,8 +13,8 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import static io.github.galop_proxy.galop.http.HttpConstants.HEADER_CHARSET;
-import static io.github.galop_proxy.galop.http.HttpConstants.NEW_LINE;
+import static io.github.galop_proxy.galop.http.Constants.HEADER_CHARSET;
+import static io.github.galop_proxy.galop.http.Constants.NEW_LINE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;

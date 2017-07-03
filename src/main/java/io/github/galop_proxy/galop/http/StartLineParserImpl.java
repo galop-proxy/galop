@@ -6,7 +6,7 @@ import io.github.galop_proxy.api.http.Version;
 
 import java.io.IOException;
 
-import static io.github.galop_proxy.galop.http.HttpConstants.HTTP_VERSION_PREFIX;
+import static io.github.galop_proxy.galop.http.Constants.HTTP_VERSION_PREFIX;
 
 final class StartLineParserImpl implements StartLineParser {
 

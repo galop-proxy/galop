@@ -1,6 +1,6 @@
 package io.github.galop_proxy.galop.http;
 
-public enum HttpStatusCode {
+public enum StatusCode {
 
     // Success:
     OK(200, "OK"),
@@ -19,7 +19,7 @@ public enum HttpStatusCode {
     private final int code;
     private final String reason;
 
-    HttpStatusCode(final int code, final String reason) {
+    StatusCode(final int code, final String reason) {
         this.code = code;
         this.reason = reason;
     }

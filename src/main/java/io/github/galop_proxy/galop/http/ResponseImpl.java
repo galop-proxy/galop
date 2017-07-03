@@ -4,7 +4,7 @@ import io.github.galop_proxy.api.http.Response;
 import io.github.galop_proxy.api.http.Version;
 
 import static io.github.galop_proxy.api.commons.Preconditions.checkNotNull;
-import static io.github.galop_proxy.galop.http.HttpConstants.STATUS_CODE_RANGE;
+import static io.github.galop_proxy.galop.http.Constants.STATUS_CODE_RANGE;
 
 final class ResponseImpl extends AbstractMessage implements Response {
 

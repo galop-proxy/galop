@@ -1,6 +1,6 @@
 package io.github.galop_proxy.galop.http;
 
-import static io.github.galop_proxy.galop.http.HttpConstants.*;
+import static io.github.galop_proxy.galop.http.Constants.*;
 
 final class HttpTestUtils {
 

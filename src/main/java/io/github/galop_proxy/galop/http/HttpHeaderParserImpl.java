@@ -113,14 +113,14 @@ final class HttpHeaderParserImpl implements HttpHeaderParser {
 
                 if (currentByteIndex != 0) {
 
-                    final String line = new String(bytes, 0, currentByteIndex, HttpConstants.HEADER_CHARSET)
+                    final String line = new String(bytes, 0, currentByteIndex, Constants.HEADER_CHARSET)
                             .toLowerCase(Locale.ENGLISH);
 
                     currentByteIndex = 0;
 
-                    if (line.startsWith(HttpConstants.HEADER_CONTENT_LENGTH_PREFIX)) {
+                    if (line.startsWith(Constants.HEADER_CONTENT_LENGTH_PREFIX)) {
                         contentLength = parseContentLength(line);
-                    } else if (line.startsWith(HttpConstants.HEADER_TRANSFER_ENCODING_PREFIX)) {
+                    } else if (line.startsWith(Constants.HEADER_TRANSFER_ENCODING_PREFIX)) {
                         chunkedEncoding = parseTransferEncoding(line);
                     }
 
@@ -150,7 +150,7 @@ final class HttpHeaderParserImpl implements HttpHeaderParser {
 
     private long parseContentLength(final String line) throws IOException {
 
-        final String contentLengthString = line.substring(HttpConstants.HEADER_CONTENT_LENGTH_PREFIX.length()).trim();
+        final String contentLengthString = line.substring(Constants.HEADER_CONTENT_LENGTH_PREFIX.length()).trim();
 
         final long contentLength;
 
@@ -170,12 +170,12 @@ final class HttpHeaderParserImpl implements HttpHeaderParser {
 
     private boolean parseTransferEncoding(final String line) throws IOException {
 
-        final String transferEncoding = line.substring(HttpConstants.HEADER_TRANSFER_ENCODING_PREFIX.length()).trim();
+        final String transferEncoding = line.substring(Constants.HEADER_TRANSFER_ENCODING_PREFIX.length()).trim();
 
         switch (transferEncoding) {
-            case HttpConstants.TRANSFER_ENCODING_CHUNKED:
+            case Constants.TRANSFER_ENCODING_CHUNKED:
                 return true;
-            case HttpConstants.TRANSFER_ENCODING_IDENTITY:
+            case Constants.TRANSFER_ENCODING_IDENTITY:
                 return false;
             default:
                 throw new UnsupportedTransferEncodingException(transferEncoding);

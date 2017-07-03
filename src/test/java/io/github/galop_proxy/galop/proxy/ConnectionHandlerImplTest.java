@@ -17,7 +17,7 @@ import static org.mockito.Mockito.*;
  */
 public class ConnectionHandlerImplTest {
 
-    private HttpExchangeHandler httpExchangeHandler;
+    private ExchangeHandler exchangeHandler;
     private Socket source;
     private Socket target;
 
@@ -26,16 +26,16 @@ public class ConnectionHandlerImplTest {
     @Before
     public void setUp() throws Exception {
 
-        httpExchangeHandler = mock(HttpExchangeHandler.class);
-        doAnswer(this::answerHandler).when(httpExchangeHandler).handleRequest(any(), any(), any());
-        doAnswer(this::answerHandler).when(httpExchangeHandler).handleResponse(any(), any(), any());
+        exchangeHandler = mock(ExchangeHandler.class);
+        doAnswer(this::answerHandler).when(exchangeHandler).handleRequest(any(), any(), any());
+        doAnswer(this::answerHandler).when(exchangeHandler).handleResponse(any(), any(), any());
 
         source = mock(Socket.class);
         target = mock(Socket.class);
         when(source.isClosed()).thenReturn(false);
         when(target.isClosed()).thenReturn(false);
 
-        handler = new ConnectionHandlerImpl(httpExchangeHandler, source, target);
+        handler = new ConnectionHandlerImpl(exchangeHandler, source, target);
 
     }
 
@@ -54,12 +54,12 @@ public class ConnectionHandlerImplTest {
 
     @Test(expected = NullPointerException.class)
     public void constructor_withoutSourceSocket_throwsNullPointerException() {
-        new ConnectionHandlerImpl(httpExchangeHandler, null, target);
+        new ConnectionHandlerImpl(exchangeHandler, null, target);
     }
 
     @Test(expected = NullPointerException.class)
     public void constructor_withoutTargetSocket_throwsNullPointerException() {
-        new ConnectionHandlerImpl(httpExchangeHandler, source, null);
+        new ConnectionHandlerImpl(exchangeHandler, source, null);
     }
 
     // Handle requests and responses:
@@ -68,21 +68,21 @@ public class ConnectionHandlerImplTest {
     public void run_withOneRequest_callsHttpExchangeHandler() throws Exception {
         when(source.isClosed()).thenReturn(false).thenReturn(true);
         handler.run();
-        verify(httpExchangeHandler).handleRequest(same(source), same(target), any());
-        verify(httpExchangeHandler).handleResponse(same(source), same(target), any());
+        verify(exchangeHandler).handleRequest(same(source), same(target), any());
+        verify(exchangeHandler).handleResponse(same(source), same(target), any());
     }
 
     @Test
     public void run_withTwoRequests_callsHttpExchangeHandlerTwoTimes() throws Exception {
         when(source.isClosed()).thenReturn(false).thenReturn(false).thenReturn(true);
         handler.run();
-        verify(httpExchangeHandler, times(2)).handleRequest(same(source), same(target), any());
-        verify(httpExchangeHandler, times(2)).handleResponse(same(source), same(target), any());
+        verify(exchangeHandler, times(2)).handleRequest(same(source), same(target), any());
+        verify(exchangeHandler, times(2)).handleResponse(same(source), same(target), any());
     }
 
     @Test(timeout = 5000)
     public void run_whenHttpExchangeHandlerThrowsException_closesSocketsAndTerminates() throws Exception {
-        doThrow(Exception.class).when(httpExchangeHandler).handleRequest(any(), any(), any());
+        doThrow(Exception.class).when(exchangeHandler).handleRequest(any(), any(), any());
         handler.run();
         verify(source).close();
         verify(target).close();

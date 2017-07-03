@@ -4,7 +4,7 @@ import com.google.common.collect.Range;
 
 import java.nio.charset.Charset;
 
-class HttpConstants {
+class Constants {
 
     static final String HTTP_VERSION_PREFIX = "HTTP/";
     static final String HTTP_VERSION = HTTP_VERSION_PREFIX + "1.1";
@@ -28,7 +28,7 @@ class HttpConstants {
 
     static final Range<Integer> STATUS_CODE_RANGE = Range.closed(0, 999);
 
-    private HttpConstants() {
+    private Constants() {
         throw new AssertionError("No instances");
     }
 

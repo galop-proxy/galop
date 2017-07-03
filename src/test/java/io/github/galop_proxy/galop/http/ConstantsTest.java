@@ -5,13 +5,13 @@ import org.junit.Test;
 import java.lang.reflect.Constructor;
 
 /**
- * Tests the class {@link HttpConstants}.
+ * Tests the class {@link Constants}.
  */
-public class HttpConstantsTest {
+public class ConstantsTest {
 
     @Test(expected = Exception.class)
     public void constructor_throwsException() throws Exception {
-        final Constructor<HttpConstants> constructor = HttpConstants.class.getDeclaredConstructor();
+        final Constructor<Constants> constructor = Constants.class.getDeclaredConstructor();
         constructor.setAccessible(true);
         constructor.newInstance();
     }

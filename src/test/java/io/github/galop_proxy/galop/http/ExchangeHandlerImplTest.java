@@ -17,9 +17,9 @@ import static org.junit.Assert.fail;
 import static org.mockito.Mockito.*;
 
 /**
- * Tests the class {@link HttpExchangeHandlerImpl}.
+ * Tests the class {@link ExchangeHandlerImpl}.
  */
-public class HttpExchangeHandlerImplTest {
+public class ExchangeHandlerImplTest {
 
     private final static long REQUEST_TIMEOUT = 10000;
     private final static long RESPONSE_TIMEOUT = 20000;
@@ -27,10 +27,10 @@ public class HttpExchangeHandlerImplTest {
     private HttpHeaderConfiguration configuration;
     private Result headerResult;
     private HttpHeaderParser httpHeaderParser;
-    private HttpMessageHandler httpMessageHandler;
+    private MessageHandler messageHandler;
     private Future<Result> future;
     private ExecutorService executorService;
-    private HttpExchangeHandlerImpl handler;
+    private ExchangeHandlerImpl handler;
 
     private Socket source;
     private OutputStream sourceOutputStream;
@@ -42,9 +42,9 @@ public class HttpExchangeHandlerImplTest {
 
         configuration = mockConfiguration();
         httpHeaderParser = mockHttpHeaderParser();
-        httpMessageHandler = mock(HttpMessageHandler.class);
+        messageHandler = mock(MessageHandler.class);
         executorService = mockExecutorService();
-        handler = new HttpExchangeHandlerImpl(configuration, httpHeaderParser, httpMessageHandler, executorService);
+        handler = new ExchangeHandlerImpl(configuration, httpHeaderParser, messageHandler, executorService);
 
         source = mockSocket();
         sourceOutputStream = new ByteArrayOutputStream();
@@ -107,7 +107,7 @@ public class HttpExchangeHandlerImplTest {
     public void handleRequest_withoutClientOrServerErrors_callsParserAndHandler() throws Exception {
         handler.handleRequest(source, target, callback);
         verify(httpHeaderParser).parse(any(), eq(true), same(callback));
-        verify(httpMessageHandler).handle(same(headerResult), any(), any());
+        verify(messageHandler).handle(same(headerResult), any(), any());
         verify(future).get(REQUEST_TIMEOUT, TimeUnit.MILLISECONDS);
     }
 
@@ -119,7 +119,7 @@ public class HttpExchangeHandlerImplTest {
         try {
             handler.handleRequest(source, target, callback);
         } catch (final UnsupportedTransferEncodingException ex) {
-            assertHttpStatusCode(HttpStatusCode.LENGTH_REQUIRED);
+            assertHttpStatusCode(StatusCode.LENGTH_REQUIRED);
             throw ex;
         }
 
@@ -133,7 +133,7 @@ public class HttpExchangeHandlerImplTest {
         try {
             handler.handleRequest(source, target, callback);
         } catch (final ByteLimitExceededException ex) {
-            assertHttpStatusCode(HttpStatusCode.REQUEST_HEADER_FIELDS_TOO_LARGE);
+            assertHttpStatusCode(StatusCode.REQUEST_HEADER_FIELDS_TOO_LARGE);
             throw ex;
         }
 
@@ -148,7 +148,7 @@ public class HttpExchangeHandlerImplTest {
             handler.handleRequest(source, target, callback);
             fail("Exception expected.");
         } catch (final Exception ex) {
-            assertHttpStatusCode(HttpStatusCode.BAD_REQUEST);
+            assertHttpStatusCode(StatusCode.BAD_REQUEST);
         }
 
     }
@@ -162,7 +162,7 @@ public class HttpExchangeHandlerImplTest {
             handler.handleRequest(source, target, callback);
             fail("Exception expected.");
         } catch (final Exception ex) {
-            assertHttpStatusCode(HttpStatusCode.SERVICE_UNAVAILABLE);
+            assertHttpStatusCode(StatusCode.SERVICE_UNAVAILABLE);
         }
 
     }
@@ -176,7 +176,7 @@ public class HttpExchangeHandlerImplTest {
             handler.handleRequest(source, target, callback);
             fail("Exception expected.");
         } catch (final Exception ex) {
-            assertHttpStatusCode(HttpStatusCode.REQUEST_TIMEOUT);
+            assertHttpStatusCode(StatusCode.REQUEST_TIMEOUT);
         }
 
     }
@@ -184,13 +184,13 @@ public class HttpExchangeHandlerImplTest {
     @Test
     public void handleRequest_whenAnErrorOccurredWhileSendingToServer_sendsStatusCode400ToClient() throws Exception {
 
-        doThrow(Exception.class).when(httpMessageHandler).handle(any(), any(), any());
+        doThrow(Exception.class).when(messageHandler).handle(any(), any(), any());
 
         try {
             handler.handleRequest(source, target, callback);
             fail("Exception expected.");
         } catch (final Exception ex) {
-            assertHttpStatusCode(HttpStatusCode.BAD_REQUEST);
+            assertHttpStatusCode(StatusCode.BAD_REQUEST);
         }
 
     }
@@ -205,7 +205,7 @@ public class HttpExchangeHandlerImplTest {
             handler.handleRequest(source, target, callback);
             fail("IOException expected.");
         } catch (final IOException ex) {
-            assertHttpStatusCode(HttpStatusCode.BAD_REQUEST);
+            assertHttpStatusCode(StatusCode.BAD_REQUEST);
         }
 
     }
@@ -224,7 +224,7 @@ public class HttpExchangeHandlerImplTest {
     public void handleResponse_withoutClientOrServerErrors_callsParserAndHandler() throws Exception {
         handler.handleResponse(source, target, callback);
         verify(httpHeaderParser).parse(any(), eq(false), any());
-        verify(httpMessageHandler).handle(same(headerResult), any(), any());
+        verify(messageHandler).handle(same(headerResult), any(), any());
         verify(callback).run();
         verify(future).get(RESPONSE_TIMEOUT, TimeUnit.MILLISECONDS);
     }
@@ -238,7 +238,7 @@ public class HttpExchangeHandlerImplTest {
             handler.handleResponse(source, target, callback);
             fail("Exception expected.");
         } catch (final Exception ex) {
-            assertHttpStatusCode(HttpStatusCode.BAD_GATEWAY);
+            assertHttpStatusCode(StatusCode.BAD_GATEWAY);
         }
 
     }
@@ -252,7 +252,7 @@ public class HttpExchangeHandlerImplTest {
             handler.handleResponse(source, target, callback);
             fail("Exception expected.");
         } catch (final Exception ex) {
-            assertHttpStatusCode(HttpStatusCode.SERVICE_UNAVAILABLE);
+            assertHttpStatusCode(StatusCode.SERVICE_UNAVAILABLE);
         }
 
     }
@@ -266,7 +266,7 @@ public class HttpExchangeHandlerImplTest {
             handler.handleResponse(source, target, callback);
             fail("Exception expected.");
         } catch (final Exception ex) {
-            assertHttpStatusCode(HttpStatusCode.GATEWAY_TIMEOUT);
+            assertHttpStatusCode(StatusCode.GATEWAY_TIMEOUT);
         }
 
     }
@@ -280,7 +280,7 @@ public class HttpExchangeHandlerImplTest {
             handler.handleResponse(source, target, callback);
             fail("Exception expected.");
         } catch (final Exception ex) {
-            assertHttpStatusCode(HttpStatusCode.BAD_GATEWAY);
+            assertHttpStatusCode(StatusCode.BAD_GATEWAY);
         }
 
     }
@@ -294,7 +294,7 @@ public class HttpExchangeHandlerImplTest {
             return null;
         }).when(httpHeaderParser).parse(any(), anyBoolean(), any());
 
-        doThrow(Exception.class).when(httpMessageHandler).handle(any(), any(), any());
+        doThrow(Exception.class).when(messageHandler).handle(any(), any(), any());
 
         try {
             handler.handleResponse(source, target, callback);
@@ -315,7 +315,7 @@ public class HttpExchangeHandlerImplTest {
             handler.handleResponse(source, target, callback);
             fail("IOException expected.");
         } catch (final IOException ex) {
-            assertHttpStatusCode(HttpStatusCode.BAD_GATEWAY);
+            assertHttpStatusCode(StatusCode.BAD_GATEWAY);
         }
 
     }
@@ -332,22 +332,22 @@ public class HttpExchangeHandlerImplTest {
 
     @Test(expected = NullPointerException.class)
     public void constructor_withoutHttpHeaderConfiguration_throwsNullPointerException() {
-        new HttpExchangeHandlerImpl(null, httpHeaderParser, httpMessageHandler, executorService);
+        new ExchangeHandlerImpl(null, httpHeaderParser, messageHandler, executorService);
     }
 
     @Test(expected = NullPointerException.class)
     public void constructor_withoutHttpHeaderParser_throwsNullPointerException() {
-        new HttpExchangeHandlerImpl(configuration, null, httpMessageHandler, executorService);
+        new ExchangeHandlerImpl(configuration, null, messageHandler, executorService);
     }
 
     @Test(expected = NullPointerException.class)
     public void constructor_withoutHttpMessageHandler_throwsNullPointerException() {
-        new HttpExchangeHandlerImpl(configuration, httpHeaderParser, null, executorService);
+        new ExchangeHandlerImpl(configuration, httpHeaderParser, null, executorService);
     }
 
     @Test(expected = NullPointerException.class)
     public void constructor_withoutExecutorService_throwsNullPointerException() {
-        new HttpExchangeHandlerImpl(configuration, httpHeaderParser, httpMessageHandler, null);
+        new ExchangeHandlerImpl(configuration, httpHeaderParser, messageHandler, null);
     }
 
     @Test(expected = NullPointerException.class)
@@ -383,7 +383,7 @@ public class HttpExchangeHandlerImplTest {
 
     // Helper methods:
 
-    private void assertHttpStatusCode(final HttpStatusCode statusCode) {
+    private void assertHttpStatusCode(final StatusCode statusCode) {
         final String output = sourceOutputStream.toString();
         assertTrue(output.contains(Integer.toString(statusCode.getCode())));
         assertTrue(output.contains(statusCode.getReason()));

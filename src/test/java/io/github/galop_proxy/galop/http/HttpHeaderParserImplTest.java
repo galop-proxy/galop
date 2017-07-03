@@ -131,8 +131,8 @@ public class HttpHeaderParserImplTest {
     @Test
     public void parse_withTransferEncodingChunked_returnsHeaderLengthAndNoTotalLength() throws IOException {
 
-        final String responseContent = "6" + HttpConstants.NEW_LINE + "Hello " + HttpConstants.NEW_LINE + "5" + HttpConstants.NEW_LINE + "World" + HttpConstants.NEW_LINE
-                + "0" + HttpConstants.NEW_LINE + HttpConstants.NEW_LINE;
+        final String responseContent = "6" + Constants.NEW_LINE + "Hello " + Constants.NEW_LINE + "5" + Constants.NEW_LINE + "World" + Constants.NEW_LINE
+                + "0" + Constants.NEW_LINE + Constants.NEW_LINE;
         final String response = HttpTestUtils.createResponse(responseContent, responseContent.getBytes().length + "", "chunked");
         final long expectedHeaderLength = response.getBytes().length - responseContent.getBytes().length;
         final InputStream responseInputStream = createInputStream(response);
@@ -154,8 +154,8 @@ public class HttpHeaderParserImplTest {
     @Test
     public void parse_always_ignoresUpperAndLowerCasesInHeaderFieldNames() throws IOException {
 
-        final String response = HttpConstants.HTTP_VERSION + HttpConstants.SPACE + "200 OK" + HttpConstants.NEW_LINE
-                + "TRANSFER-ENCODING:" + HttpConstants.SPACE + "chunked" + HttpConstants.NEW_LINE + HttpConstants.NEW_LINE;
+        final String response = Constants.HTTP_VERSION + Constants.SPACE + "200 OK" + Constants.NEW_LINE
+                + "TRANSFER-ENCODING:" + Constants.SPACE + "chunked" + Constants.NEW_LINE + Constants.NEW_LINE;
         final InputStream responseInputStream = createInputStream(response);
 
         final HttpHeaderParser.Result result = parser.parse(responseInputStream, false);

@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 import static io.github.galop_proxy.api.commons.Preconditions.checkNotNull;
-import static io.github.galop_proxy.galop.http.HttpConstants.HEADER_CHARSET;
+import static io.github.galop_proxy.galop.http.Constants.HEADER_CHARSET;
 
 final class MessageParserImpl implements MessageParser {
 

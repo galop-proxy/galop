@@ -8,7 +8,7 @@ import java.io.OutputStream;
 
 import static io.github.galop_proxy.api.commons.Preconditions.checkNotNull;
 
-final class HttpMessageHandlerImpl implements HttpMessageHandler {
+final class MessageHandlerImpl implements MessageHandler {
 
     @Override
     public void handle(final HttpHeaderParser.Result header, final InputStream inputStream,

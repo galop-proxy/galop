@@ -11,8 +11,8 @@ public final class HttpModule extends AbstractModule {
         bind(StartLineParser.class).to(StartLineParserImpl.class).in(Singleton.class);
         bind(HeaderParser.class).to(HeaderParserImpl.class).in(Singleton.class);
         bind(HttpHeaderParser.class).to(HttpHeaderParserImpl.class).in(Singleton.class);
-        bind(HttpMessageHandler.class).to(HttpMessageHandlerImpl.class).in(Singleton.class);
-        bind(HttpExchangeHandler.class).to(HttpExchangeHandlerImpl.class).in(Singleton.class);
+        bind(MessageHandler.class).to(MessageHandlerImpl.class).in(Singleton.class);
+        bind(ExchangeHandler.class).to(ExchangeHandlerImpl.class).in(Singleton.class);
     }
 
 }
