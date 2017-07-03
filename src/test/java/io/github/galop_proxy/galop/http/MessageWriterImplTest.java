@@ -10,30 +10,30 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
- * Tests the class {@link MessageHandlerImpl}.
+ * Tests the class {@link MessageWriterImpl}.
  */
-public class MessageHandlerImplTest {
+public class MessageWriterImplTest {
 
-    private MessageHandlerImpl handler;
+    private MessageWriterImpl handler;
     private OutputStream outputStream;
 
     @Before
     public void setUp() {
-        handler = new MessageHandlerImpl();
+        handler = new MessageWriterImpl();
         outputStream = new ByteArrayOutputStream();
     }
 
     // No entity:
 
     @Test
-    public void handle_messageWithoutEntity_copiesMessageHeaderToOutput() throws IOException {
+    public void writeMessage_messageWithoutEntity_copiesMessageHeaderToOutput() throws IOException {
 
         final String message = "Hello world!";
         final int messageLength = message.getBytes().length;
         final InputStream inputStream = new ByteArrayInputStream(message.getBytes());
         final HttpHeaderParser.Result result = createHeaderResult(false, messageLength, (long) messageLength);
 
-        handler.handle(result, inputStream, outputStream);
+        handler.writeMessage(result, inputStream, outputStream);
 
         assertEquals(message, outputStream.toString());
 
@@ -42,7 +42,7 @@ public class MessageHandlerImplTest {
     // Identity transfer encoding:
 
     @Test
-    public void handle_messageWithEntityAndIdentityTransferEncoding_copiesMessageToOutput() throws IOException {
+    public void writeMessage_messageWithEntityAndIdentityTransferEncoding_copiesMessageToOutput() throws IOException {
 
         final String header = "Hello world!";
         final String entity = "Lorem Ipsum";
@@ -52,7 +52,7 @@ public class MessageHandlerImplTest {
         final InputStream inputStream = new ByteArrayInputStream(message.getBytes());
         final HttpHeaderParser.Result result = createHeaderResult(false, headerLength, (long) messageLength);
 
-        handler.handle(result, inputStream, outputStream);
+        handler.writeMessage(result, inputStream, outputStream);
 
         assertEquals(message, outputStream.toString());
 
@@ -61,7 +61,7 @@ public class MessageHandlerImplTest {
     // Chunked transfer encoding:
 
     @Test
-    public void handle_messageWithChunkedTransferEncoding_copiesMessageToOutput() throws IOException {
+    public void writeMessage_messageWithChunkedTransferEncoding_copiesMessageToOutput() throws IOException {
 
         final String entity = "6" + Constants.NEW_LINE + "Hello " + Constants.NEW_LINE
                 + "11" + Constants.NEW_LINE + " wonderful world!" + Constants.NEW_LINE
@@ -76,14 +76,14 @@ public class MessageHandlerImplTest {
         final String combinedMessages = message + nextMessage;
         final InputStream inputStream = new ByteArrayInputStream(combinedMessages.getBytes());
 
-        handler.handle(result, inputStream, outputStream);
+        handler.writeMessage(result, inputStream, outputStream);
 
         assertEquals(message, outputStream.toString());
 
     }
 
     @Test
-    public void handle_messageWithChunkedTransferEncodingAndChunkExtension_copiesMessageToOutput() throws IOException {
+    public void writeMessage_messageWithChunkedTransferEncodingAndChunkExtension_copiesMessageToOutput() throws IOException {
 
         final String entity = "C;lorem=ipsum" + Constants.NEW_LINE + "Hello world!" + Constants.NEW_LINE
                 + "A;hello=world;foo=bar" + Constants.NEW_LINE + "123\r\n\r\n456" + Constants.NEW_LINE
@@ -97,14 +97,14 @@ public class MessageHandlerImplTest {
         final String combinedMessages = message + nextMessage;
         final InputStream inputStream = new ByteArrayInputStream(combinedMessages.getBytes());
 
-        handler.handle(result, inputStream, outputStream);
+        handler.writeMessage(result, inputStream, outputStream);
 
         assertEquals(message, outputStream.toString());
 
     }
 
     @Test
-    public void handle_messageWithChunkedTransferEncodingAndTrailerPart_copiesMessageToOutput() throws IOException {
+    public void writeMessage_messageWithChunkedTransferEncodingAndTrailerPart_copiesMessageToOutput() throws IOException {
 
         final String entity = "B" + Constants.NEW_LINE + "Lorem Ipsum" + Constants.NEW_LINE
                 + "0" + Constants.NEW_LINE
@@ -119,7 +119,7 @@ public class MessageHandlerImplTest {
         final String combinedMessages = message + nextMessage;
         final InputStream inputStream = new ByteArrayInputStream(combinedMessages.getBytes());
 
-        handler.handle(result, inputStream, outputStream);
+        handler.writeMessage(result, inputStream, outputStream);
 
         assertEquals(message, outputStream.toString());
 
@@ -128,40 +128,40 @@ public class MessageHandlerImplTest {
     // Invalid chunked transfer encoding:
 
     @Test(expected = InvalidChunkException.class)
-    public void handle_withoutValidEndOfChunkSize_throwsInvalidChunkException() throws IOException {
+    public void writeMessage_withoutValidEndOfChunkSize_throwsInvalidChunkException() throws IOException {
         final String entity = "1"; // Missing CRLF
         final String message = HttpTestUtils.createResponse(entity, null, "chunked");
         final long headerLength = message.getBytes().length - entity.getBytes().length;
         final HttpHeaderParser.Result result = createHeaderResult(true, headerLength, null);
         final InputStream inputStream = new ByteArrayInputStream(message.getBytes());
-        handler.handle(result, inputStream, outputStream);
+        handler.writeMessage(result, inputStream, outputStream);
     }
 
     @Test(expected = InvalidChunkException.class)
-    public void handle_withInvalidChunkSize_throwsInvalidChunkException() throws IOException {
+    public void writeMessage_withInvalidChunkSize_throwsInvalidChunkException() throws IOException {
         final String entity = "Z" + Constants.NEW_LINE; // Not a valid Hexadecimal number
         final String message = HttpTestUtils.createResponse(entity, null, "chunked");
         final long headerLength = message.getBytes().length - entity.getBytes().length;
         final HttpHeaderParser.Result result = createHeaderResult(true, headerLength, null);
         final InputStream inputStream = new ByteArrayInputStream(message.getBytes());
-        handler.handle(result, inputStream, outputStream);
+        handler.writeMessage(result, inputStream, outputStream);
     }
 
     // Invalid parameters:
 
     @Test(expected = NullPointerException.class)
-    public void handle_withoutHttpHeaderParserResult_throwsNullPointerException() throws IOException {
-        handler.handle(null, mock(InputStream.class), mock(OutputStream.class));
+    public void writeMessage_withoutHttpHeaderParserResult_throwsNullPointerException() throws IOException {
+        handler.writeMessage(null, mock(InputStream.class), mock(OutputStream.class));
     }
 
     @Test(expected = NullPointerException.class)
-    public void handle_withoutInputStream_throwsNullPointerException() throws IOException {
-        handler.handle(mock(HttpHeaderParser.Result.class), null, mock(OutputStream.class));
+    public void writeMessage_withoutInputStream_throwsNullPointerException() throws IOException {
+        handler.writeMessage(mock(HttpHeaderParser.Result.class), null, mock(OutputStream.class));
     }
 
     @Test(expected = NullPointerException.class)
-    public void handle_withoutOutputStream_throwsNullPointerException() throws IOException {
-        handler.handle(mock(HttpHeaderParser.Result.class), mock(InputStream.class), null);
+    public void writeMessage_withoutOutputStream_throwsNullPointerException() throws IOException {
+        handler.writeMessage(mock(HttpHeaderParser.Result.class), mock(InputStream.class), null);
     }
 
     // Helper methods:

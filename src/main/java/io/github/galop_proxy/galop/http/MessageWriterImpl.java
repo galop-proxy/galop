@@ -8,11 +8,11 @@ import java.io.OutputStream;
 
 import static io.github.galop_proxy.api.commons.Preconditions.checkNotNull;
 
-final class MessageHandlerImpl implements MessageHandler {
+final class MessageWriterImpl implements MessageWriter {
 
     @Override
-    public void handle(final HttpHeaderParser.Result header, final InputStream inputStream,
-                       final OutputStream outputStream) throws IOException {
+    public void writeMessage(final HttpHeaderParser.Result header, final InputStream inputStream,
+                             final OutputStream outputStream) throws IOException {
 
         checkNotNull(header, "header");
         checkNotNull(inputStream, "inputStream");

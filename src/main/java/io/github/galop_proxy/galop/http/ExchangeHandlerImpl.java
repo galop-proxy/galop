@@ -24,15 +24,15 @@ final class ExchangeHandlerImpl implements ExchangeHandler {
 
     private final HttpHeaderConfiguration httpHeaderConfiguration;
     private final HttpHeaderParser httpHeaderParser;
-    private final MessageHandler messageHandler;
+    private final MessageWriter messageWriter;
     private final ExecutorService executorService;
 
     @Inject
     ExchangeHandlerImpl(final HttpHeaderConfiguration httpHeaderConfiguration, final HttpHeaderParser httpHeaderParser,
-                        final MessageHandler messageHandler, final ExecutorService executorService) {
+                        final MessageWriter messageWriter, final ExecutorService executorService) {
         this.httpHeaderConfiguration = checkNotNull(httpHeaderConfiguration, "httpHeaderConfiguration");
         this.httpHeaderParser = checkNotNull(httpHeaderParser, "httpHeaderParser");
-        this.messageHandler = checkNotNull(messageHandler, "messageHandler");
+        this.messageWriter = checkNotNull(messageWriter, "messageWriter");
         this.executorService = checkNotNull(executorService, "executorService");
     }
 
@@ -48,7 +48,7 @@ final class ExchangeHandlerImpl implements ExchangeHandler {
 
         try {
             final Result header = parseRequestHeader(inputStream, startHandlingRequestCallback);
-            messageHandler.handle(header, inputStream, target.getOutputStream());
+            messageWriter.writeMessage(header, inputStream, target.getOutputStream());
         } catch (final Exception ex) {
             handleRequestError(ex, source);
             throw ex;
@@ -91,7 +91,7 @@ final class ExchangeHandlerImpl implements ExchangeHandler {
 
         try {
             final Result header = parseResponseHeader(inputStream, () -> sendingResponseStarted.set(true));
-            messageHandler.handle(header, inputStream, source.getOutputStream());
+            messageWriter.writeMessage(header, inputStream, source.getOutputStream());
             endHandlingResponseCallback.run();
         } catch (final Exception ex) {
             handleResponseError(ex, source, sendingResponseStarted.get());

@@ -27,7 +27,7 @@ public class ExchangeHandlerImplTest {
     private HttpHeaderConfiguration configuration;
     private Result headerResult;
     private HttpHeaderParser httpHeaderParser;
-    private MessageHandler messageHandler;
+    private MessageWriter messageWriter;
     private Future<Result> future;
     private ExecutorService executorService;
     private ExchangeHandlerImpl handler;
@@ -42,9 +42,9 @@ public class ExchangeHandlerImplTest {
 
         configuration = mockConfiguration();
         httpHeaderParser = mockHttpHeaderParser();
-        messageHandler = mock(MessageHandler.class);
+        messageWriter = mock(MessageWriter.class);
         executorService = mockExecutorService();
-        handler = new ExchangeHandlerImpl(configuration, httpHeaderParser, messageHandler, executorService);
+        handler = new ExchangeHandlerImpl(configuration, httpHeaderParser, messageWriter, executorService);
 
         source = mockSocket();
         sourceOutputStream = new ByteArrayOutputStream();
@@ -107,7 +107,7 @@ public class ExchangeHandlerImplTest {
     public void handleRequest_withoutClientOrServerErrors_callsParserAndHandler() throws Exception {
         handler.handleRequest(source, target, callback);
         verify(httpHeaderParser).parse(any(), eq(true), same(callback));
-        verify(messageHandler).handle(same(headerResult), any(), any());
+        verify(messageWriter).writeMessage(same(headerResult), any(), any());
         verify(future).get(REQUEST_TIMEOUT, TimeUnit.MILLISECONDS);
     }
 
@@ -184,7 +184,7 @@ public class ExchangeHandlerImplTest {
     @Test
     public void handleRequest_whenAnErrorOccurredWhileSendingToServer_sendsStatusCode400ToClient() throws Exception {
 
-        doThrow(Exception.class).when(messageHandler).handle(any(), any(), any());
+        doThrow(Exception.class).when(messageWriter).writeMessage(any(), any(), any());
 
         try {
             handler.handleRequest(source, target, callback);
@@ -224,7 +224,7 @@ public class ExchangeHandlerImplTest {
     public void handleResponse_withoutClientOrServerErrors_callsParserAndHandler() throws Exception {
         handler.handleResponse(source, target, callback);
         verify(httpHeaderParser).parse(any(), eq(false), any());
-        verify(messageHandler).handle(same(headerResult), any(), any());
+        verify(messageWriter).writeMessage(same(headerResult), any(), any());
         verify(callback).run();
         verify(future).get(RESPONSE_TIMEOUT, TimeUnit.MILLISECONDS);
     }
@@ -294,7 +294,7 @@ public class ExchangeHandlerImplTest {
             return null;
         }).when(httpHeaderParser).parse(any(), anyBoolean(), any());
 
-        doThrow(Exception.class).when(messageHandler).handle(any(), any(), any());
+        doThrow(Exception.class).when(messageWriter).writeMessage(any(), any(), any());
 
         try {
             handler.handleResponse(source, target, callback);
@@ -332,12 +332,12 @@ public class ExchangeHandlerImplTest {
 
     @Test(expected = NullPointerException.class)
     public void constructor_withoutHttpHeaderConfiguration_throwsNullPointerException() {
-        new ExchangeHandlerImpl(null, httpHeaderParser, messageHandler, executorService);
+        new ExchangeHandlerImpl(null, httpHeaderParser, messageWriter, executorService);
     }
 
     @Test(expected = NullPointerException.class)
     public void constructor_withoutHttpHeaderParser_throwsNullPointerException() {
-        new ExchangeHandlerImpl(configuration, null, messageHandler, executorService);
+        new ExchangeHandlerImpl(configuration, null, messageWriter, executorService);
     }
 
     @Test(expected = NullPointerException.class)
@@ -347,7 +347,7 @@ public class ExchangeHandlerImplTest {
 
     @Test(expected = NullPointerException.class)
     public void constructor_withoutExecutorService_throwsNullPointerException() {
-        new ExchangeHandlerImpl(configuration, httpHeaderParser, messageHandler, null);
+        new ExchangeHandlerImpl(configuration, httpHeaderParser, messageWriter, null);
     }
 
     @Test(expected = NullPointerException.class)
