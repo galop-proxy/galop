@@ -34,7 +34,7 @@ public class PreconditionsTest {
         }
     }
 
-    // checkNotNegative:
+    // checkNotNegative (int):
 
     @Test
     public void checkNotNegative_withZero_returnsZero() {
@@ -55,6 +55,29 @@ public class PreconditionsTest {
             assertEquals("value must not be negative.", ex.getMessage());
         }
     }
+
+    // checkNotNegative (long):
+
+    @Test
+    public void checkNotNegative_withZeroLong_returnsZero() {
+        assertEquals(0L, checkNotNegative(0L, "value"));
+    }
+
+    @Test
+    public void checkNotNegative_withPositiveLongValue_returnsValue() {
+        assertEquals(1L, checkNotNegative(1L, "value"));
+    }
+
+    @Test
+    public void checkNotNegative_withNegativeLongValue_throwsIllegalArgumentException() {
+        try {
+            checkNotNegative(-1L, "value");
+            fail("IllegalArgumentException expected.");
+        } catch (final IllegalArgumentException ex) {
+            assertEquals("value must not be negative.", ex.getMessage());
+        }
+    }
+
 
     // checkNotEmpty:
 

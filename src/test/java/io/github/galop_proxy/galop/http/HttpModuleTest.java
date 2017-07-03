@@ -101,6 +101,16 @@ public class HttpModuleTest extends AbstractConfigurationTest {
         assertSame(injector.getInstance(HeaderWriter.class), injector.getInstance(HeaderWriter.class));
     }
 
+    @Test
+    public void configure_bindsMessageBodyWriter() {
+        assertNotNull(injector.getInstance(MessageBodyWriter.class));
+    }
+
+    @Test
+    public void configure_bindsMessageBodyWriterAsSingleton() {
+        assertSame(injector.getInstance(MessageBodyWriter.class), injector.getInstance(MessageBodyWriter.class));
+    }
+
     // Old:
 
     @Test

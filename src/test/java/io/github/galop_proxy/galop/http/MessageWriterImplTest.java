@@ -19,8 +19,15 @@ public class MessageWriterImplTest {
 
     @Before
     public void setUp() {
-        handler = new MessageWriterImpl();
+
+        // TODO Mockito
+        final MessageBodyWriter messageBodyWriter = new MessageBodyWriterImpl();
+
+        // TODO Constructor
+        handler = new MessageWriterImpl(messageBodyWriter);
+
         outputStream = new ByteArrayOutputStream();
+
     }
 
     // No entity:

@@ -27,6 +27,7 @@ public final class HttpModule extends AbstractModule {
         bind(MessageWriter.class).to(MessageWriterImpl.class).in(Singleton.class);
         bind(StartLineWriter.class).to(StartLineWriterImpl.class).in(Singleton.class);
         bind(HeaderWriter.class).to(HeaderWriterImpl.class).in(Singleton.class);
+        bind(MessageBodyWriter.class).to(MessageBodyWriterImpl.class).in(Singleton.class);
     }
 
     private void bindOld() {
