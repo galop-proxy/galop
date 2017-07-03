@@ -73,6 +73,12 @@ public class HeaderParserImplTest {
                 REQUEST_X_FORWARDED_FOR_1, REQUEST_X_FORWARDED_FOR_2);
     }
 
+    @Test
+    public void parseRequestHeaders_withoutHeaderFields_returnsEmptyResult() throws IOException {
+        final Map<String, List<String>> headerFields = instance.parseRequestHeaders(toCallable(""));
+        assertEquals(0, headerFields.size());
+    }
+
     @Test(expected = InvalidHttpHeaderException.class)
     public void parseRequestHeaders_withWhitespaceBetweenHeaderFieldNameAndColon_throwsInvalidHttpHeaderException()
             throws IOException {
@@ -116,6 +122,12 @@ public class HeaderParserImplTest {
     public void parseResponseHeaders_withWhitespaceBetweenHeaderFieldNameAndColon_removesWhiteSpace() throws IOException {
        final Map<String, List<String>> response = instance.parseResponseHeaders(toCallable("Server : " + RESPONSE_SERVER));
        assertHeaderField(response, HeaderFields.Response.SERVER, RESPONSE_SERVER);
+    }
+
+    @Test
+    public void parseResponseHeaders_withoutHeaderFields_returnsEmptyResult() throws IOException {
+        final Map<String, List<String>> headerFields = instance.parseResponseHeaders(toCallable(""));
+        assertEquals(0, headerFields.size());
     }
 
     @Test(expected = InvalidHttpHeaderException.class)
