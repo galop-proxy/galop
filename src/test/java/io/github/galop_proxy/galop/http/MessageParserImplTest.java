@@ -63,6 +63,11 @@ public class MessageParserImplTest {
 
     // Set up:
 
+    private HttpHeaderRequestConfiguration requestConfiguration;
+    private HttpHeaderResponseConfiguration responseConfiguration;
+    private StartLineParser startLineParser;
+    private HeaderParser headerParser;
+
     private MessageParser instance;
 
     private Request request;
@@ -72,22 +77,43 @@ public class MessageParserImplTest {
     @Before
     public void setUp() throws IOException {
 
-        final HttpHeaderRequestConfiguration requestConfiguration = mock(HttpHeaderRequestConfiguration.class);
-        final HttpHeaderResponseConfiguration responseConfiguration = mock(HttpHeaderResponseConfiguration.class);
+        requestConfiguration = mock(HttpHeaderRequestConfiguration.class);
+        responseConfiguration = mock(HttpHeaderResponseConfiguration.class);
         when(requestConfiguration.getMaxSize()).thenReturn(MAX_HTTP_HEADER_SIZE);
         when(responseConfiguration.getMaxSize()).thenReturn(MAX_HTTP_HEADER_SIZE);
 
         // TODO Mockito
-        final StartLineParser startLineParser = new StartLineParserImpl();
-        final HeaderParser headerParser = new HeaderParserImpl();
+        startLineParser = new StartLineParserImpl();
+        headerParser = new HeaderParserImpl();
 
-        // TODO Constructor tests
         instance = new MessageParserImpl(requestConfiguration, responseConfiguration, startLineParser, headerParser);
 
         request = instance.parseRequest(toInputStream(REQUEST_EXAMPLE), null);
         responseInputStream = toInputStream(RESPONSE_EXAMPLE);
         response = instance.parseResponse(responseInputStream, null);
 
+    }
+
+    // constructor:
+
+    @Test(expected = NullPointerException.class)
+    public void constructor_withoutHttpHeaderRequestConfiguration_throwsNullPointerException() {
+        new MessageParserImpl(null, responseConfiguration, startLineParser, headerParser);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void constructor_withoutHttpHeaderResponseConfiguration_throwsNullPointerException() {
+        new MessageParserImpl(requestConfiguration, null, startLineParser, headerParser);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void constructor_withoutStartLineParser_throwsNullPointerException() {
+        new MessageParserImpl(requestConfiguration, responseConfiguration, null, headerParser);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void constructor_withoutHeaderParser_throwsNullPointerException() {
+        new MessageParserImpl(requestConfiguration, responseConfiguration, startLineParser, null);
     }
 
     // parseRequest:
