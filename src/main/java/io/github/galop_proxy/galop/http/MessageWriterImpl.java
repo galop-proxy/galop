@@ -54,14 +54,8 @@ final class MessageWriterImpl implements MessageWriter {
         final long contentLength = parseContentLength(message, chunkedEncoding);
 
         final OutputStreamWriter outputStreamWriter = new OutputStreamWriter(outputStream, HEADER_CHARSET);
-
-        if (request) {
-            startLineWriter.writeRequestLine((Request) message, outputStreamWriter);
-        } else {
-            startLineWriter.writeStatusLine((Response) message, outputStreamWriter);
-        }
-
-        headerWriter.writeHeader(message, outputStreamWriter);
+        writeStartLine(message, request, outputStreamWriter);
+        writeHeader(message, outputStreamWriter);
 
         if (chunkedEncoding) {
             messageBodyWriter.writeChunkedEntity(inputStream, outputStream);
@@ -83,7 +77,7 @@ final class MessageWriterImpl implements MessageWriter {
             return false;
         }
 
-        final String lastTransferEncoding = transferEncodings.get(transferEncodings.size() - 1);
+        final String lastTransferEncoding = getLastTransferEncoding(transferEncodings);
 
         switch (lastTransferEncoding) {
             case Constants.TRANSFER_ENCODING_CHUNKED:
@@ -94,6 +88,19 @@ final class MessageWriterImpl implements MessageWriter {
                 return false;
             default:
                 throw new UnsupportedTransferEncodingException(lastTransferEncoding);
+        }
+
+    }
+
+    private String getLastTransferEncoding(final List<String> values) {
+
+        final String value = values.get(values.size() - 1);
+        final String[] transferEncodings = value.split(",");
+
+        if (transferEncodings.length == 1) {
+            return transferEncodings[0];
+        } else {
+            return transferEncodings[transferEncodings.length - 1].trim();
         }
 
     }
@@ -134,6 +141,21 @@ final class MessageWriterImpl implements MessageWriter {
 
         return contentLength;
 
+    }
+
+    private void writeStartLine(final Message message, final boolean request, final OutputStreamWriter outputStream)
+            throws IOException {
+
+        if (request) {
+            startLineWriter.writeRequestLine((Request) message, outputStream);
+        } else {
+            startLineWriter.writeStatusLine((Response) message, outputStream);
+        }
+
+    }
+
+    private void writeHeader(final Message message, final OutputStreamWriter outputStream) throws IOException {
+        headerWriter.writeHeader(message, outputStream);
     }
 
 }
