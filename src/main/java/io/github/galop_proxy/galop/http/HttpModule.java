@@ -10,7 +10,6 @@ public final class HttpModule extends AbstractModule {
         bindHandler();
         bindParsers();
         bindWriters();
-        bindOld();
     }
 
     private void bindHandler() {
@@ -28,10 +27,6 @@ public final class HttpModule extends AbstractModule {
         bind(StartLineWriter.class).to(StartLineWriterImpl.class).in(Singleton.class);
         bind(HeaderWriter.class).to(HeaderWriterImpl.class).in(Singleton.class);
         bind(MessageBodyWriter.class).to(MessageBodyWriterImpl.class).in(Singleton.class);
-    }
-
-    private void bindOld() {
-        bind(HttpHeaderParser.class).to(HttpHeaderParserImpl.class).in(Singleton.class);
     }
 
 }
