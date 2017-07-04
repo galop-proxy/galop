@@ -82,7 +82,6 @@ public class MessageParserImplTest {
         when(requestConfiguration.getMaxSize()).thenReturn(MAX_HTTP_HEADER_SIZE);
         when(responseConfiguration.getMaxSize()).thenReturn(MAX_HTTP_HEADER_SIZE);
 
-        // TODO Mockito
         startLineParser = new StartLineParserImpl();
         headerParser = new HeaderParserImpl();
 

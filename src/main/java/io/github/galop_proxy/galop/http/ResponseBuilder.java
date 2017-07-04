@@ -101,10 +101,18 @@ public final class ResponseBuilder {
             content = this.content;
         }
 
+        buildContentLengthHeader(content.length, builder);
+        buildContentTypeHeader(type, charset, builder);
+    }
+
+    private void buildContentLengthHeader(final long length, final StringBuilder builder) {
         builder.append(Constants.HEADER_CONTENT_LENGTH_PREFIX);
         builder.append(Constants.SPACE);
-        builder.append(content.length);
+        builder.append(length);
         builder.append(Constants.NEW_LINE);
+    }
+
+    private void buildContentTypeHeader(final String type, final Charset charset, final StringBuilder builder) {
         builder.append(Constants.HEADER_CONTENT_TYPE_PREFIX);
         builder.append(Constants.SPACE);
         builder.append(type);
@@ -113,7 +121,6 @@ public final class ResponseBuilder {
         builder.append(Constants.HEADER_CONTENT_TYPE_CHARSET_PREFIX);
         builder.append(charset);
         builder.append(Constants.NEW_LINE);
-
     }
 
     private void buildHeaderEnd(final StringBuilder builder) {
