@@ -1,6 +1,6 @@
 package io.github.galop_proxy.galop.proxy;
 
-import io.github.galop_proxy.galop.http.HttpStatusCode;
+import io.github.galop_proxy.galop.http.StatusCode;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -110,7 +110,7 @@ public class ServerImplTest {
         server.run();
 
         verify(source).close();
-        assertSourceOutputStreamContains(HttpStatusCode.SERVICE_UNAVAILABLE);
+        assertSourceOutputStreamContains(StatusCode.SERVICE_UNAVAILABLE);
 
     }
 
@@ -124,7 +124,7 @@ public class ServerImplTest {
         server.run();
 
         verify(source).close();
-        assertSourceOutputStreamContains(HttpStatusCode.GATEWAY_TIMEOUT);
+        assertSourceOutputStreamContains(StatusCode.GATEWAY_TIMEOUT);
 
     }
 
@@ -228,10 +228,10 @@ public class ServerImplTest {
 
     // Helper method:
 
-    private void assertSourceOutputStreamContains(final HttpStatusCode httpStatusCode) throws IOException {
+    private void assertSourceOutputStreamContains(final StatusCode statusCode) throws IOException {
         final String output = source.getOutputStream().toString();
-        assertTrue(output.contains(httpStatusCode.getCode() + ""));
-        assertTrue(output.contains(httpStatusCode.getReason() + ""));
+        assertTrue(output.contains(statusCode.getCode() + ""));
+        assertTrue(output.contains(statusCode.getReason() + ""));
     }
 
 }

@@ -6,7 +6,7 @@ import io.github.galop_proxy.galop.AbstractConfigurationTest;
 import io.github.galop_proxy.galop.administration.Monitor;
 import io.github.galop_proxy.galop.network.NetworkModule;
 import io.github.galop_proxy.galop.configuration.Configuration;
-import io.github.galop_proxy.galop.http.HttpExchangeHandler;
+import io.github.galop_proxy.galop.http.ExchangeHandler;
 import io.github.galop_proxy.galop.proxy.Server;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,7 +34,7 @@ public class LoadedModuleTest extends AbstractConfigurationTest {
 
     @Test
     public void configure_bindsHttpModule() {
-        assertNotNull(injector.getInstance(HttpExchangeHandler.class));
+        assertNotNull(injector.getInstance(ExchangeHandler.class));
     }
 
     @Test

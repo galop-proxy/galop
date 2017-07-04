@@ -7,31 +7,31 @@ import java.time.format.DateTimeFormatter;
 
 import static io.github.galop_proxy.api.commons.Preconditions.checkNotNull;
 
-public final class HttpResponse {
+public final class ResponseBuilder {
 
     private static final String TEXT_CONTENT_TYPE = "text/plain";
     private static final Charset DEFAULT_CONTENT_CHARSET = Charset.forName("UTF-8");
 
-    private final HttpStatusCode statusCode;
+    private final StatusCode statusCode;
     private ZonedDateTime dateTime;
     private String contentType;
     private Charset contentCharset;
     private byte[] content;
 
-    public static HttpResponse createWithStatus(final HttpStatusCode statusCode) {
-        return new HttpResponse(statusCode);
+    public static ResponseBuilder createWithStatus(final StatusCode statusCode) {
+        return new ResponseBuilder(statusCode);
     }
 
-    private HttpResponse(final HttpStatusCode statusCode) {
+    private ResponseBuilder(final StatusCode statusCode) {
         this.statusCode = checkNotNull(statusCode, "statusCode");
     }
 
-    public HttpResponse dateTime(final ZonedDateTime dateTime) {
+    public ResponseBuilder dateTime(final ZonedDateTime dateTime) {
         this.dateTime = dateTime;
         return this;
     }
 
-    public HttpResponse text(final String content) {
+    public ResponseBuilder text(final String content) {
         this.contentType = TEXT_CONTENT_TYPE;
         this.contentCharset = DEFAULT_CONTENT_CHARSET;
         this.content = content.getBytes(contentCharset);
@@ -40,7 +40,7 @@ public final class HttpResponse {
 
     public byte[] build() {
 
-        final byte[] header = buildHeader().getBytes(HttpConstants.HEADER_CHARSET);
+        final byte[] header = buildHeader().getBytes(Constants.HEADER_CHARSET);
         final byte[] content = buildContent();
 
         final byte[] headerAndContent = new byte[header.length + content.length];
@@ -60,12 +60,12 @@ public final class HttpResponse {
     }
 
     private void buildStatusLine(final StringBuilder builder) {
-        builder.append(HttpConstants.HTTP_VERSION);
-        builder.append(HttpConstants.SPACE);
+        builder.append(Constants.HTTP_VERSION);
+        builder.append(Constants.SPACE);
         builder.append(statusCode.getCode());
-        builder.append(HttpConstants.SPACE);
+        builder.append(Constants.SPACE);
         builder.append(statusCode.getReason());
-        builder.append(HttpConstants.NEW_LINE);
+        builder.append(Constants.NEW_LINE);
     }
 
     private void buildDateHeader(final StringBuilder builder) {
@@ -78,10 +78,10 @@ public final class HttpResponse {
             dateTime = ZonedDateTime.now(ZoneId.of("GMT"));
         }
 
-        builder.append(HttpConstants.HEADER_DATE_PREFIX);
-        builder.append(HttpConstants.SPACE);
+        builder.append(Constants.HEADER_DATE_PREFIX);
+        builder.append(Constants.SPACE);
         builder.append(DateTimeFormatter.RFC_1123_DATE_TIME.format(dateTime));
-        builder.append(HttpConstants.NEW_LINE);
+        builder.append(Constants.NEW_LINE);
 
     }
 
@@ -101,23 +101,30 @@ public final class HttpResponse {
             content = this.content;
         }
 
-        builder.append(HttpConstants.HEADER_CONTENT_LENGTH_PREFIX);
-        builder.append(HttpConstants.SPACE);
-        builder.append(content.length);
-        builder.append(HttpConstants.NEW_LINE);
-        builder.append(HttpConstants.HEADER_CONTENT_TYPE_PREFIX);
-        builder.append(HttpConstants.SPACE);
-        builder.append(type);
-        builder.append(HttpConstants.VALUE_SEPARATOR);
-        builder.append(HttpConstants.SPACE);
-        builder.append(HttpConstants.HEADER_CONTENT_TYPE_CHARSET_PREFIX);
-        builder.append(charset);
-        builder.append(HttpConstants.NEW_LINE);
+        buildContentLengthHeader(content.length, builder);
+        buildContentTypeHeader(type, charset, builder);
+    }
 
+    private void buildContentLengthHeader(final long length, final StringBuilder builder) {
+        builder.append(Constants.HEADER_CONTENT_LENGTH_PREFIX);
+        builder.append(Constants.SPACE);
+        builder.append(length);
+        builder.append(Constants.NEW_LINE);
+    }
+
+    private void buildContentTypeHeader(final String type, final Charset charset, final StringBuilder builder) {
+        builder.append(Constants.HEADER_CONTENT_TYPE_PREFIX);
+        builder.append(Constants.SPACE);
+        builder.append(type);
+        builder.append(Constants.VALUE_SEPARATOR);
+        builder.append(Constants.SPACE);
+        builder.append(Constants.HEADER_CONTENT_TYPE_CHARSET_PREFIX);
+        builder.append(charset);
+        builder.append(Constants.NEW_LINE);
     }
 
     private void buildHeaderEnd(final StringBuilder builder) {
-        builder.append(HttpConstants.NEW_LINE);
+        builder.append(Constants.NEW_LINE);
     }
 
     private byte[] buildContent() {

@@ -6,36 +6,32 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import static io.github.galop_proxy.api.commons.Preconditions.checkNotNegative;
 import static io.github.galop_proxy.api.commons.Preconditions.checkNotNull;
 
-final class HttpMessageHandlerImpl implements HttpMessageHandler {
+final class MessageBodyWriterImpl implements MessageBodyWriter {
 
     @Override
-    public void handle(final HttpHeaderParser.Result header, final InputStream inputStream,
-                       final OutputStream outputStream) throws IOException {
+    public void writeIdentityEntity(final InputStream inputStream, final OutputStream outputStream, final long length)
+            throws IOException {
 
-        checkNotNull(header, "header");
+        checkNotNull(inputStream, "inputStream");
+        checkNotNull(outputStream, "outputStream");
+        checkNotNegative(length, "length");
+
+        IOUtils.copyLarge(inputStream, outputStream, 0, length);
+
+    }
+
+    @Override
+    public void writeChunkedEntity(final InputStream inputStream, final OutputStream outputStream) throws IOException {
+
         checkNotNull(inputStream, "inputStream");
         checkNotNull(outputStream, "outputStream");
 
-        if (header.isChunkedTransferEncoding()) {
-            handleChunkedTransferEncoding(header, inputStream, outputStream);
-        } else {
-            handleIdentityTransferEncoding(header, inputStream, outputStream);
-        }
-
-    }
-
-    private void handleIdentityTransferEncoding(final HttpHeaderParser.Result header, final InputStream inputStream,
-                                                final OutputStream outputStream) throws IOException {
-        IOUtils.copyLarge(inputStream, outputStream, 0, header.getTotalLength());
-    }
-
-    private void handleChunkedTransferEncoding(final HttpHeaderParser.Result header, final InputStream inputStream,
-                                               final OutputStream outputStream) throws IOException {
-        IOUtils.copyLarge(inputStream, outputStream, 0, header.getHeaderLength());
         handleChunks(inputStream, outputStream);
         handleTrailerPart(inputStream, outputStream);
+
     }
 
     private void handleChunks(final InputStream inputStream, final OutputStream outputStream) throws IOException {

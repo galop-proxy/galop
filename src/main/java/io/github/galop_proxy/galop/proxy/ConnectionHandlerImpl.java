@@ -10,15 +10,15 @@ import static io.github.galop_proxy.api.commons.Preconditions.checkNotNull;
 
 final class ConnectionHandlerImpl implements ConnectionHandler {
 
-    private final HttpExchangeHandler httpExchangeHandler;
+    private final ExchangeHandler exchangeHandler;
     private final Socket source;
     private final Socket target;
 
     private volatile boolean currentlyHandlingRequestOrResponse;
     private volatile boolean connectionShouldBeClosed;
 
-    ConnectionHandlerImpl(final HttpExchangeHandler httpExchangeHandler, final Socket source, final Socket target) {
-        this.httpExchangeHandler = checkNotNull(httpExchangeHandler, "httpExchangeHandler");
+    ConnectionHandlerImpl(final ExchangeHandler exchangeHandler, final Socket source, final Socket target) {
+        this.exchangeHandler = checkNotNull(exchangeHandler, "exchangeHandler");
         this.source = checkNotNull(source, "source");
         this.target = checkNotNull(target, "target");
     }
@@ -42,11 +42,11 @@ final class ConnectionHandlerImpl implements ConnectionHandler {
     }
 
     private void handleRequest() throws Exception {
-        httpExchangeHandler.handleRequest(source, target, this::markStartHandlingRequest);
+        exchangeHandler.handleRequest(source, target, this::markStartHandlingRequest);
     }
 
     private void handleResponse() throws Exception {
-        httpExchangeHandler.handleResponse(source, target, this::markEndHandlingResponse);
+        exchangeHandler.handleResponse(source, target, this::markEndHandlingResponse);
     }
 
     private synchronized void markStartHandlingRequest() {

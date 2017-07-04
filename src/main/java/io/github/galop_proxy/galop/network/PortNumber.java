@@ -1,4 +1,4 @@
-package io.github.galop_proxy.api.network;
+package io.github.galop_proxy.galop.network;
 
 public final class PortNumber {
 
@@ -41,16 +41,6 @@ public final class PortNumber {
     }
 
     @Override
-    public String toString() {
-        return Integer.toString(value);
-    }
-
-    @Override
-    public int hashCode() {
-        return value;
-    }
-
-    @Override
     public boolean equals(final Object other) {
 
         if (this == other) {
@@ -64,6 +54,19 @@ public final class PortNumber {
         final PortNumber that = (PortNumber) other;
         return value == that.value;
 
+    }
+
+    @Override
+    public int hashCode() {
+        final int hashMultiplier = 59;
+        int result = 17;
+        result = result * hashMultiplier + value;
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return Integer.toString(value);
     }
 
 }

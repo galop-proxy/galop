@@ -25,24 +25,90 @@ public class HttpModuleTest extends AbstractConfigurationTest {
                 new NetworkModule(), new LoadedConfigurationModule(configuration), new HttpModule());
     }
 
+    // Handler:
+
     @Test
-    public void configure_bindsHttpHeaderParser() {
-        assertNotNull(injector.getInstance(HttpHeaderParser.class));
+    public void configure_bindsExchangeHandler() {
+        assertNotNull(injector.getInstance(ExchangeHandler.class));
     }
 
     @Test
-    public void configure_bindsHttpHeaderParserAsSingleton() {
-        assertSame(injector.getInstance(HttpHeaderParser.class), injector.getInstance(HttpHeaderParser.class));
+    public void configure_bindsExchangeHandlerAsSingleton() {
+        assertSame(injector.getInstance(ExchangeHandler.class), injector.getInstance(ExchangeHandler.class));
+    }
+
+    // Parser:
+
+    @Test
+    public void configure_bindsMessageParser() {
+        assertNotNull(injector.getInstance(MessageParser.class));
     }
 
     @Test
-    public void configure_bindsHttpMessageHandler() {
-        assertNotNull(injector.getInstance(HttpMessageHandler.class));
+    public void configure_bindsMessageParserAsSingleton() {
+        assertSame(injector.getInstance(MessageParser.class), injector.getInstance(MessageParser.class));
     }
 
     @Test
-    public void configure_bindsHttpMessageHandlerAsSingleton() {
-        assertSame(injector.getInstance(HttpMessageHandler.class), injector.getInstance(HttpMessageHandler.class));
+    public void configure_bindsStartLineParser() {
+        assertNotNull(injector.getInstance(StartLineParser.class));
+    }
+
+    @Test
+    public void configure_bindsStartLineParserAsSingleton() {
+        assertSame(injector.getInstance(StartLineParser.class), injector.getInstance(StartLineParser.class));
+    }
+
+    @Test
+    public void configure_bindsHeaderParser() {
+        assertNotNull(injector.getInstance(HeaderParser.class));
+    }
+
+    @Test
+    public void configure_bindsHeaderParserAsSingleton() {
+        assertSame(injector.getInstance(HeaderParser.class), injector.getInstance(HeaderParser.class));
+    }
+
+    // Writer:
+
+    @Test
+    public void configure_bindsMessageWriter() {
+        assertNotNull(injector.getInstance(MessageWriter.class));
+    }
+
+    @Test
+    public void configure_bindsMessageWriterAsSingleton() {
+        assertSame(injector.getInstance(MessageWriter.class), injector.getInstance(MessageWriter.class));
+    }
+
+    @Test
+    public void configure_bindsStartLineWriter() {
+        assertNotNull(injector.getInstance(StartLineWriter.class));
+    }
+
+    @Test
+    public void configure_bindsStartLineWriterAsSingleton() {
+        assertSame(injector.getInstance(StartLineWriter.class), injector.getInstance(StartLineWriter.class));
+    }
+
+    @Test
+    public void configure_bindsHeaderWriter() {
+        assertNotNull(injector.getInstance(HeaderWriter.class));
+    }
+
+    @Test
+    public void configure_bindsHeaderWriterAsSingleton() {
+        assertSame(injector.getInstance(HeaderWriter.class), injector.getInstance(HeaderWriter.class));
+    }
+
+    @Test
+    public void configure_bindsMessageBodyWriter() {
+        assertNotNull(injector.getInstance(MessageBodyWriter.class));
+    }
+
+    @Test
+    public void configure_bindsMessageBodyWriterAsSingleton() {
+        assertSame(injector.getInstance(MessageBodyWriter.class), injector.getInstance(MessageBodyWriter.class));
     }
 
 }

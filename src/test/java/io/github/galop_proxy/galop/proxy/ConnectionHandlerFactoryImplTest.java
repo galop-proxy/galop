@@ -1,6 +1,6 @@
 package io.github.galop_proxy.galop.proxy;
 
-import io.github.galop_proxy.galop.http.HttpExchangeHandler;
+import io.github.galop_proxy.galop.http.ExchangeHandler;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -18,7 +18,7 @@ public class ConnectionHandlerFactoryImplTest {
 
     @Before
     public void setUp() {
-        final HttpExchangeHandler handler = mock(HttpExchangeHandler.class);
+        final ExchangeHandler handler = mock(ExchangeHandler.class);
         factory = new ConnectionHandlerFactoryImpl(handler);
     }
 

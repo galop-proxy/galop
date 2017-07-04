@@ -1,7 +1,7 @@
 package io.github.galop_proxy.galop.proxy;
 
-import io.github.galop_proxy.galop.http.HttpResponse;
-import io.github.galop_proxy.galop.http.HttpStatusCode;
+import io.github.galop_proxy.galop.http.ResponseBuilder;
+import io.github.galop_proxy.galop.http.StatusCode;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -19,8 +19,8 @@ import java.util.WeakHashMap;
 import java.util.concurrent.ExecutorService;
 
 import static io.github.galop_proxy.api.commons.Preconditions.checkNotNull;
-import static io.github.galop_proxy.galop.http.HttpStatusCode.GATEWAY_TIMEOUT;
-import static io.github.galop_proxy.galop.http.HttpStatusCode.SERVICE_UNAVAILABLE;
+import static io.github.galop_proxy.galop.http.StatusCode.GATEWAY_TIMEOUT;
+import static io.github.galop_proxy.galop.http.StatusCode.SERVICE_UNAVAILABLE;
 
 final class ServerImpl implements Server {
 
@@ -95,9 +95,9 @@ final class ServerImpl implements Server {
 
     }
 
-    private void handleServerError(final HttpStatusCode httpStatusCode, final Socket source) {
+    private void handleServerError(final StatusCode statusCode, final Socket source) {
         try {
-            final byte[] response = HttpResponse.createWithStatus(httpStatusCode).build();
+            final byte[] response = ResponseBuilder.createWithStatus(statusCode).build();
             IOUtils.write(response, source.getOutputStream());
         } catch (final Exception ex) {
             // Can be ignored.

@@ -1,7 +1,7 @@
 package io.github.galop_proxy.galop.configuration;
 
 import io.github.galop_proxy.api.network.InetAddressFactory;
-import io.github.galop_proxy.api.network.PortNumber;
+import io.github.galop_proxy.galop.network.PortNumber;
 
 import javax.inject.Inject;
 import java.net.InetAddress;

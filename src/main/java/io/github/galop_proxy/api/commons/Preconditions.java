@@ -20,6 +20,27 @@ public final class Preconditions {
         }
     }
 
+    public static long checkNotNegative(final long value, final String parameterName) throws IllegalArgumentException {
+        if (value > -1) {
+            return value;
+        } else {
+            throw new IllegalArgumentException(parameterName + " must not be negative.");
+        }
+    }
+
+    public static String checkNotEmpty(final String s, final String parameterName)
+            throws NullPointerException, IllegalArgumentException {
+
+        checkNotNull(s, parameterName);
+
+        if (!s.isEmpty()) {
+            return s;
+        } else {
+            throw new IllegalArgumentException(parameterName + " must not be empty.");
+        }
+
+    }
+
     private Preconditions() {
         throw new AssertionError("No instances");
     }

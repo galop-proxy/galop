@@ -1,6 +1,21 @@
 # Changelog
 
 
+## [Unreleased]
+
+### Added
+
+- All HTTP requests and responses are standardized before they are forwarded to
+  the server and clients. The names of header fields are converted completely
+  into lowercase letters.
+- HTTP requests with syntactically incorrect request lines or header fields are
+  rejected with the HTTP status code 400 (Bad Request). Such requests are not
+  forwarded to the target server.
+- HTTP responses with syntactically incorrect status lines or header fields are
+  rejected with the HTTP status code 502 (Bad Gateway). Such responses are not
+  forwarded to clients.
+
+
 ## 0.4.2 - 2017-05-30
 
 ### Fixed

@@ -1,4 +1,4 @@
-package io.github.galop_proxy.api.network;
+package io.github.galop_proxy.galop.network;
 
 import org.junit.Test;
 

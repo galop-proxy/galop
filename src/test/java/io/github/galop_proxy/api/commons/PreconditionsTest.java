@@ -4,6 +4,7 @@ import org.junit.Test;
 
 import java.lang.reflect.Constructor;
 
+import static io.github.galop_proxy.api.commons.Preconditions.checkNotEmpty;
 import static io.github.galop_proxy.api.commons.Preconditions.checkNotNegative;
 import static io.github.galop_proxy.api.commons.Preconditions.checkNotNull;
 import static org.junit.Assert.assertEquals;
@@ -33,7 +34,7 @@ public class PreconditionsTest {
         }
     }
 
-    // checkNotNegative:
+    // checkNotNegative (int):
 
     @Test
     public void checkNotNegative_withZero_returnsZero() {
@@ -52,6 +53,56 @@ public class PreconditionsTest {
             fail("IllegalArgumentException expected.");
         } catch (final IllegalArgumentException ex) {
             assertEquals("value must not be negative.", ex.getMessage());
+        }
+    }
+
+    // checkNotNegative (long):
+
+    @Test
+    public void checkNotNegative_withZeroLong_returnsZero() {
+        assertEquals(0L, checkNotNegative(0L, "value"));
+    }
+
+    @Test
+    public void checkNotNegative_withPositiveLongValue_returnsValue() {
+        assertEquals(1L, checkNotNegative(1L, "value"));
+    }
+
+    @Test
+    public void checkNotNegative_withNegativeLongValue_throwsIllegalArgumentException() {
+        try {
+            checkNotNegative(-1L, "value");
+            fail("IllegalArgumentException expected.");
+        } catch (final IllegalArgumentException ex) {
+            assertEquals("value must not be negative.", ex.getMessage());
+        }
+    }
+
+
+    // checkNotEmpty:
+
+    @Test
+    public void checkNotEmpty_withNotEmptyString_returnsString() {
+        assertEquals("hello world", checkNotEmpty("hello world", "string"));
+    }
+
+    @Test
+    public void checkNotEmpty_withEmptyString_throwsIllegalArgumentException() {
+        try {
+            checkNotEmpty("", "string");
+            fail("IllegalArgumentException expected.");
+        } catch (final IllegalArgumentException ex) {
+            assertEquals("string must not be empty.", ex.getMessage());
+        }
+    }
+
+    @Test
+    public void checkNotEmpty_withoutString_throwsNullPointerException() {
+        try {
+            checkNotEmpty(null, "string");
+            fail("NullPointerException expected.");
+        } catch (final NullPointerException ex) {
+            assertEquals("string must not be null.", ex.getMessage());
         }
     }
 
