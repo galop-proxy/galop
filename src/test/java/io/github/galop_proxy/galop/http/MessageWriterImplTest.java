@@ -7,6 +7,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.*;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 
@@ -192,6 +193,32 @@ public class MessageWriterImplTest {
     @Test
     public void writeResponse_withChunkedTransferEncoding_usesChunkedEncoding() throws IOException {
         response.getHeaderFields().put(HeaderFields.Response.TRANSFER_ENCODING, Collections.singletonList("chunked"));
+        assertChunkedEncodingResponse();
+    }
+
+    @Test
+    public void writeRequest_withChunkedAsLastTransferEncoding_usesChunkedEncoding() throws IOException {
+        request.getHeaderFields().put(HeaderFields.Response.TRANSFER_ENCODING, Collections.singletonList("gzip, chunked"));
+        assertChunkedEncodingRequest();
+    }
+
+    @Test
+    public void writeResponse_withChunkedAsLastTransferEncoding_usesChunkedEncoding() throws IOException {
+        response.getHeaderFields().put(HeaderFields.Response.TRANSFER_ENCODING, Collections.singletonList("gzip, chunked"));
+        assertChunkedEncodingResponse();
+    }
+
+    @Test
+    public void writeRequest_withChunkedAsLastTransferEncodingInDifferentHeaderField_usesChunkedEncoding()
+            throws IOException {
+        request.getHeaderFields().put(HeaderFields.Response.TRANSFER_ENCODING, Arrays.asList("gzip", "chunked"));
+        assertChunkedEncodingRequest();
+    }
+
+    @Test
+    public void writeResponse_withChunkedAsLastTransferEncodingInDifferentHeaderField_usesChunkedEncoding()
+            throws IOException {
+        response.getHeaderFields().put(HeaderFields.Response.TRANSFER_ENCODING, Arrays.asList("gzip", "chunked"));
         assertChunkedEncodingResponse();
     }
 

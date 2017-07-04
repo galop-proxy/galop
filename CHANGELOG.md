@@ -14,6 +14,9 @@
 - HTTP responses with syntactically incorrect status lines or header fields are
   rejected with the HTTP status code 502 (Bad Gateway). Such responses are not
   forwarded to clients.
+- The proxy supports chunked transfer coding if chunked is the last coding in a
+  sequence of transfer codings. So far, chunked was only supported, if it was
+  the only transfer coding.
 
 
 ## 0.4.2 - 2017-05-30
