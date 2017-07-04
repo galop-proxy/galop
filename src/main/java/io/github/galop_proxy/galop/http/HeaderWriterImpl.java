@@ -3,7 +3,7 @@ package io.github.galop_proxy.galop.http;
 import io.github.galop_proxy.api.http.Message;
 
 import java.io.IOException;
-import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.util.List;
 import java.util.Map.Entry;
 
@@ -13,10 +13,10 @@ import static io.github.galop_proxy.galop.http.Constants.NEW_LINE;
 final class HeaderWriterImpl implements HeaderWriter {
 
     @Override
-    public void writeHeader(final Message message, final OutputStreamWriter outputStreamWriter) throws IOException {
+    public void writeHeader(final Message message, final Writer writer) throws IOException {
 
         checkNotNull(message, "message");
-        checkNotNull(outputStreamWriter, "outputStreamWriter");
+        checkNotNull(writer, "writer");
 
         for (final Entry<String, List<String>> fields : message.getHeaderFields().entrySet()) {
 
@@ -24,13 +24,13 @@ final class HeaderWriterImpl implements HeaderWriter {
             final List<String> values = fields.getValue();
 
             for (final String value : values) {
-                outputStreamWriter.write(name + ": " + value + NEW_LINE);
+                writer.write(name + ": " + value + NEW_LINE);
             }
 
         }
 
-        outputStreamWriter.write(NEW_LINE);
-        outputStreamWriter.flush();
+        writer.write(NEW_LINE);
+        writer.flush();
 
     }
 

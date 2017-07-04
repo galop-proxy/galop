@@ -1,185 +1,310 @@
 package io.github.galop_proxy.galop.http;
 
+import io.github.galop_proxy.api.http.HeaderFields;
+import io.github.galop_proxy.api.http.Request;
+import io.github.galop_proxy.api.http.Response;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.*;
+import java.util.Collections;
+import java.util.HashMap;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.*;
 
 /**
  * Tests the class {@link MessageWriterImpl}.
  */
 public class MessageWriterImplTest {
 
-    private MessageWriterImpl handler;
+    private StartLineWriter startLineWriter;
+    private HeaderWriter headerWriter;
+    private MessageBodyWriter messageBodyWriter;
+    private MessageWriterImpl instance;
+
+    private Request request;
+    private Response response;
+    private InputStream inputStream;
     private OutputStream outputStream;
 
     @Before
     public void setUp() {
 
-        // TODO Mockito
-        final MessageBodyWriter messageBodyWriter = new MessageBodyWriterImpl();
+        startLineWriter = mock(StartLineWriter.class);
+        headerWriter = mock(HeaderWriter.class);
+        messageBodyWriter = mock(MessageBodyWriter.class);
+        instance = new MessageWriterImpl(startLineWriter, headerWriter, messageBodyWriter);
 
-        // TODO Constructor
-        handler = new MessageWriterImpl(messageBodyWriter);
+        request = mock(Request.class);
+        when(request.getHeaderFields()).thenReturn(new HashMap<>());
 
-        outputStream = new ByteArrayOutputStream();
+        response = mock(Response.class);
+        when(response.getHeaderFields()).thenReturn(new HashMap<>());
 
-    }
-
-    // No entity:
-
-    @Test
-    public void writeMessage_messageWithoutEntity_copiesMessageHeaderToOutput() throws IOException {
-
-        final String message = "Hello world!";
-        final int messageLength = message.getBytes().length;
-        final InputStream inputStream = new ByteArrayInputStream(message.getBytes());
-        final HttpHeaderParser.Result result = createHeaderResult(false, messageLength, (long) messageLength);
-
-        handler.writeMessage(result, inputStream, outputStream);
-
-        assertEquals(message, outputStream.toString());
+        inputStream = mock(InputStream.class);
+        outputStream = mock(OutputStream.class);
 
     }
 
-    // Identity transfer encoding:
-
-    @Test
-    public void writeMessage_messageWithEntityAndIdentityTransferEncoding_copiesMessageToOutput() throws IOException {
-
-        final String header = "Hello world!";
-        final String entity = "Lorem Ipsum";
-        final String message = header + entity;
-        final int headerLength = header.getBytes().length;
-        final int messageLength = message.getBytes().length;
-        final InputStream inputStream = new ByteArrayInputStream(message.getBytes());
-        final HttpHeaderParser.Result result = createHeaderResult(false, headerLength, (long) messageLength);
-
-        handler.writeMessage(result, inputStream, outputStream);
-
-        assertEquals(message, outputStream.toString());
-
-    }
-
-    // Chunked transfer encoding:
-
-    @Test
-    public void writeMessage_messageWithChunkedTransferEncoding_copiesMessageToOutput() throws IOException {
-
-        final String entity = "6" + Constants.NEW_LINE + "Hello " + Constants.NEW_LINE
-                + "11" + Constants.NEW_LINE + " wonderful world!" + Constants.NEW_LINE
-                + "E" + Constants.NEW_LINE + "\nHow\r\nare you?" + Constants.NEW_LINE
-                + "0" + Constants.NEW_LINE
-                + Constants.NEW_LINE;
-        final String message = HttpTestUtils.createResponse(entity, null, "chunked");
-        final long headerLength = message.getBytes().length - entity.getBytes().length;
-        final HttpHeaderParser.Result result = createHeaderResult(true, headerLength, null);
-
-        final String nextMessage = "Hello world again!";
-        final String combinedMessages = message + nextMessage;
-        final InputStream inputStream = new ByteArrayInputStream(combinedMessages.getBytes());
-
-        handler.writeMessage(result, inputStream, outputStream);
-
-        assertEquals(message, outputStream.toString());
-
-    }
-
-    @Test
-    public void writeMessage_messageWithChunkedTransferEncodingAndChunkExtension_copiesMessageToOutput() throws IOException {
-
-        final String entity = "C;lorem=ipsum" + Constants.NEW_LINE + "Hello world!" + Constants.NEW_LINE
-                + "A;hello=world;foo=bar" + Constants.NEW_LINE + "123\r\n\r\n456" + Constants.NEW_LINE
-                + "0" + Constants.NEW_LINE
-                + Constants.NEW_LINE;
-        final String message = HttpTestUtils.createResponse(entity, null, "chunked");
-        final long headerLength = message.getBytes().length - entity.getBytes().length;
-        final HttpHeaderParser.Result result = createHeaderResult(true, headerLength, null);
-
-        final String nextMessage = "Hello world again!";
-        final String combinedMessages = message + nextMessage;
-        final InputStream inputStream = new ByteArrayInputStream(combinedMessages.getBytes());
-
-        handler.writeMessage(result, inputStream, outputStream);
-
-        assertEquals(message, outputStream.toString());
-
-    }
-
-    @Test
-    public void writeMessage_messageWithChunkedTransferEncodingAndTrailerPart_copiesMessageToOutput() throws IOException {
-
-        final String entity = "B" + Constants.NEW_LINE + "Lorem Ipsum" + Constants.NEW_LINE
-                + "0" + Constants.NEW_LINE
-                + "Example:123456789" + Constants.NEW_LINE
-                + "Another: Hello world!" + Constants.NEW_LINE
-                + Constants.NEW_LINE;
-        final String message = HttpTestUtils.createResponse(entity, null, "chunked");
-        final long headerLength = message.getBytes().length - entity.getBytes().length;
-        final HttpHeaderParser.Result result = createHeaderResult(true, headerLength, null);
-
-        final String nextMessage = "Hello world again!";
-        final String combinedMessages = message + nextMessage;
-        final InputStream inputStream = new ByteArrayInputStream(combinedMessages.getBytes());
-
-        handler.writeMessage(result, inputStream, outputStream);
-
-        assertEquals(message, outputStream.toString());
-
-    }
-
-    // Invalid chunked transfer encoding:
-
-    @Test(expected = InvalidChunkException.class)
-    public void writeMessage_withoutValidEndOfChunkSize_throwsInvalidChunkException() throws IOException {
-        final String entity = "1"; // Missing CRLF
-        final String message = HttpTestUtils.createResponse(entity, null, "chunked");
-        final long headerLength = message.getBytes().length - entity.getBytes().length;
-        final HttpHeaderParser.Result result = createHeaderResult(true, headerLength, null);
-        final InputStream inputStream = new ByteArrayInputStream(message.getBytes());
-        handler.writeMessage(result, inputStream, outputStream);
-    }
-
-    @Test(expected = InvalidChunkException.class)
-    public void writeMessage_withInvalidChunkSize_throwsInvalidChunkException() throws IOException {
-        final String entity = "Z" + Constants.NEW_LINE; // Not a valid Hexadecimal number
-        final String message = HttpTestUtils.createResponse(entity, null, "chunked");
-        final long headerLength = message.getBytes().length - entity.getBytes().length;
-        final HttpHeaderParser.Result result = createHeaderResult(true, headerLength, null);
-        final InputStream inputStream = new ByteArrayInputStream(message.getBytes());
-        handler.writeMessage(result, inputStream, outputStream);
-    }
-
-    // Invalid parameters:
+    // Constructor:
 
     @Test(expected = NullPointerException.class)
-    public void writeMessage_withoutHttpHeaderParserResult_throwsNullPointerException() throws IOException {
-        handler.writeMessage(null, mock(InputStream.class), mock(OutputStream.class));
+    public void constructor_withoutStartLineWriter_throwsNullPointerException() {
+        new MessageWriterImpl(null, headerWriter, messageBodyWriter);
     }
 
     @Test(expected = NullPointerException.class)
-    public void writeMessage_withoutInputStream_throwsNullPointerException() throws IOException {
-        handler.writeMessage(mock(HttpHeaderParser.Result.class), null, mock(OutputStream.class));
+    public void constructor_withoutHeaderWriter_throwsNullPointerException() {
+        new MessageWriterImpl(startLineWriter, null, messageBodyWriter);
     }
 
     @Test(expected = NullPointerException.class)
-    public void writeMessage_withoutOutputStream_throwsNullPointerException() throws IOException {
-        handler.writeMessage(mock(HttpHeaderParser.Result.class), mock(InputStream.class), null);
+    public void constructor_withoutMessageBodyWriter_throwsNullPointerException() {
+        new MessageWriterImpl(startLineWriter, headerWriter, null);
+    }
+
+    // Identity encoding:
+
+    @Test
+    public void writeRequest_withContentLengthAndWithoutTransferEncoding_usesIdentityEncodingWithSpecifiedContentLength()
+            throws IOException {
+        request.getHeaderFields().put(HeaderFields.Response.CONTENT_LENGTH, Collections.singletonList("256"));
+        assertIdentityEncodingRequest(256);
+    }
+
+    @Test
+    public void writeResponse_withContentLengthAndWithoutTransferEncoding_usesIdentityEncodingWithSpecifiedContentLength()
+            throws IOException {
+        response.getHeaderFields().put(HeaderFields.Response.CONTENT_LENGTH, Collections.singletonList("256"));
+        assertIdentityEncodingResponse(256);
+    }
+
+    @Test
+    public void writeRequest_withIdentityTransferEncoding_usesIdentityEncodingWithSpecifiedContentLength()
+            throws IOException{
+        request.getHeaderFields().put(HeaderFields.Response.TRANSFER_ENCODING, Collections.singletonList("identity"));
+        request.getHeaderFields().put(HeaderFields.Response.CONTENT_LENGTH, Collections.singletonList("100"));
+        assertIdentityEncodingRequest(100);
+    }
+
+    @Test
+    public void writeResponse_withIdentityTransferEncoding_usesIdentityEncodingWithSpecifiedContentLength()
+            throws IOException{
+        response.getHeaderFields().put(HeaderFields.Response.TRANSFER_ENCODING, Collections.singletonList("identity"));
+        response.getHeaderFields().put(HeaderFields.Response.CONTENT_LENGTH, Collections.singletonList("100"));
+        assertIdentityEncodingResponse(100);
+    }
+
+    @Test
+    public void writeRequest_withoutTransferEncodingAndWithoutContentLength_usesIdentityEncodingWithZeroLength()
+            throws IOException {
+        assertIdentityEncodingRequest(0);
+    }
+
+    @Test
+    public void writeResponse_withoutTransferEncodingAndWithoutContentLength_usesIdentityEncodingWithZeroLength()
+            throws IOException {
+        assertIdentityEncodingResponse(0);
+    }
+
+    @Test
+    public void writeRequest_withEmptyContentLength_usesIdentityEncodingWithZeroLength() throws IOException {
+        request.getHeaderFields().put(HeaderFields.Response.CONTENT_LENGTH, Collections.singletonList(""));
+        assertIdentityEncodingRequest(0);
+    }
+
+    @Test
+    public void writeResponse_withEmptyContentLength_usesIdentityEncodingWithZeroLength() throws IOException {
+        response.getHeaderFields().put(HeaderFields.Response.CONTENT_LENGTH, Collections.singletonList(""));
+        assertIdentityEncodingResponse(0);
+    }
+
+    @Test
+    public void writeRequest_withEmptyContentLengthList_usesIdentityEncodingWithZeroLength() throws IOException {
+        request.getHeaderFields().put(HeaderFields.Response.CONTENT_LENGTH, Collections.emptyList());
+        assertIdentityEncodingRequest(0);
+    }
+
+    @Test
+    public void writeResponse_withEmptyContentLengthList_usesIdentityEncodingWithZeroLength() throws IOException {
+        response.getHeaderFields().put(HeaderFields.Response.CONTENT_LENGTH, Collections.emptyList());
+        assertIdentityEncodingResponse(0);
+    }
+
+    @Test
+    public void writeRequest_withEmptyTransferEncoding_usesIdentityEncodingWithZeroLength() throws IOException {
+        request.getHeaderFields().put(HeaderFields.Response.TRANSFER_ENCODING, Collections.singletonList(""));
+        assertIdentityEncodingRequest(0);
+    }
+
+    @Test
+    public void writeResponse_withEmptyTransferEncoding_usesIdentityEncodingWithZeroLength() throws IOException {
+        response.getHeaderFields().put(HeaderFields.Response.TRANSFER_ENCODING, Collections.singletonList(""));
+        assertIdentityEncodingResponse(0);
+    }
+
+    @Test
+    public void writeRequest_withEmptyTransferEncodingList_usesIdentityEncodingWithZeroLength() throws IOException {
+        request.getHeaderFields().put(HeaderFields.Response.TRANSFER_ENCODING, Collections.emptyList());
+        assertIdentityEncodingRequest(0);
+    }
+
+    @Test
+    public void writeResponse_withEmptyTransferEncodingList_usesIdentityEncodingWithZeroLength() throws IOException {
+        response.getHeaderFields().put(HeaderFields.Response.TRANSFER_ENCODING, Collections.emptyList());
+        assertIdentityEncodingResponse(0);
+    }
+
+    @Test(expected = InvalidHttpHeaderException.class)
+    public void writeRequest_withInvalidContentLength_throwsInvalidHttpHeaderException() throws IOException {
+        request.getHeaderFields().put(HeaderFields.Response.CONTENT_LENGTH, Collections.singletonList("abc"));
+        assertFailureRequest();
+    }
+
+    @Test(expected = InvalidHttpHeaderException.class)
+    public void writeResponse_withInvalidContentLength_throwsInvalidHttpHeaderException() throws IOException {
+        response.getHeaderFields().put(HeaderFields.Response.CONTENT_LENGTH, Collections.singletonList("abc"));
+        assertFailureResponse();
+    }
+
+    @Test(expected = InvalidHttpHeaderException.class)
+    public void writeRequest_withNegativeContentLength_throwsInvalidHttpHeaderException() throws IOException {
+        request.getHeaderFields().put(HeaderFields.Response.CONTENT_LENGTH, Collections.singletonList("-1"));
+        assertFailureRequest();
+    }
+
+    @Test(expected = InvalidHttpHeaderException.class)
+    public void writeResponse_withNegativeContentLength_throwsInvalidHttpHeaderException() throws IOException {
+        response.getHeaderFields().put(HeaderFields.Response.CONTENT_LENGTH, Collections.singletonList("-1"));
+        assertFailureResponse();
+    }
+
+    // Chunked encoding:
+
+    @Test
+    public void writeRequest_withChunkedTransferEncoding_usesChunkedEncoding() throws IOException {
+        request.getHeaderFields().put(HeaderFields.Response.TRANSFER_ENCODING, Collections.singletonList("chunked"));
+        assertChunkedEncodingRequest();
+    }
+
+    @Test
+    public void writeResponse_withChunkedTransferEncoding_usesChunkedEncoding() throws IOException {
+        response.getHeaderFields().put(HeaderFields.Response.TRANSFER_ENCODING, Collections.singletonList("chunked"));
+        assertChunkedEncodingResponse();
+    }
+
+    @Test(expected = UnsupportedTransferEncodingException.class)
+    public void writeRequest_withUnsupportedTransferEncoding_throwsUnsupportedTransferEncodingException()
+            throws IOException {
+        request.getHeaderFields().put(HeaderFields.Response.TRANSFER_ENCODING, Collections.singletonList("unsupported"));
+        assertFailureRequest();
+    }
+
+    @Test(expected = UnsupportedTransferEncodingException.class)
+    public void writeResponse_withUnsupportedTransferEncoding_throwsUnsupportedTransferEncodingException()
+            throws IOException {
+        response.getHeaderFields().put(HeaderFields.Response.TRANSFER_ENCODING, Collections.singletonList("unsupported"));
+        assertFailureResponse();
+    }
+
+    // Wrong use of API:
+
+    @Test(expected = NullPointerException.class)
+    public void writeRequest_withoutMessage_throwsNullPointerException() throws IOException {
+        instance.writeRequest(null, inputStream, outputStream);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void writeRequest_withoutInputStream_throwsNullPointerException() throws IOException {
+        instance.writeRequest(request, null, outputStream);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void writeRequest_withoutOutputStream_throwsNullPointerException() throws IOException {
+        instance.writeRequest(request, inputStream, null);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void writeResponse_withoutMessage_throwsNullPointerException() throws IOException {
+        instance.writeResponse(null, inputStream, outputStream);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void writeResponse_withoutInputStream_throwsNullPointerException() throws IOException {
+        instance.writeResponse(response, null, outputStream);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void writeResponse_withoutOutputStream_throwsNullPointerException() throws IOException {
+        instance.writeResponse(response, inputStream, null);
     }
 
     // Helper methods:
 
-    private HttpHeaderParser.Result createHeaderResult(final boolean chunkedTransferEncoding, final long headerLength,
-                                                       final Long totalLength) {
-        final HttpHeaderParser.Result result = mock(HttpHeaderParser.Result.class);
-        when(result.isChunkedTransferEncoding()).thenReturn(chunkedTransferEncoding);
-        when(result.getHeaderLength()).thenReturn(headerLength);
-        when(result.getTotalLength()).thenReturn(totalLength);
-        return result;
+    private void assertIdentityEncodingRequest(final long length) throws IOException {
+
+        instance.writeRequest(request, inputStream, outputStream);
+
+        verify(startLineWriter).writeRequestLine(same(request), any());
+        verify(headerWriter).writeHeader(same(request), any());
+        verify(messageBodyWriter).writeIdentityEntity(inputStream, outputStream, length);
+        verify(messageBodyWriter, never()).writeChunkedEntity(any(), any());
+
+    }
+
+    private void assertIdentityEncodingResponse(final long length) throws IOException {
+
+        instance.writeResponse(response, inputStream, outputStream);
+
+        verify(startLineWriter).writeStatusLine(same(response), any());
+        verify(headerWriter).writeHeader(same(response), any());
+        verify(messageBodyWriter).writeIdentityEntity(inputStream, outputStream, length);
+        verify(messageBodyWriter, never()).writeChunkedEntity(any(), any());
+
+    }
+
+    private void assertChunkedEncodingRequest() throws IOException {
+
+        instance.writeRequest(request, inputStream, outputStream);
+
+        verify(startLineWriter).writeRequestLine(same(request), any());
+        verify(headerWriter).writeHeader(same(request), any());
+        verify(messageBodyWriter).writeChunkedEntity(inputStream, outputStream);
+        verify(messageBodyWriter, never()).writeIdentityEntity(any(), any(), anyLong());
+
+    }
+
+    private void assertChunkedEncodingResponse() throws IOException {
+
+        instance.writeResponse(response, inputStream, outputStream);
+
+        verify(startLineWriter).writeStatusLine(same(response), any());
+        verify(headerWriter).writeHeader(same(response), any());
+        verify(messageBodyWriter).writeChunkedEntity(inputStream, outputStream);
+        verify(messageBodyWriter, never()).writeIdentityEntity(any(), any(), anyLong());
+
+    }
+
+    private void assertFailureRequest() throws IOException {
+        try {
+            instance.writeRequest(request, inputStream, outputStream);
+            fail("IOException expected.");
+        } catch (final IOException ex) {
+            assertFalse(ex.getMessage().isEmpty());
+            throw ex;
+        }
+    }
+
+    private void assertFailureResponse() throws IOException {
+        try {
+            instance.writeResponse(response, inputStream, outputStream);
+            fail("IOException expected.");
+        } catch (final IOException ex) {
+            assertFalse(ex.getMessage().isEmpty());
+            throw ex;
+        }
     }
 
 }

@@ -13,7 +13,7 @@ final class StartLineParserImpl implements StartLineParser {
     @Override
     public Request parseRequestLine(final Callable<String, IOException> nextLine) throws IOException {
 
-        final String[] requestLine = splitStartLine(nextLine);
+        final String[] requestLine = nextLine.call().split(" ");
 
         if (requestLine.length != 3) {
             throw new InvalidHttpHeaderException("Invalid request line.");
@@ -30,7 +30,7 @@ final class StartLineParserImpl implements StartLineParser {
     @Override
     public Response parseStatusLine(final Callable<String, IOException> nextLine) throws IOException {
 
-        final String[] statusLine = splitStartLine(nextLine);
+        final String[] statusLine = nextLine.call().split(" ", 3);
 
         if (statusLine.length != 3 && statusLine.length != 2) {
             throw new InvalidHttpHeaderException("Invalid status line.");
@@ -42,10 +42,6 @@ final class StartLineParserImpl implements StartLineParser {
 
         return new ResponseImpl(version, statusCode, reasonPhrase);
 
-    }
-
-    private String[] splitStartLine(final Callable<String, IOException> nextLine) throws IOException {
-        return nextLine.call().split(" ");
     }
 
     private Version parseVersion(final String version) throws InvalidHttpHeaderException {

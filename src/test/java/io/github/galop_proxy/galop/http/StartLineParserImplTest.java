@@ -93,6 +93,12 @@ public class StartLineParserImplTest {
     }
 
     @Test
+    public void parseStatusLine_withReasonPhraseContainingSpace_returnsParsedReasonPhrase() throws IOException {
+        response = instance.parseStatusLine(() -> "HTTP/1.1 304 Not Modified");
+        assertEquals("Not Modified", response.getReasonPhrase());
+    }
+
+    @Test
     public void parseStatusLine_withoutReasonPhrase_returnsEmptyReasonPhrase() throws IOException {
         final String statusLine = "HTTP/1.1 200";
         final Response parsed = instance.parseStatusLine(() -> statusLine);

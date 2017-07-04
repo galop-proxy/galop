@@ -1,13 +1,13 @@
 package io.github.galop_proxy.galop.http;
 
+import io.github.galop_proxy.api.http.Request;
+import io.github.galop_proxy.api.http.Response;
 import io.github.galop_proxy.galop.configuration.HttpHeaderConfiguration;
-import io.github.galop_proxy.galop.http.HttpHeaderParser.Result;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.inject.Inject;
-import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.Socket;
@@ -23,15 +23,15 @@ final class ExchangeHandlerImpl implements ExchangeHandler {
     private static final Logger LOGGER = LogManager.getLogger(ExchangeHandler.class);
 
     private final HttpHeaderConfiguration httpHeaderConfiguration;
-    private final HttpHeaderParser httpHeaderParser;
+    private final MessageParser messageParser;
     private final MessageWriter messageWriter;
     private final ExecutorService executorService;
 
     @Inject
-    ExchangeHandlerImpl(final HttpHeaderConfiguration httpHeaderConfiguration, final HttpHeaderParser httpHeaderParser,
+    ExchangeHandlerImpl(final HttpHeaderConfiguration httpHeaderConfiguration, final MessageParser messageParser,
                         final MessageWriter messageWriter, final ExecutorService executorService) {
         this.httpHeaderConfiguration = checkNotNull(httpHeaderConfiguration, "httpHeaderConfiguration");
-        this.httpHeaderParser = checkNotNull(httpHeaderParser, "httpHeaderParser");
+        this.messageParser = checkNotNull(messageParser, "messageParser");
         this.messageWriter = checkNotNull(messageWriter, "messageWriter");
         this.executorService = checkNotNull(executorService, "executorService");
     }
@@ -44,11 +44,11 @@ final class ExchangeHandlerImpl implements ExchangeHandler {
 
         validateParameters(source, target, startHandlingRequestCallback);
 
-        final InputStream inputStream = new BufferedInputStream(source.getInputStream());
+        final InputStream inputStream = source.getInputStream();
 
         try {
-            final Result header = parseRequestHeader(inputStream, startHandlingRequestCallback);
-            messageWriter.writeMessage(header, inputStream, target.getOutputStream());
+            final Request request = parseRequest(inputStream, startHandlingRequestCallback);
+            messageWriter.writeRequest(request, inputStream, target.getOutputStream());
         } catch (final Exception ex) {
             handleRequestError(ex, source);
             throw ex;
@@ -56,9 +56,9 @@ final class ExchangeHandlerImpl implements ExchangeHandler {
 
     }
 
-    private Result parseRequestHeader(final InputStream inputStream, final Runnable startCallback) throws Exception {
+    private Request parseRequest(final InputStream inputStream, final Runnable startCallback) throws Exception {
         final long timeout = httpHeaderConfiguration.getRequest().getReceiveTimeout();
-        return executeWithTimeout(() -> httpHeaderParser.parse(inputStream, true, startCallback), timeout);
+        return executeWithTimeout(() -> messageParser.parseRequest(inputStream, startCallback), timeout);
     }
 
     private void handleRequestError(final Exception ex, final Socket source) {
@@ -85,13 +85,12 @@ final class ExchangeHandlerImpl implements ExchangeHandler {
 
         validateParameters(source, target, endHandlingResponseCallback);
 
-        final InputStream inputStream = new BufferedInputStream(target.getInputStream());
-
+        final InputStream inputStream = target.getInputStream();
         final AtomicBoolean sendingResponseStarted = new AtomicBoolean(false);
 
         try {
-            final Result header = parseResponseHeader(inputStream, () -> sendingResponseStarted.set(true));
-            messageWriter.writeMessage(header, inputStream, source.getOutputStream());
+            final Response response = parseResponseHeader(inputStream, () -> sendingResponseStarted.set(true));
+            messageWriter.writeResponse(response, inputStream, source.getOutputStream());
             endHandlingResponseCallback.run();
         } catch (final Exception ex) {
             handleResponseError(ex, source, sendingResponseStarted.get());
@@ -100,9 +99,9 @@ final class ExchangeHandlerImpl implements ExchangeHandler {
 
     }
 
-    private Result parseResponseHeader(final InputStream inputStream, final Runnable startCallback) throws Exception {
+    private Response parseResponseHeader(final InputStream inputStream, final Runnable startCallback) throws Exception {
         final long timeout = httpHeaderConfiguration.getResponse().getReceiveTimeout();
-        return executeWithTimeout(() -> httpHeaderParser.parse(inputStream, false, startCallback), timeout);
+        return executeWithTimeout(() -> messageParser.parseResponse(inputStream, startCallback), timeout);
     }
 
     private void handleResponseError(final Exception ex, final Socket source, final boolean sendingResponseStarted) {

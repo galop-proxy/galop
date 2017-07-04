@@ -1,50 +1,139 @@
 package io.github.galop_proxy.galop.http;
 
 import com.google.inject.Inject;
-import org.apache.commons.io.IOUtils;
+import io.github.galop_proxy.api.http.Message;
+import io.github.galop_proxy.api.http.Request;
+import io.github.galop_proxy.api.http.Response;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.util.List;
 
 import static io.github.galop_proxy.api.commons.Preconditions.checkNotNull;
+import static io.github.galop_proxy.api.http.HeaderFields.Response.CONTENT_LENGTH;
+import static io.github.galop_proxy.api.http.HeaderFields.Response.TRANSFER_ENCODING;
+import static io.github.galop_proxy.galop.http.Constants.HEADER_CHARSET;
 
 final class MessageWriterImpl implements MessageWriter {
 
+    private final StartLineWriter startLineWriter;
+    private final HeaderWriter headerWriter;
     private final MessageBodyWriter messageBodyWriter;
 
     @Inject
-    MessageWriterImpl(final MessageBodyWriter messageBodyWriter) {
+    MessageWriterImpl(final StartLineWriter startLineWriter, final HeaderWriter headerWriter,
+                      final MessageBodyWriter messageBodyWriter) {
+        this.startLineWriter = checkNotNull(startLineWriter, "startLineWriter");
+        this.headerWriter = checkNotNull(headerWriter, "headerWriter");
         this.messageBodyWriter = checkNotNull(messageBodyWriter, "messageBodyWriter");
     }
 
     @Override
-    public void writeMessage(final HttpHeaderParser.Result header, final InputStream inputStream,
-                             final OutputStream outputStream) throws IOException {
+    public void writeRequest(final Request request, final InputStream inputStream, final OutputStream outputStream)
+            throws IOException {
+        checkNotNull(request, "request");
+        writeMessage(request, true, inputStream, outputStream);
+    }
 
-        checkNotNull(header, "header");
+    @Override
+    public void writeResponse(final Response response, final InputStream inputStream, final OutputStream outputStream)
+            throws IOException {
+        checkNotNull(response, "response");
+        writeMessage(response, false, inputStream, outputStream);
+    }
+
+    private void writeMessage(final Message message, final boolean request, final InputStream inputStream,
+                              final OutputStream outputStream) throws IOException {
+
         checkNotNull(inputStream, "inputStream");
         checkNotNull(outputStream, "outputStream");
 
-        if (header.isChunkedTransferEncoding()) {
-            handleChunkedTransferEncoding(header, inputStream, outputStream);
+        final boolean chunkedEncoding = isChunkedEncoding(message);
+        final long contentLength = parseContentLength(message, chunkedEncoding);
+
+        final OutputStreamWriter outputStreamWriter = new OutputStreamWriter(outputStream, HEADER_CHARSET);
+
+        if (request) {
+            startLineWriter.writeRequestLine((Request) message, outputStreamWriter);
         } else {
-            handleIdentityTransferEncoding(header, inputStream, outputStream);
+            startLineWriter.writeStatusLine((Response) message, outputStreamWriter);
+        }
+
+        headerWriter.writeHeader(message, outputStreamWriter);
+
+        if (chunkedEncoding) {
+            messageBodyWriter.writeChunkedEntity(inputStream, outputStream);
+        } else {
+            messageBodyWriter.writeIdentityEntity(inputStream, outputStream, contentLength);
         }
 
     }
 
-    private void handleIdentityTransferEncoding(final HttpHeaderParser.Result header, final InputStream inputStream,
-                                                final OutputStream outputStream) throws IOException {
-        final long bodyLength = header.getTotalLength() - header.getHeaderLength();
-        IOUtils.copyLarge(inputStream, outputStream, 0, header.getHeaderLength());
-        messageBodyWriter.writeIdentityEntity(inputStream, outputStream, bodyLength);
+    private boolean isChunkedEncoding(final Message message) throws IOException {
+
+        if (!message.getHeaderFields().containsKey(TRANSFER_ENCODING)) {
+            return false;
+        }
+
+        final List<String> transferEncodings = message.getHeaderFields().get(TRANSFER_ENCODING);
+
+        if (transferEncodings.size() == 0) {
+            return false;
+        }
+
+        final String lastTransferEncoding = transferEncodings.get(transferEncodings.size() - 1);
+
+        switch (lastTransferEncoding) {
+            case Constants.TRANSFER_ENCODING_CHUNKED:
+                return true;
+            case Constants.TRANSFER_ENCODING_IDENTITY:
+                return false;
+            case "":
+                return false;
+            default:
+                throw new UnsupportedTransferEncodingException(lastTransferEncoding);
+        }
+
     }
 
-    private void handleChunkedTransferEncoding(final HttpHeaderParser.Result header, final InputStream inputStream,
-                                               final OutputStream outputStream) throws IOException {
-        IOUtils.copyLarge(inputStream, outputStream, 0, header.getHeaderLength());
-        messageBodyWriter.writeChunkedEntity(inputStream, outputStream);
+    private long parseContentLength(final Message message, final boolean chunkedEncoding) throws IOException {
+
+        if (chunkedEncoding) {
+            return 0;
+        }
+
+        if (!message.getHeaderFields().containsKey(CONTENT_LENGTH)) {
+            return 0;
+        }
+
+        final List<String> contentLengths = message.getHeaderFields().get(CONTENT_LENGTH);
+
+        if (contentLengths.size() == 0) {
+            return 0;
+        }
+
+        final String lastContentLength = contentLengths.get(contentLengths.size() - 1);
+
+        if (lastContentLength.isEmpty()) {
+            return 0;
+        }
+
+        final long contentLength;
+
+        try {
+            contentLength = Long.parseLong(lastContentLength);
+        } catch (final NumberFormatException ex) {
+            throw new InvalidHttpHeaderException("Invalid Content-Length: Not a valid number.");
+        }
+
+        if (contentLength < 0) {
+            throw new InvalidHttpHeaderException("Invalid Content-Length: Must be greater or equal to 0.");
+        }
+
+        return contentLength;
+
     }
 
 }

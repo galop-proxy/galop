@@ -6,10 +6,7 @@ import io.github.galop_proxy.api.http.Version;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 
 import static io.github.galop_proxy.galop.http.Constants.NEW_LINE;
 import static org.junit.Assert.assertEquals;
@@ -28,7 +25,7 @@ public class StartLineWriterImplTest {
     private Response response;
 
     private ByteArrayOutputStream outputStream;
-    private OutputStreamWriter writer;
+    private Writer writer;
 
 
     @Before
@@ -104,7 +101,7 @@ public class StartLineWriterImplTest {
     }
 
     @Test(expected = NullPointerException.class)
-    public void writeStatusLine_withoutOutputStreamWriter_throwsNullPointerException() throws IOException {
+    public void writeStatusLine_withoutWriter_throwsNullPointerException() throws IOException {
         instance.writeStatusLine(response, null);
     }
 

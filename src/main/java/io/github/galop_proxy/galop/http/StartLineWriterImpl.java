@@ -5,7 +5,7 @@ import io.github.galop_proxy.api.http.Request;
 import io.github.galop_proxy.api.http.Response;
 
 import java.io.IOException;
-import java.io.OutputStreamWriter;
+import java.io.Writer;
 
 import static io.github.galop_proxy.api.commons.Preconditions.checkNotNull;
 import static io.github.galop_proxy.galop.http.Constants.HTTP_VERSION_PREFIX;
@@ -14,12 +14,12 @@ import static io.github.galop_proxy.galop.http.Constants.NEW_LINE;
 final class StartLineWriterImpl implements StartLineWriter {
 
     @Override
-    public void writeRequestLine(final Request request, final OutputStreamWriter outputStreamWriter) throws IOException {
+    public void writeRequestLine(final Request request, final Writer writer) throws IOException {
 
         checkNotNull(request, "request");
-        checkNotNull(outputStreamWriter, "outputStreamWriter");
+        checkNotNull(writer, "writer");
 
-        outputStreamWriter.write(
+        writer.write(
                   method(request)
                 + " "
                 + requestTarget(request)
@@ -27,17 +27,17 @@ final class StartLineWriterImpl implements StartLineWriter {
                 + version(request)
                 + NEW_LINE);
 
-        outputStreamWriter.flush();
+        writer.flush();
 
     }
 
     @Override
-    public void writeStatusLine(final Response response, final OutputStreamWriter outputStreamWriter) throws IOException {
+    public void writeStatusLine(final Response response, final Writer writer) throws IOException {
 
         checkNotNull(response, "response");
-        checkNotNull(outputStreamWriter, "outputStreamWriter");
+        checkNotNull(writer, "writer");
 
-        outputStreamWriter.write(
+        writer.write(
                   version(response)
                 + " "
                 + statusCode(response)
@@ -45,7 +45,7 @@ final class StartLineWriterImpl implements StartLineWriter {
                 + reasonPhrase(response)
                 + NEW_LINE);
 
-        outputStreamWriter.flush();
+        writer.flush();
 
     }
 

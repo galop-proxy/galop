@@ -5,10 +5,7 @@ import io.github.galop_proxy.api.http.Message;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -29,7 +26,7 @@ public class HeaderWriterImplTest {
     private Message message;
 
     private ByteArrayOutputStream outputStream;
-    private OutputStreamWriter writer;
+    private Writer writer;
 
     @Before
     public void setUp() {
@@ -88,7 +85,7 @@ public class HeaderWriterImplTest {
     }
 
     @Test(expected = NullPointerException.class)
-    public void writeHeader_withoutOutputStreamWriter_throwsNullPointerException() throws IOException {
+    public void writeHeader_withoutWriter_throwsNullPointerException() throws IOException {
         instance.writeHeader(message, null);
     }
 
