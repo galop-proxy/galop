@@ -11,7 +11,7 @@ final class FileServer extends Server {
         super(port);
 
         final ResourceHandler resourceHandler = new ResourceHandler();
-        resourceHandler.setBaseResource(Resource.newClassPathResource("/"));
+        resourceHandler.setBaseResource(Resource.newClassPathResource("files"));
         setHandler(resourceHandler);
 
     }

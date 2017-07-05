@@ -8,7 +8,10 @@ nohup java -jar ../target/galop-0.4.2.jar ./galop.properties 2>> $log >> $log &
 pid=$!
 echo "GALOP started (PID: $pid).\n"
 
-mvn clean compile exec:exec
+mvn clean package
+echo
+
+java -jar target/system_test-0.4.2.jar
 result=$?
 
 echo "\nStopping GALOP (PID: $pid) ..."
