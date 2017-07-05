@@ -8,6 +8,8 @@ import org.junit.runner.notification.RunListener;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
+import static io.github.galop_proxy.system_test.ConsoleUtils.*;
+
 final class ExecutionListener extends RunListener {
 
     private Class<?> lastClassName;
@@ -32,23 +34,31 @@ final class ExecutionListener extends RunListener {
         println("\n");
 
         if (result.wasSuccessful()) {
-            print("Result:");
-            printlnSuccessful("All " + result.getRunCount()
-                    + " test cases were successfully executed in "
-                    + formatTime(result.getRunTime()) + ".");
+            testRunSuccessful(result);
         } else {
-
-            print("Result:");
-
-            if (result.getFailureCount() > 1) {
-                printlnError(result.getFailureCount() + " test cases failed.");
-            } else {
-                printlnError("1 test case failed.");
-            }
-
+            testRunFailed(result);
         }
 
         println("\n");
+
+    }
+
+    private void testRunSuccessful(final Result result) {
+        print("Result:");
+        printlnSuccessful("All " + result.getRunCount()
+                + " test cases were successfully executed in "
+                + formatTime(result.getRunTime()) + ".");
+    }
+
+    private void testRunFailed(final Result result) {
+
+        print("Result:");
+
+        if (result.getFailureCount() > 1) {
+            printlnError(result.getFailureCount() + " test cases failed.");
+        } else {
+            printlnError("1 test case failed.");
+        }
 
     }
 
@@ -98,46 +108,29 @@ final class ExecutionListener extends RunListener {
 
     // Helper methods:
 
-    private void println(final String message) {
-        print(message + "\n");
+    private String simplifyMethodName(final String methodName) {
+        return methodName.replace('_', ' ') + ".";
     }
 
-    private void print(final String message) {
-        System.out.print(" " + message);
-    }
-
-    private void printlnSuccessful(final String message) {
-        printSuccessful(message + "\n");
-    }
-
-    private void printSuccessful(final String message) {
-        print((char) 27 + "[32m" + message + (char) 27 + "[0m");
-    }
-
-    private void printWarning(final String message) {
-        print((char) 27 + "[33m" + message + (char) 27 + "[0m");
-    }
-
-    private void printlnError(final String message) {
-        printError(message + "\n");
-    }
-
-    private void printError(final String message) {
-        print((char) 27 + "[31m" + message + (char) 27 + "[0m");
+    private String formatTime(final long milliseconds) {
+        final long seconds = TimeUnit.MILLISECONDS.toSeconds(milliseconds);
+        final long millisecondsWithoutSeconds = milliseconds - TimeUnit.SECONDS.toMillis(seconds);
+        return seconds + "." + millisecondsWithoutSeconds + " seconds";
     }
 
     private String simplifyClassName(final Class<?> clazz) {
-
         final String name = clazz.getSimpleName();
-
-        // Remove "Tests" suffix
         final String nameWithoutTest = name.substring(0, name.length() - 4);
+        return addSpaces(nameWithoutTest);
+    }
+
+    private String addSpaces(final String s) {
 
         final StringBuilder builder = new StringBuilder();
 
         boolean firstChar = true;
 
-        for (final char c : nameWithoutTest.toCharArray()) {
+        for (final char c : s.toCharArray()) {
 
             if (!firstChar && Character.isUpperCase(c)) {
                 builder.append(' ');
@@ -151,16 +144,7 @@ final class ExecutionListener extends RunListener {
         }
 
         return builder.toString();
-    }
 
-    private String simplifyMethodName(final String methodName) {
-        return methodName.replace('_', ' ') + ".";
-    }
-
-    private String formatTime(final long milliseconds) {
-        final long seconds = TimeUnit.MILLISECONDS.toSeconds(milliseconds);
-        final long millisecondsWithoutSeconds = milliseconds - TimeUnit.SECONDS.toMillis(seconds);
-        return seconds + "." + millisecondsWithoutSeconds + " seconds";
     }
 
 }
