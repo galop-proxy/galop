@@ -1,28 +1,31 @@
-#!/bin/sh
+#!/bin/bash
 
-log=$(mktemp)
-echo "GALOP log file: $log"
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+cd $SCRIPT_DIR
 
-echo "Starting GALOP ..."
-nohup java -jar ../target/galop-0.4.2.jar ./galop.properties 2>> $log >> $log &
-pid=$!
-echo "GALOP started (PID: $pid).\n"
+LOG=$(mktemp)
+printf "GALOP log file: $LOG\n"
+
+printf "Starting GALOP ...\n"
+nohup java -jar ../target/galop-0.4.2.jar ./galop.properties 2>> $LOG >> $LOG &
+PID=$!
+printf "GALOP started (PID: $PID).\n\n"
 
 mvn clean package
-echo
+printf "\n"
 
 java -jar target/system_test-0.4.2.jar
-result=$?
+RESULT=$?
 
-echo "\nStopping GALOP (PID: $pid) ..."
-kill $pid
-echo "GALOP stopped."
+printf "\nStopping GALOP (PID: $PID) ...\n"
+kill $PID
+printf "GALOP stopped.\n"
 
-if [ $result -ne 0 ]; then
-    echo "\n------------------------------------------------------------------------"
-    echo " GALOP log file"
-    echo "------------------------------------------------------------------------\n"
-    cat $log
+if [ $RESULT -ne 0 ]; then
+    printf "\n------------------------------------------------------------------------\n"
+    printf " GALOP log file\n"
+    printf "------------------------------------------------------------------------\n"
+    cat $LOG
 fi
 
-exit $result
+exit $RESULT

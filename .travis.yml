@@ -9,6 +9,6 @@ cache:
 install: true
 script:
    - mvn verify -B
-   - sh system-test/start.sh
+   - bash system-test/start.sh
 after_success:
   - mvn coveralls:report -B
