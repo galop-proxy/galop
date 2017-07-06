@@ -4,9 +4,11 @@ import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 
+import java.io.IOException;
+
 public final class FileServer extends Server {
 
-    public FileServer() {
+    public FileServer() throws IOException {
 
         super(3000);
 
@@ -14,11 +16,18 @@ public final class FileServer extends Server {
 
         contexts.setHandlers(new Handler[]{
                 new StaticFilesContextHandler(),
-                new RequestContextHandler()
+                new RequestContextHandler(),
+                new ChunkedContextHandler()
         });
 
         setHandler(contexts);
 
+    }
+
+    public static void main(String... args) throws Exception {
+        final Server server = new FileServer();
+        server.start();
+        server.join();
     }
 
 }
