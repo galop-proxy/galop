@@ -22,6 +22,8 @@ public class RequestHeadersTest {
         response = client.newRequest("http://localhost:8080/request/")
                 .method(HttpMethod.GET)
                 .header("LOREM", "IpSuM")
+                .header("hello", "world 1")
+                .header("hello", "world 2")
                 .send();
     }
 
@@ -38,6 +40,14 @@ public class RequestHeadersTest {
     @Test
     public void The_host_header_value_is_not_changed() {
         assertRequestHeader(HttpHeader.HOST.asString(), "localhost:8080");
+    }
+
+    @Test
+    public void Multiple_header_fields_with_the_same_name_are_passed_in_the_correct_order() {
+        final String request = response.getContentAsString();
+        assertRequestHeader("hello", "world 1");
+        assertRequestHeader("hello", "world 2");
+        assertTrue(request.indexOf("world 1") < request.indexOf("world 2"));
     }
 
     private void assertRequestHeader(final String name, final String value) {
