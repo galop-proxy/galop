@@ -95,7 +95,7 @@ final class ExecutionListener extends RunListener {
         lastMethodName = failure.getDescription().getMethodName();
 
         printError("FAILED    ");
-        println(simplifyMethodName(lastMethodName) + ": " + failure.getMessage());
+        println(simplifyMethodName(lastMethodName) + "\b: " + failure.getMessage());
 
     }
 

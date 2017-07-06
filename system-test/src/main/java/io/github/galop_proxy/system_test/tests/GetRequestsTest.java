@@ -17,7 +17,7 @@ public class GetRequestsTest {
     public void setUp() throws Exception {
         client = new HttpClient();
         client.start();
-        response = client.GET("http://localhost:8080/hello-world.txt");
+        response = client.GET("http://localhost:8080/static/hello-world.txt");
     }
 
     @After

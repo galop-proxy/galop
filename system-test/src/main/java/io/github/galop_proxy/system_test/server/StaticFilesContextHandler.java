@@ -1,14 +1,14 @@
-package io.github.galop_proxy.system_test;
+package io.github.galop_proxy.system_test.server;
 
-import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.eclipse.jetty.util.resource.Resource;
 
-final class FileServer extends Server {
+final class StaticFilesContextHandler extends ContextHandler {
 
-    FileServer(final int port) {
+    StaticFilesContextHandler() {
 
-        super(port);
+        super("/static");
 
         final ResourceHandler resourceHandler = new ResourceHandler();
         resourceHandler.setBaseResource(Resource.newClassPathResource("files"));

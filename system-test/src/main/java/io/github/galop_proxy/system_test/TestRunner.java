@@ -2,13 +2,15 @@ package io.github.galop_proxy.system_test;
 
 import io.github.galop_proxy.system_test.tests.GetRequestsTest;
 import io.github.galop_proxy.system_test.tests.HeadRequestsTest;
+import io.github.galop_proxy.system_test.tests.RequestHeadersTest;
 import org.junit.runner.JUnitCore;
 
 final class TestRunner {
 
     private final static Class<?>[] TEST_CLASSES = {
             GetRequestsTest.class,
-            HeadRequestsTest.class
+            HeadRequestsTest.class,
+            RequestHeadersTest.class
     };
 
     static boolean runTestsAndWait() {

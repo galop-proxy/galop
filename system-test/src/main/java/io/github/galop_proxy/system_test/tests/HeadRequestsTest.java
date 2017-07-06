@@ -18,7 +18,7 @@ public class HeadRequestsTest {
     public void setUp() throws Exception {
         client = new HttpClient();
         client.start();
-        response = client.newRequest("http://localhost:8080/hello-world.txt").method(HttpMethod.HEAD).send();
+        response = client.newRequest("http://localhost:8080/static/hello-world.txt").method(HttpMethod.HEAD).send();
     }
 
     @After
