@@ -6,7 +6,7 @@
 
     <groupId>io.github.galop_proxy</groupId>
     <artifactId>system_test</artifactId>
-    <version>0.4.2</version>
+    <version>0.5.0</version>
     <packaging>jar</packaging>
 
     <name>GALOP System test</name>
