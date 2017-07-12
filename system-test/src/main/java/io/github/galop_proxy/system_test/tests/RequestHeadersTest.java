@@ -8,6 +8,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class RequestHeadersTest {
@@ -24,6 +26,8 @@ public class RequestHeadersTest {
                 .header("LOREM", "IpSuM")
                 .header("hello", "world 1")
                 .header("hello", "world 2")
+                .header("connection", "upgrade")
+                .header("upgrade", "HTTP/2.0")
                 .send();
     }
 
@@ -38,7 +42,7 @@ public class RequestHeadersTest {
     }
 
     @Test
-    public void The_host_header_value_is_not_changed() {
+    public void The_host_header_field_value_is_not_changed() {
         assertRequestHeader(HttpHeader.HOST.asString(), "localhost:8080");
     }
 
@@ -50,9 +54,24 @@ public class RequestHeadersTest {
         assertTrue(request.indexOf("world 1") < request.indexOf("world 2"));
     }
 
+    @Test
+    public void The_connection_header_field_is_removed() {
+        assertRequestHeaderRemoved(HttpHeader.CONNECTION.asString());
+    }
+
+    @Test
+    public void The_upgrade_header_field_is_removed() {
+        assertRequestHeaderRemoved(HttpHeader.UPGRADE.asString());
+    }
+
     private void assertRequestHeader(final String name, final String value) {
         final String header = "\r\n" + name + ": " + value + "\r\n";
         assertTrue(response.getContentAsString().contains(header));
+    }
+
+    private void assertRequestHeaderRemoved(final String name) {
+        final String header = "\r\n" + name + ": ";
+        assertFalse(response.getContentAsString().toLowerCase().contains(header.toLowerCase()));
     }
 
 }

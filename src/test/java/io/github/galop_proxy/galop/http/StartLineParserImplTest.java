@@ -149,8 +149,14 @@ public class StartLineParserImplTest {
 
     @Test(expected = UnsupportedHttpVersionException.class)
     public void parseStatusLine_withUnsupportedHttpVersion_throwsUnsupportedHttpVersionException() throws IOException {
-        final String requestLine = "GET /example HTTP/2.0";
-        instance.parseRequestLine(() -> requestLine);
+        final String statusLine = "HTTP/2.0 200 OK";
+        instance.parseStatusLine(() -> statusLine);
+    }
+
+    @Test(expected = UnsupportedStatusCodeException.class)
+    public void parseStatusLine_withStatusCode426UpgradeRequired_throwsUnsupportedStatusCodeException() throws IOException {
+        final String statusLine = "HTTP/1.1 426 OK";
+        instance.parseStatusLine(() -> statusLine);
     }
 
     @Test(expected = NullPointerException.class)

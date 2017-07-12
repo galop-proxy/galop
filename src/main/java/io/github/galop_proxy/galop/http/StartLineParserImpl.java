@@ -73,17 +73,27 @@ final class StartLineParserImpl implements StartLineParser {
                 || !Character.isDigit(version.charAt(7));
     }
 
-    private int parseStatusCode(final String statusCode) throws InvalidHttpHeaderException {
+    private int parseStatusCode(final String statusCode) throws IOException {
 
-        if (statusCode.length() != 3
-                || !Character.isDigit(statusCode.charAt(0))
-                || !Character.isDigit(statusCode.charAt(1))
-                || !Character.isDigit(statusCode.charAt(2))) {
+        if (isInvalidStatusCode(statusCode)) {
             throw new InvalidHttpHeaderException("Invalid status line: The status code must consist of three digits.");
         }
 
-        return Integer.parseInt(statusCode);
+        final int parsedStatusCode = Integer.parseInt(statusCode);
 
+        if (parsedStatusCode == StatusCode.UPGRADE_REQUIRED.getCode()) {
+            throw new UnsupportedStatusCodeException(parsedStatusCode);
+        }
+
+        return parsedStatusCode;
+
+    }
+
+    private boolean isInvalidStatusCode(final String statusCode) {
+        return statusCode.length() != 3
+                || !Character.isDigit(statusCode.charAt(0))
+                || !Character.isDigit(statusCode.charAt(1))
+                || !Character.isDigit(statusCode.charAt(2));
     }
 
     private String parseReasonPhrase(final String[] statusLine) {

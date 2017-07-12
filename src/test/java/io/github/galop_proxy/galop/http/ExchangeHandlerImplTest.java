@@ -293,6 +293,20 @@ public class ExchangeHandlerImplTest {
 
     }
 
+    @Test(expected = UnsupportedStatusCodeException.class)
+    public void handleResponse_withUnsupportedStatusCode_sendsStatusCode502ToClient() throws Exception {
+
+        doThrow(UnsupportedStatusCodeException.class).when(messageParser).parseResponse(same(targetInputStream), any());
+
+        try {
+            handler.handleResponse(source, target, callback);
+        } catch (final UnsupportedStatusCodeException ex) {
+            assertHttpStatusCode(StatusCode.BAD_GATEWAY);
+            throw ex;
+        }
+
+    }
+
     @Test
     public void handleResponse_whenInterrupted_sendsStatusCode503ToClient() throws Exception {
 
