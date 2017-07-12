@@ -2,6 +2,7 @@ package io.github.galop_proxy.system_test.tests;
 
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.http.HttpVersion;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -38,6 +39,11 @@ public class GetRequestsTest {
     @Test
     public void The_content_is_passed_in_the_message_body() {
         assertEquals("Hello world!", response.getContentAsString());
+    }
+
+    @Test
+    public void The_response_HTTP_version_is_1_1() {
+        assertEquals(HttpVersion.HTTP_1_1, response.getVersion());
     }
 
 }

@@ -1,10 +1,13 @@
 package io.github.galop_proxy.galop.http;
 
 import com.google.common.collect.Range;
+import io.github.galop_proxy.api.http.Version;
 
 import java.nio.charset.Charset;
 
 final class Constants {
+
+    static final Version SUPPORTED_HTTP_VERSION = new Version(1, 1);
 
     static final String HTTP_VERSION_PREFIX = "HTTP/";
     static final String HTTP_VERSION = HTTP_VERSION_PREFIX + "1.1";

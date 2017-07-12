@@ -7,6 +7,7 @@ import io.github.galop_proxy.api.http.Version;
 import java.io.IOException;
 
 import static io.github.galop_proxy.galop.http.Constants.HTTP_VERSION_PREFIX;
+import static io.github.galop_proxy.galop.http.Constants.SUPPORTED_HTTP_VERSION;
 
 final class StartLineParserImpl implements StartLineParser {
 
@@ -44,7 +45,7 @@ final class StartLineParserImpl implements StartLineParser {
 
     }
 
-    private Version parseVersion(final String version) throws InvalidHttpHeaderException {
+    private Version parseVersion(final String version) throws IOException {
 
         if (isInvalidVersion(version)) {
             throw new InvalidHttpHeaderException("Invalid HTTP version in request line.");
@@ -53,7 +54,13 @@ final class StartLineParserImpl implements StartLineParser {
         final int major = Character.getNumericValue(version.charAt(5));
         final int minor = Character.getNumericValue(version.charAt(7));
 
-        return new Version(major, minor);
+        final Version parsedVersion = new Version(major, minor);
+
+        if (!parsedVersion.equals(SUPPORTED_HTTP_VERSION)) {
+            throw new UnsupportedHttpVersionException(parsedVersion);
+        }
+
+        return parsedVersion;
 
     }
 

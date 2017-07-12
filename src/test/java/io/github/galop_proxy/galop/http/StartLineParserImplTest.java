@@ -70,6 +70,12 @@ public class StartLineParserImplTest {
         instance.parseRequestLine(() -> requestLine);
     }
 
+    @Test(expected = UnsupportedHttpVersionException.class)
+    public void parseRequestLine_withUnsupportedHttpVersion_throwsUnsupportedHttpVersionException() throws IOException {
+        final String requestLine = "GET /example HTTP/1.0";
+        instance.parseRequestLine(() -> requestLine);
+    }
+
     @Test(expected = NullPointerException.class)
     public void parseRequestLine_withoutCallable_throwsNullPointerException() throws IOException {
         instance.parseRequestLine(null);
@@ -139,6 +145,12 @@ public class StartLineParserImplTest {
     public void parseStatusLine_withInvalidStatusCode_throwsInvalidHttpHeaderException() throws IOException {
         final String statusLine = "HTTP/1.1 ABC OK";
         instance.parseStatusLine(() -> statusLine);
+    }
+
+    @Test(expected = UnsupportedHttpVersionException.class)
+    public void parseStatusLine_withUnsupportedHttpVersion_throwsUnsupportedHttpVersionException() throws IOException {
+        final String requestLine = "GET /example HTTP/2.0";
+        instance.parseRequestLine(() -> requestLine);
     }
 
     @Test(expected = NullPointerException.class)
