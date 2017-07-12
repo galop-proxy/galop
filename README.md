@@ -36,7 +36,7 @@ functionality of GALOP.
   IP addresses of the clients to the server via the HTTP header X-Forwarded-For.
   *(Support scheduled for version 0.8.0)*
 - **HTTP 1.0 not supported:** Only HTTP protocol version 1.1 is supported.
-*(HTTP 1.0 support scheduled for version 0.9.0)*
+  *(HTTP 1.0 support scheduled for version 0.9.0)*
 - **No secure connections:** Currently neither TLS nor SSL is supported.
 
 These limitations will be solved before the first stable release.
