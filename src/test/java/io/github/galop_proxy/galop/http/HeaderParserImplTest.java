@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.*;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -30,14 +31,18 @@ public class HeaderParserImplTest {
             "User-Agent: " + REQUEST_USER_AGENT,
             "Cookie:", // Empty value
             "X-Forwarded-For: " + REQUEST_X_FORWARDED_FOR_1,
-            "X-Forwarded-For: " + REQUEST_X_FORWARDED_FOR_2);
+            "X-Forwarded-For: " + REQUEST_X_FORWARDED_FOR_2,
+            "Connection: upgrade",
+            "Upgrade: HTTP/2.0");
 
     private static final List<String> RESPONSE = Arrays.asList(
             "Server: " + RESPONSE_SERVER,
             "Content-Type: " + RESPONSE_CONTENT_TYPE,
             "Date:", // Empty value
             "Set-Cookie: " + RESPONSE_SET_COOKIE_1,
-            "Set-Cookie: " + RESPONSE_SET_COOKIE_2);
+            "Set-Cookie: " + RESPONSE_SET_COOKIE_2,
+            "Connection: upgrade",
+            "Upgrade: HTTP/2.0");
 
     private HeaderParser instance;
     private Map<String, List<String>> request;
@@ -71,6 +76,16 @@ public class HeaderParserImplTest {
     public void parseRequestHeaders_withMultipleHeaderFieldsWithTheSameName_returnsParsedValuesAsList() {
         assertHeaderField(request, HeaderFields.Request.X_FORWARDED_FOR,
                 REQUEST_X_FORWARDED_FOR_1, REQUEST_X_FORWARDED_FOR_2);
+    }
+
+    @Test
+    public void parseRequestsHeaders_withConnectionHeaderField_removesConnectionHeaderField() {
+        assertFalse(request.containsKey(HeaderFields.Request.CONNECTION));
+    }
+
+    @Test
+    public void parseRequestsHeaders_withUpgradeHeaderField_removesUpgradeHeaderField() {
+        assertFalse(request.containsKey(HeaderFields.Request.UPGRADE));
     }
 
     @Test
@@ -128,6 +143,16 @@ public class HeaderParserImplTest {
     public void parseResponseHeaders_withoutHeaderFields_returnsEmptyResult() throws IOException {
         final Map<String, List<String>> headerFields = instance.parseResponseHeaders(toCallable(""));
         assertEquals(0, headerFields.size());
+    }
+
+    @Test
+    public void parseResponseHeaders_withConnectionHeaderField_removesConnectionHeaderField() {
+        assertFalse(response.containsKey(HeaderFields.Request.CONNECTION));
+    }
+
+    @Test
+    public void parseResponseHeaders_withUpgradeHeaderField_removesUpgradeHeaderField() {
+        assertFalse(response.containsKey(HeaderFields.Request.UPGRADE));
     }
 
     @Test(expected = InvalidHttpHeaderException.class)

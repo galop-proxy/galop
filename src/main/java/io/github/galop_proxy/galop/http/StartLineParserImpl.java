@@ -41,6 +41,10 @@ final class StartLineParserImpl implements StartLineParser {
         final int statusCode = parseStatusCode(statusLine[1]);
         final String reasonPhrase = parseReasonPhrase(statusLine);
 
+        if (statusCode == StatusCode.UPGRADE_REQUIRED.getCode()) {
+            throw new UnsupportedStatusCodeException(statusCode);
+        }
+
         return new ResponseImpl(version, statusCode, reasonPhrase);
 
     }

@@ -1,5 +1,6 @@
 package io.github.galop_proxy.galop.http;
 
+import io.github.galop_proxy.api.http.HeaderFields;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
@@ -30,7 +31,7 @@ final class HeaderParserImpl implements HeaderParser {
             parseHeaderField(headerFields, line, request);
         }
 
-        return headerFields;
+        return removeUnsupportedHeaderFields(headerFields);
 
     }
 
@@ -106,6 +107,12 @@ final class HeaderParserImpl implements HeaderParser {
             headerFields.get(name).add(value);
         }
 
+    }
+
+    private Map<String, List<String>> removeUnsupportedHeaderFields(final Map<String, List<String>> headerFields) {
+        headerFields.remove(HeaderFields.Request.CONNECTION);
+        headerFields.remove(HeaderFields.Request.UPGRADE);
+        return headerFields;
     }
 
 }
