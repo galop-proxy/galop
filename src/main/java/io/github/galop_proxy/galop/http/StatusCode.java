@@ -14,7 +14,8 @@ public enum StatusCode {
     // Server errors:
     BAD_GATEWAY(502, "Bad Gateway"),
     SERVICE_UNAVAILABLE(503, "Service Unavailable"),
-    GATEWAY_TIMEOUT(504, "Gateway Time-out");
+    GATEWAY_TIMEOUT(504, "Gateway Time-out"),
+    HTTP_VERSION_NOT_SUPPORTED(505, "HTTP Version Not Supported");
 
     private final int code;
     private final String reason;

@@ -65,6 +65,8 @@ final class ExchangeHandlerImpl implements ExchangeHandler {
 
         if (ex instanceof UnsupportedTransferEncodingException) {
             sendHttpStatusToClient(StatusCode.LENGTH_REQUIRED, source);
+        } else if (ex instanceof UnsupportedHttpVersionException) {
+            sendHttpStatusToClient(StatusCode.HTTP_VERSION_NOT_SUPPORTED, source);
         } else if (ex instanceof ByteLimitExceededException) {
             sendHttpStatusToClient(StatusCode.REQUEST_HEADER_FIELDS_TOO_LARGE, source);
         } else if (ex instanceof InterruptedException) {

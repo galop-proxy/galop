@@ -142,6 +142,20 @@ public class ExchangeHandlerImplTest {
 
     }
 
+    @Test(expected = UnsupportedHttpVersionException.class)
+    public void handleRequest_withUnsupportedHttpVersion_sendsStatusCode505ToClient() throws Exception {
+
+        doThrow(UnsupportedHttpVersionException.class).when(messageParser).parseRequest(same(sourceInputStream), any());
+
+        try {
+            handler.handleRequest(source, target, callback);
+        } catch (final UnsupportedHttpVersionException ex) {
+            assertHttpStatusCode(StatusCode.HTTP_VERSION_NOT_SUPPORTED);
+            throw ex;
+        }
+
+    }
+
     @Test(expected = ByteLimitExceededException.class)
     public void handleRequest_withTooLongRequestHeader_sendsStatusCode431ToClient() throws Exception {
 
@@ -261,6 +275,20 @@ public class ExchangeHandlerImplTest {
             fail("Exception expected.");
         } catch (final Exception ex) {
             assertHttpStatusCode(StatusCode.BAD_GATEWAY);
+        }
+
+    }
+
+    @Test(expected = UnsupportedHttpVersionException.class)
+    public void handleResponse_withUnsupportedHttpVersion_sendsStatusCode502ToClient() throws Exception {
+
+        doThrow(UnsupportedHttpVersionException.class).when(messageParser).parseResponse(same(targetInputStream), any());
+
+        try {
+            handler.handleResponse(source, target, callback);
+        } catch (final UnsupportedHttpVersionException ex) {
+            assertHttpStatusCode(StatusCode.BAD_GATEWAY);
+            throw ex;
         }
 
     }

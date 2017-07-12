@@ -4,6 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.http.HttpVersion;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -44,6 +45,26 @@ public class UnsupportedRequestsTest {
                 .header("long", StringUtils.repeat("long", 3000))
                 .send();
         assertEquals(431, response.getStatus());
+    }
+
+    @Test
+    public void Requests_with_HTTP_version_1_0_are_rejected_with_the_error_code_505() throws Exception {
+        final ContentResponse response = client
+                .newRequest("http://localhost:8080/")
+                .method(HttpMethod.GET)
+                .version(HttpVersion.HTTP_1_0)
+                .send();
+        assertEquals(505, response.getStatus());
+    }
+
+    @Test
+    public void Requests_with_HTTP_version_2_0_are_rejected_with_the_error_code_505() throws Exception {
+        final ContentResponse response = client
+                .newRequest("http://localhost:8080/")
+                .method(HttpMethod.GET)
+                .version(HttpVersion.HTTP_2)
+                .send();
+        assertEquals(505, response.getStatus());
     }
 
 }
