@@ -17,7 +17,7 @@ be shut down without interrupting open HTTP requests.
 
 ## Features
 
-- Simple reverse proxy for HTTP requests.
+- Simple reverse proxy for HTTP 1.1 requests.
 - Closes connections gracefully when shutting down by processing open HTTP
   requests before terminating a connection.
 - Supports chunked transfer encoding.
@@ -30,10 +30,14 @@ be unstable and not all functions are implemented that are necessary for use in
 a production environment. Please note the following limitations in the current
 functionality of GALOP.
 
+- **No Plugin API:** The proxy can not be extended via plugins.
+  *(Plugin API scheduled for version 0.7.0)*
+- **X-Forwarded-For not supported:** The proxy can not send the original
+  IP addresses of the clients to the server via the HTTP header X-Forwarded-For.
+  *(Support scheduled for version 0.8.0)*
+- **HTTP 1.0 not supported:** Only HTTP protocol version 1.1 is supported.
+*(HTTP 1.0 support scheduled for version 0.9.0)*
 - **No secure connections:** Currently neither TLS nor SSL is supported.
-- **X-Forwarded-For not supported:** Currently, the proxy can not send the
-  original IP addresses of the clients to the server via the HTTP header
-  X-Forwarded-For.
 
 These limitations will be solved before the first stable release.
 During the development, this list will be constantly updated.
