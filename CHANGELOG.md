@@ -9,6 +9,10 @@
   rejected with the HTTP status code 505 (HTTP Version Not Supported).
 - All HTTP responses using a different HTTP protocol version than 1.1 are
   rejected with the HTTP status code 502 (Bad Gateway).
+- The HTTP header fields Connection and Upgrade are removed from all HTTP
+  messages.
+- When the server sends the HTTP status code 426 (Upgrade Required), the status
+  code 502 (Bad Gateway) is instead sent to the client.
 
 
 ## 0.5.0 - 2017-07-06
