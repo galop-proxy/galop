@@ -1,6 +1,16 @@
 # Changelog
 
 
+## [Unreleased]
+
+### Changed
+
+- All HTTP requests using a different HTTP protocol version than 1.1 are
+  rejected with the HTTP status code 505 (HTTP Version Not Supported).
+- All HTTP responses using a different HTTP protocol version than 1.1 are
+  rejected with the HTTP status code 502 (Bad Gateway).
+
+
 ## 0.5.0 - 2017-07-06
 
 ### Added
