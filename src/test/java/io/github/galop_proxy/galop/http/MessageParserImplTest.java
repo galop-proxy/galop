@@ -7,7 +7,6 @@ import io.github.galop_proxy.galop.configuration.HttpHeaderResponseConfiguration
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.InOrder;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -87,9 +86,9 @@ public class MessageParserImplTest {
 
         instance = new MessageParserImpl(requestConfiguration, responseConfiguration, startLineParser, headerParser);
 
-        request = instance.parseRequest(toInputStream(REQUEST_EXAMPLE), null);
+        request = instance.parseRequest(toInputStream(REQUEST_EXAMPLE));
         responseInputStream = toInputStream(RESPONSE_EXAMPLE);
-        response = instance.parseResponse(responseInputStream, null);
+        response = instance.parseResponse(responseInputStream);
 
     }
 
@@ -144,29 +143,13 @@ public class MessageParserImplTest {
         assertHeaderField(request, HeaderFields.Request.COOKIE, "");
     }
 
-    @Test
-    @SuppressWarnings("ResultOfMethodCallIgnored")
-    public void parseRequest_withCallback_callsCallbackAsSoonAsTheFirstByteWasRead() throws IOException {
-
-        final InputStream inputStream = spy(toInputStream(REQUEST_EXAMPLE));
-        final Runnable callback = mock(Runnable.class);
-
-        instance.parseRequest(inputStream, callback);
-
-        final InOrder inOrder = inOrder(inputStream, callback);
-        inOrder.verify(inputStream).read();
-        inOrder.verify(callback).run();
-        inOrder.verify(inputStream, atLeastOnce()).read();
-
-    }
-
     @Test(expected = ByteLimitExceededException.class)
     public void parseRequest_withTooLongHeader_throwsByteLimitExceededException() throws IOException {
         final String request =
                 "GET /example HTTP/1.1" + NEW_LINE +
                         "Very long: " + Strings.repeat("a", MAX_HTTP_HEADER_SIZE) + NEW_LINE +
                         NEW_LINE;
-        instance.parseRequest(toInputStream(request), null);
+        instance.parseRequest(toInputStream(request));
     }
 
     @Test(expected = InvalidHttpHeaderException.class)
@@ -176,31 +159,31 @@ public class MessageParserImplTest {
                 "GET /example HTTP/1.1" + NEW_LINE +
                 "Host :invalid" + NEW_LINE +
                  NEW_LINE;
-        instance.parseRequest(toInputStream(request), null);
+        instance.parseRequest(toInputStream(request));
     }
 
     @Test(expected = InvalidHttpHeaderException.class)
     public void parseRequest_withIncompleteRequestLine_throwsInvalidHttpHeaderException() throws IOException {
         final String request = "GET /example" + NEW_LINE + NEW_LINE;
-        instance.parseRequest(toInputStream(request), null);
+        instance.parseRequest(toInputStream(request));
     }
 
     @Test(expected = InvalidHttpHeaderException.class)
     public void parseRequest_withInvalidVersionPrefix_throwsInvalidHttpHeaderException() throws IOException {
         final String request = "GET /example ABC/1.1" + NEW_LINE + NEW_LINE;
-        instance.parseRequest(toInputStream(request), null);
+        instance.parseRequest(toInputStream(request));
     }
 
     @Test(expected = InvalidHttpHeaderException.class)
     public void parseRequest_withInvalidMajorVersionDigit_throwsInvalidHttpHeaderException() throws IOException {
         final String request = "GET /example HTTP/A.1" + NEW_LINE + NEW_LINE;
-        instance.parseRequest(toInputStream(request), null);
+        instance.parseRequest(toInputStream(request));
     }
 
     @Test(expected = InvalidHttpHeaderException.class)
     public void parseRequest_withInvalidMinorVersionDigit_throwsInvalidHttpHeaderException() throws IOException {
         final String request = "GET /example HTTP/1.B" + NEW_LINE + NEW_LINE;
-        instance.parseRequest(toInputStream(request), null);
+        instance.parseRequest(toInputStream(request));
     }
 
     @Test(expected = InvalidHttpHeaderException.class)
@@ -209,7 +192,7 @@ public class MessageParserImplTest {
                 "GET /example HTTP/1.1" + NEW_LINE +
                 "WithoutColon" + NEW_LINE +
                  NEW_LINE;
-        instance.parseRequest(toInputStream(request), null);
+        instance.parseRequest(toInputStream(request));
     }
 
     @Test(expected = InvalidHttpHeaderException.class)
@@ -218,7 +201,7 @@ public class MessageParserImplTest {
                 "GET /example HTTP/1.1" + NEW_LINE +
                 ": EmptyFieldName" + NEW_LINE +
                 NEW_LINE;
-        instance.parseRequest(toInputStream(request), null);
+        instance.parseRequest(toInputStream(request));
     }
 
     // parseResponse:
@@ -245,31 +228,15 @@ public class MessageParserImplTest {
                 "HTTP/1.1 200 OK" + NEW_LINE +
                 "Server :LoremIpsum" + NEW_LINE +
                 NEW_LINE;
-        final Response parsed = instance.parseResponse(toInputStream(response), null);
+        final Response parsed = instance.parseResponse(toInputStream(response));
         assertHeaderField(parsed, HeaderFields.Response.SERVER, "LoremIpsum");
     }
 
     @Test
     public void parseResponse_withoutReasonPhrase_returnsEmptyReasonPhrase() throws IOException {
         final String response = "HTTP/1.1 200" + NEW_LINE + NEW_LINE;
-        final Response parsed = instance.parseResponse(toInputStream(response), null);
+        final Response parsed = instance.parseResponse(toInputStream(response));
         assertEquals("", parsed.getReasonPhrase());
-    }
-
-    @Test
-    @SuppressWarnings("ResultOfMethodCallIgnored")
-    public void parseResponse_withCallback_callsCallbackAsSoonAsTheFirstByteWasRead() throws IOException {
-
-        final InputStream inputStream = spy(toInputStream(RESPONSE_EXAMPLE));
-        final Runnable callback = mock(Runnable.class);
-
-        instance.parseResponse(inputStream, callback);
-
-        final InOrder inOrder = inOrder(inputStream, callback);
-        inOrder.verify(inputStream).read();
-        inOrder.verify(callback).run();
-        inOrder.verify(inputStream, atLeastOnce()).read();
-
     }
 
     @Test
@@ -283,43 +250,43 @@ public class MessageParserImplTest {
                 "HTTP/1.1 200 OK" + NEW_LINE +
                 "Very long: " + Strings.repeat("a", MAX_HTTP_HEADER_SIZE) + NEW_LINE +
                  NEW_LINE;
-        instance.parseResponse(toInputStream(response), null);
+        instance.parseResponse(toInputStream(response));
     }
 
     @Test(expected = InvalidHttpHeaderException.class)
     public void parseResponse_withIncompleteStatusLine_throwsInvalidHttpHeaderException() throws IOException {
         final String response = "HTTP/1.1" + NEW_LINE + NEW_LINE;
-        instance.parseResponse(toInputStream(response), null);
+        instance.parseResponse(toInputStream(response));
     }
 
     @Test(expected = InvalidHttpHeaderException.class)
     public void parseResponse_withInvalidVersionPrefix_throwsInvalidHttpHeaderException() throws IOException {
         final String response = "ABC/1.1 200 OK" + NEW_LINE + NEW_LINE;
-        instance.parseResponse(toInputStream(response), null);
+        instance.parseResponse(toInputStream(response));
     }
 
     @Test(expected = InvalidHttpHeaderException.class)
     public void parseResponse_withInvalidMajorVersionDigit_throwsInvalidHttpHeaderException() throws IOException {
         final String response = "HTTP/A.1 200 OK" + NEW_LINE + NEW_LINE;
-        instance.parseResponse(toInputStream(response), null);
+        instance.parseResponse(toInputStream(response));
     }
 
     @Test(expected = InvalidHttpHeaderException.class)
     public void parseResponse_withInvalidMinorVersionDigit_throwsInvalidHttpHeaderException() throws IOException {
         final String response = "HTTP/1.B 200 OK" + NEW_LINE + NEW_LINE;
-        instance.parseResponse(toInputStream(response), null);
+        instance.parseResponse(toInputStream(response));
     }
 
     @Test(expected = InvalidHttpHeaderException.class)
     public void parseResponse_withTooLongStatusCode_throwsInvalidHttpHeaderException() throws IOException {
         final String response = "HTTP/1.1 2000 OK" + NEW_LINE + NEW_LINE;
-        instance.parseResponse(toInputStream(response), null);
+        instance.parseResponse(toInputStream(response));
     }
 
     @Test(expected = InvalidHttpHeaderException.class)
     public void parseResponse_withInvalidStatusCode_throwsInvalidHttpHeaderException() throws IOException {
         final String response = "HTTP/1.1 ABC OK" + NEW_LINE + NEW_LINE;
-        instance.parseResponse(toInputStream(response), null);
+        instance.parseResponse(toInputStream(response));
     }
 
     @Test(expected = InvalidHttpHeaderException.class)
@@ -328,7 +295,7 @@ public class MessageParserImplTest {
                 "HTTP/1.1 200 OK" + NEW_LINE +
                 "WithoutColon" + NEW_LINE +
                  NEW_LINE;
-        instance.parseResponse(toInputStream(response), null);
+        instance.parseResponse(toInputStream(response));
     }
 
     @Test(expected = InvalidHttpHeaderException.class)
@@ -337,19 +304,19 @@ public class MessageParserImplTest {
                 "HTTP/1.1 200 OK" + NEW_LINE +
                 ": EmptyFieldName" + NEW_LINE +
                 NEW_LINE;
-        instance.parseResponse(toInputStream(response), null);
+        instance.parseResponse(toInputStream(response));
     }
 
     // Wrong use of API:
 
     @Test(expected = NullPointerException.class)
     public void parseRequest_withoutInputStream_throwsNullPointerException() throws IOException {
-        instance.parseRequest(null, mock(Runnable.class));
+        instance.parseRequest(null);
     }
 
     @Test(expected = NullPointerException.class)
     public void parseResponse_withoutInputStream_throwsNullPointerException() throws IOException {
-        instance.parseResponse(null, mock(Runnable.class));
+        instance.parseResponse(null);
     }
 
     // Helper methods:

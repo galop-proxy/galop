@@ -10,6 +10,7 @@ import org.apache.logging.log4j.Logger;
 import javax.inject.Inject;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.Socket;
 import java.util.Locale;
 import java.util.concurrent.*;
@@ -38,16 +39,15 @@ final class ExchangeHandlerImpl implements ExchangeHandler {
     // Handle request:
 
     @Override
-    public void handleRequest(final Socket source, final Socket target, final Runnable startHandlingRequestCallback)
-            throws Exception {
+    public void handleRequest(final Socket source, final Socket target) throws Exception {
 
-        validateParameters(source, target, startHandlingRequestCallback);
+        validateParameters(source, target);
 
         final InputStream inputStream = source.getInputStream();
 
         try {
-            final Request request = parseRequest(inputStream, startHandlingRequestCallback);
-            messageWriter.writeRequest(request, inputStream, target.getOutputStream());
+            final Request request = parseRequest(inputStream);
+            writeRequest(request, inputStream, target.getOutputStream());
         } catch (final Exception ex) {
             handleRequestError(ex, source);
             throw ex;
@@ -55,9 +55,14 @@ final class ExchangeHandlerImpl implements ExchangeHandler {
 
     }
 
-    private Request parseRequest(final InputStream inputStream, final Runnable startCallback) throws Exception {
+    private Request parseRequest(final InputStream inputStream) throws Exception {
         final long timeout = httpHeaderConfiguration.getRequest().getReceiveTimeout();
-        return executeWithTimeout(() -> messageParser.parseRequest(inputStream, startCallback), timeout);
+        return executeWithTimeout(() -> messageParser.parseRequest(inputStream), timeout);
+    }
+
+    private void writeRequest(final Request request, final InputStream inputStream, final OutputStream outputStream)
+            throws Exception {
+        messageWriter.writeRequest(request, inputStream, outputStream);
     }
 
     private void handleRequestError(final Exception ex, final Socket source) {
@@ -81,20 +86,18 @@ final class ExchangeHandlerImpl implements ExchangeHandler {
     // Handle response:
 
     @Override
-    public void handleResponse(final Socket source, final Socket target, final Runnable endHandlingResponseCallback)
-            throws Exception {
+    public void handleResponse(final Socket source, final Socket target) throws Exception {
 
-        validateParameters(source, target, endHandlingResponseCallback);
+        validateParameters(source, target);
 
         final InputStream inputStream = target.getInputStream();
 
         boolean sendingResponseStarted = false;
 
         try {
-            final Response response = parseResponseHeader(inputStream);
+            final Response response = parseResponse(inputStream);
             sendingResponseStarted = true;
-            messageWriter.writeResponse(response, inputStream, source.getOutputStream());
-            endHandlingResponseCallback.run();
+            writeResponse(response, inputStream, source.getOutputStream());
         } catch (final Exception ex) {
             handleResponseError(ex, source, sendingResponseStarted);
             throw ex;
@@ -102,9 +105,14 @@ final class ExchangeHandlerImpl implements ExchangeHandler {
 
     }
 
-    private Response parseResponseHeader(final InputStream inputStream) throws Exception {
+    private Response parseResponse(final InputStream inputStream) throws Exception {
         final long timeout = httpHeaderConfiguration.getResponse().getReceiveTimeout();
-        return executeWithTimeout(() -> messageParser.parseResponse(inputStream, null), timeout);
+        return executeWithTimeout(() -> messageParser.parseResponse(inputStream), timeout);
+    }
+
+    private void writeResponse(final Response response, final InputStream inputStream, final OutputStream outputStream)
+            throws Exception {
+        messageWriter.writeResponse(response, inputStream, outputStream);
     }
 
     private void handleResponseError(final Exception ex, final Socket source, final boolean sendingResponseStarted) {
@@ -127,10 +135,9 @@ final class ExchangeHandlerImpl implements ExchangeHandler {
 
     // Helper methods:
 
-    private void validateParameters(final Socket source, final Socket target, final Runnable callback) {
+    private void validateParameters(final Socket source, final Socket target) {
         checkNotNull(source, "source");
         checkNotNull(target, "target");
-        checkNotNull(callback, "callback");
     }
 
     private <V> V executeWithTimeout(final Callable<V> task, final long timeout)

@@ -35,7 +35,7 @@ final class MessageParserImpl implements MessageParser {
     // Parse request:
 
     @Override
-    public Request parseRequest(final InputStream inputStream, final Runnable startParsingCallback) throws IOException {
+    public Request parseRequest(final InputStream inputStream) throws IOException {
 
         checkNotNull(inputStream, "inputStream");
 
@@ -43,21 +43,20 @@ final class MessageParserImpl implements MessageParser {
         final byte[] buffer = new byte[maxHttpHeaderSize];
         final LimitedInputStream limitedInputStream = new LimitedInputStream(inputStream, maxHttpHeaderSize);
 
-        final Request request = parseRequestLine(limitedInputStream, buffer, startParsingCallback);
+        final Request request = parseRequestLine(limitedInputStream, buffer);
         parseHeaderFields(request, limitedInputStream, buffer, true);
         return request;
 
     }
 
-    private Request parseRequestLine(final InputStream inputStream, final byte[] buffer,
-                                     final Runnable startParsingCallback) throws IOException {
-        return startLineParser.parseRequestLine(() -> getNextLine(inputStream, buffer, startParsingCallback));
+    private Request parseRequestLine(final InputStream inputStream, final byte[] buffer) throws IOException {
+        return startLineParser.parseRequestLine(() -> getNextLine(inputStream, buffer));
     }
 
     // Parse Response:
 
     @Override
-    public Response parseResponse(final InputStream inputStream, final Runnable startParsingCallback) throws IOException {
+    public Response parseResponse(final InputStream inputStream) throws IOException {
 
         checkNotNull(inputStream, "inputStream");
 
@@ -65,15 +64,14 @@ final class MessageParserImpl implements MessageParser {
         final byte[] buffer = new byte[maxHttpHeaderSize];
         final LimitedInputStream limitedInputStream = new LimitedInputStream(inputStream, maxHttpHeaderSize);
 
-        final Response response = parseStatusLine(limitedInputStream, buffer, startParsingCallback);
+        final Response response = parseStatusLine(limitedInputStream, buffer);
         parseHeaderFields(response, limitedInputStream, buffer, false);
         return response;
 
     }
 
-    private Response parseStatusLine(final InputStream inputStream, final byte[] buffer,
-                                     final Runnable startParsingCallback) throws IOException {
-        return startLineParser.parseStatusLine(() -> getNextLine(inputStream, buffer, startParsingCallback));
+    private Response parseStatusLine(final InputStream inputStream, final byte[] buffer) throws IOException {
+        return startLineParser.parseStatusLine(() -> getNextLine(inputStream, buffer));
     }
 
     // Common methods:
@@ -89,26 +87,14 @@ final class MessageParserImpl implements MessageParser {
     }
 
     private String getNextLine(final InputStream inputStream, final byte[] buffer) throws IOException {
-        return getNextLine(inputStream, buffer, null);
-    }
-
-    private String getNextLine(final InputStream inputStream, final byte[] buffer, final Runnable startParsingCallback)
-            throws IOException {
 
         int currentByteIndex = 0;
         boolean carriageReturn = false;
         boolean lineBreak = false;
 
-        boolean firstByte = true;
-
         int currentByte;
 
         while ((currentByte = inputStream.read()) > -1) {
-
-            if (firstByte) {
-                firstByte = false;
-                handleFirstByte(startParsingCallback);
-            }
 
             buffer[currentByteIndex] = (byte) currentByte;
             currentByteIndex++;
@@ -132,14 +118,6 @@ final class MessageParserImpl implements MessageParser {
         }
 
         return new String(buffer, 0, currentByteIndex, HEADER_CHARSET);
-
-    }
-
-    private void handleFirstByte(final Runnable startParsingCallback) {
-
-        if (startParsingCallback != null) {
-            startParsingCallback.run();
-        }
 
     }
 

@@ -8,8 +8,8 @@ import java.io.InputStream;
 
 interface MessageParser {
 
-    Request parseRequest(InputStream inputStream, Runnable startParsingCallback) throws IOException;
+    Request parseRequest(InputStream inputStream) throws IOException;
 
-    Response parseResponse(InputStream inputStream, Runnable startParsingCallback) throws IOException;
+    Response parseResponse(InputStream inputStream) throws IOException;
 
 }
