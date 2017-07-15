@@ -7,6 +7,14 @@
 
 - When the server sends the HTTP status code 101 (Switching Protocols),
   the status code 502 (Bad Gateway) is instead sent to the client.
+- The proxy closes connections immediately after the HTTP response to a
+  HTTP request has been submitted.
+
+### Fixed
+
+- All HTTP header fields, which are listed in the HTTP header field Connection,
+  are removed from an HTTP message. So far only the HTTP header field Upgrade
+  has been removed.
 
 
 ## 0.6.0 - 2017-07-12

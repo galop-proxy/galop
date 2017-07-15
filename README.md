@@ -35,6 +35,9 @@ functionality of GALOP.
 - **X-Forwarded-For not supported:** The proxy can not send the original
   IP addresses of the clients to the server via the HTTP header X-Forwarded-For.
   *(Support scheduled for version 0.8.0)*
+- **No HTTP persistent connections:** The proxy closes connections
+  immediately after the HTTP response to a HTTP request has been submitted.
+  *(Support scheduled for version 0.8.0)*
 - **HTTP 1.0 not supported:** Only HTTP protocol version 1.1 is supported.
   *(HTTP 1.0 support scheduled for version 0.9.0)*
 - **No secure connections:** Currently neither TLS nor SSL is supported.
