@@ -32,8 +32,9 @@ public class HeaderParserImplTest {
             "Cookie:", // Empty value
             "X-Forwarded-For: " + REQUEST_X_FORWARDED_FOR_1,
             "X-Forwarded-For: " + REQUEST_X_FORWARDED_FOR_2,
-            "Connection: upgrade",
-            "Upgrade: HTTP/2.0");
+            "Connection: upgrade, lorem",
+            "Upgrade: HTTP/2.0",
+            "Lorem: Ipsum");
 
     private static final List<String> RESPONSE = Arrays.asList(
             "Server: " + RESPONSE_SERVER,
@@ -41,8 +42,9 @@ public class HeaderParserImplTest {
             "Date:", // Empty value
             "Set-Cookie: " + RESPONSE_SET_COOKIE_1,
             "Set-Cookie: " + RESPONSE_SET_COOKIE_2,
-            "Connection: upgrade",
-            "Upgrade: HTTP/2.0");
+            "Connection: upgrade, lorem",
+            "Upgrade: HTTP/2.0",
+            "Lorem: Ipsum");
 
     private HeaderParser instance;
     private Map<String, List<String>> request;
@@ -79,19 +81,24 @@ public class HeaderParserImplTest {
     }
 
     @Test
-    public void parseRequestsHeaders_withConnectionHeaderField_removesConnectionHeaderField() {
-        assertFalse(request.containsKey(HeaderFields.Request.CONNECTION));
+    public void parseRequestsHeaders_withConnectionHeaderField_changesConnectionHeaderFieldToClose() {
+        assertHeaderField(request, HeaderFields.Request.CONNECTION, "close");
     }
 
     @Test
-    public void parseRequestsHeaders_withUpgradeHeaderField_removesUpgradeHeaderField() {
+    public void parseRequestsHeaders_withValueUpgradeInConnectionHeaderField_removesUpgradeHeaderField() {
         assertFalse(request.containsKey(HeaderFields.Request.UPGRADE));
     }
 
     @Test
-    public void parseRequestHeaders_withoutHeaderFields_returnsEmptyResult() throws IOException {
+    public void parseRequestsHeaders_withValueLoremInConnectionHeaderField_removesLoremHeaderField() {
+        assertFalse(request.containsKey("lorem"));
+    }
+
+    @Test
+    public void parseRequestHeaders_withoutHeaderFields_returnsOnlyConnectionHeaderField() throws IOException {
         final Map<String, List<String>> headerFields = instance.parseRequestHeaders(toCallable(""));
-        assertEquals(0, headerFields.size());
+        assertEquals(1, headerFields.size());
     }
 
     @Test(expected = InvalidHttpHeaderException.class)
@@ -140,19 +147,24 @@ public class HeaderParserImplTest {
     }
 
     @Test
-    public void parseResponseHeaders_withoutHeaderFields_returnsEmptyResult() throws IOException {
+    public void parseResponseHeaders_withoutHeaderFields_returnsOnlyConnectionHeaderField() throws IOException {
         final Map<String, List<String>> headerFields = instance.parseResponseHeaders(toCallable(""));
-        assertEquals(0, headerFields.size());
+        assertEquals(1, headerFields.size());
     }
 
     @Test
-    public void parseResponseHeaders_withConnectionHeaderField_removesConnectionHeaderField() {
-        assertFalse(response.containsKey(HeaderFields.Request.CONNECTION));
+    public void parseResponseHeaders_withConnectionHeaderField_changesConnectionHeaderFieldToClose() {
+        assertHeaderField(response, HeaderFields.Request.CONNECTION, "close");
     }
 
     @Test
-    public void parseResponseHeaders_withUpgradeHeaderField_removesUpgradeHeaderField() {
+    public void parseResponseHeaders_withValueUpgradeInConnectionHeaderField_removesUpgradeHeaderField() {
         assertFalse(response.containsKey(HeaderFields.Request.UPGRADE));
+    }
+
+    @Test
+    public void parseResponseHeaders_withValueLoremInConnectionHeaderField_removesLoremHeaderField() {
+        assertFalse(response.containsKey("lorem"));
     }
 
     @Test(expected = InvalidHttpHeaderException.class)

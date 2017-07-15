@@ -3,12 +3,10 @@ package io.github.galop_proxy.galop.proxy;
 import io.github.galop_proxy.galop.http.*;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.invocation.InvocationOnMock;
+import org.mockito.InOrder;
 
+import java.io.IOException;
 import java.net.Socket;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 import static org.mockito.Mockito.*;
 
@@ -27,25 +25,14 @@ public class ConnectionHandlerImplTest {
     public void setUp() throws Exception {
 
         exchangeHandler = mock(ExchangeHandler.class);
-        doAnswer(this::answerHandler).when(exchangeHandler).handleRequest(any(), any(), any());
-        doAnswer(this::answerHandler).when(exchangeHandler).handleResponse(any(), any(), any());
-
         source = mock(Socket.class);
         target = mock(Socket.class);
-        when(source.isClosed()).thenReturn(false);
-        when(target.isClosed()).thenReturn(false);
 
         handler = new ConnectionHandlerImpl(exchangeHandler, source, target);
 
     }
 
-    private Object answerHandler(final InvocationOnMock invocation) {
-        final Runnable callback = (Runnable) invocation.getArguments()[2];
-        callback.run();
-        return invocation;
-    }
-
-    // Constructor:
+    // constructor:
 
     @Test(expected = NullPointerException.class)
     public void constructor_withoutHttpExchangeHandler_throwsNullPointerException() {
@@ -62,79 +49,49 @@ public class ConnectionHandlerImplTest {
         new ConnectionHandlerImpl(exchangeHandler, source, null);
     }
 
-    // Handle requests and responses:
+    // run:
 
     @Test
-    public void run_withOneRequest_callsHttpExchangeHandler() throws Exception {
-        when(source.isClosed()).thenReturn(false).thenReturn(true);
+    public void run_handlesRequestAndThenResponseAndThenClosesSockets() throws Exception {
+
         handler.run();
-        verify(exchangeHandler).handleRequest(same(source), same(target), any());
-        verify(exchangeHandler).handleResponse(same(source), same(target), any());
+
+        final InOrder inOrder = inOrder(exchangeHandler, source, target);
+
+        inOrder.verify(exchangeHandler).handleRequest(source, target);
+        inOrder.verify(exchangeHandler).handleResponse(source, target);
+
+        inOrder.verify(source).close();
+        inOrder.verify(target).close();
+
     }
 
     @Test
-    public void run_withTwoRequests_callsHttpExchangeHandlerTwoTimes() throws Exception {
-        when(source.isClosed()).thenReturn(false).thenReturn(false).thenReturn(true);
-        handler.run();
-        verify(exchangeHandler, times(2)).handleRequest(same(source), same(target), any());
-        verify(exchangeHandler, times(2)).handleResponse(same(source), same(target), any());
-    }
+    public void run_whenExchangeHandlerThrowsException_closesSockets() throws Exception {
 
-    @Test(timeout = 5000)
-    public void run_whenHttpExchangeHandlerThrowsException_closesSocketsAndTerminates() throws Exception {
-        doThrow(Exception.class).when(exchangeHandler).handleRequest(any(), any(), any());
+        doThrow(Exception.class).when(exchangeHandler).handleRequest(source, target);
+
         handler.run();
+
+        verify(exchangeHandler).handleRequest(source, target);
+        verify(exchangeHandler, never()).handleResponse(source, target);
+
         verify(source).close();
         verify(target).close();
+
     }
 
-    // Closed sockets:
+    // close:
 
     @Test
-    public void run_whenSourceSocketIsClosed_closesTargetSocketAndTerminates() throws Exception {
-        when(source.isClosed()).thenReturn(true);
+    public void close_never_closesSocketsAgain() throws IOException {
+
         handler.run();
-        verify(target).close();
-    }
-
-    @Test
-    public void run_whenTargetSocketIsClosed_closesSourceSocketAndTerminates() throws Exception {
-        when(target.isClosed()).thenReturn(true);
-        handler.run();
-        verify(source).close();
-    }
-
-    // Interrupted execution:
-
-    @Test
-    public void run_whenThreadIsInterrupted_closesSourceAndTargetSocketAndTerminates() throws Exception {
-
-        final ExecutorService executorService = Executors.newSingleThreadExecutor();
-        executorService.execute(handler);
-
-        executorService.shutdownNow();
-        executorService.awaitTermination(5, TimeUnit.SECONDS);
-
-        verify(source, atLeastOnce()).close();
-        verify(target, atLeastOnce()).close();
-
-    }
-
-    // Close handler:
-
-    @Test
-    public void close_whenCurrentlyNoRequestOrResponseIsHandled_closesSocketsAndTerminates() throws Exception {
-
-        final ExecutorService executorService = Executors.newSingleThreadExecutor();
-        executorService.execute(handler);
 
         handler.close();
 
-        executorService.shutdown();
-        executorService.awaitTermination(5, TimeUnit.SECONDS);
-
-        verify(source, atLeastOnce()).close();
-        verify(target, atLeastOnce()).close();
+        verify(source).close();
+        verify(target).close();
 
     }
 

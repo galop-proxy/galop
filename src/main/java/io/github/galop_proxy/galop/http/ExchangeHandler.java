@@ -4,8 +4,8 @@ import java.net.Socket;
 
 public interface ExchangeHandler {
 
-    void handleRequest(Socket source, Socket target, Runnable startHandlingRequestCallback) throws Exception;
+    void handleRequest(Socket source, Socket target) throws Exception;
 
-    void handleResponse(Socket source, Socket target, Runnable endHandlingResponseCallback) throws Exception;
+    void handleResponse(Socket source, Socket target) throws Exception;
 
 }
