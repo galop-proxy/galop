@@ -31,7 +31,7 @@ final class HeaderParserImpl implements HeaderParser {
             parseHeaderField(headerFields, line, request);
         }
 
-        return removeUnsupportedHeaderFields(headerFields);
+        return processConnectionHeaderFields(headerFields);
 
     }
 
@@ -109,10 +109,49 @@ final class HeaderParserImpl implements HeaderParser {
 
     }
 
-    private Map<String, List<String>> removeUnsupportedHeaderFields(final Map<String, List<String>> headerFields) {
-        headerFields.remove(HeaderFields.Request.CONNECTION);
-        headerFields.remove(HeaderFields.Request.UPGRADE);
+    private Map<String, List<String>> processConnectionHeaderFields(final Map<String, List<String>> headerFields) {
+
+        if (headerFields.containsKey(HeaderFields.Request.CONNECTION)) {
+            final List<String> values = parseConnectionHeaderFields(headerFields);
+            removeConnectionHeaderFields(headerFields, values);
+        }
+
+        return addConnectionHeaderField(headerFields);
+
+    }
+
+    private List<String> parseConnectionHeaderFields(final Map<String, List<String>> headerFields) {
+
+        final List<String> values = new ArrayList<>();
+
+        for (final String headerField : headerFields.get(HeaderFields.Request.CONNECTION)) {
+
+            for (final String value : headerField.split(",")) {
+                values.add(value.trim().toLowerCase(Locale.ENGLISH));
+            }
+
+        }
+
+        return values;
+
+    }
+
+    private void removeConnectionHeaderFields(final Map<String, List<String>> headerFields, final List<String> values) {
+
+        for (final String value : values) {
+            headerFields.remove(value);
+        }
+
+    }
+
+    private Map<String, List<String>> addConnectionHeaderField(final Map<String, List<String>> headerFields) {
+
+        final List<String> connectionHeader = new ArrayList<>();
+        connectionHeader.add("close");
+        headerFields.put(HeaderFields.Request.CONNECTION, connectionHeader);
+
         return headerFields;
+
     }
 
 }

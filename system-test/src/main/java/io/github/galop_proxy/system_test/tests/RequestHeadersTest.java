@@ -55,8 +55,8 @@ public class RequestHeadersTest {
     }
 
     @Test
-    public void The_connection_header_field_is_removed() {
-        assertRequestHeaderRemoved(HttpHeader.CONNECTION.asString());
+    public void The_connection_header_field_is_set_to_close() {
+        assertRequestHeader(HttpHeader.CONNECTION.asString(), "close");
     }
 
     @Test

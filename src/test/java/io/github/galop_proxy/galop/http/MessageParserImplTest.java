@@ -133,7 +133,7 @@ public class MessageParserImplTest {
 
     @Test
     public void parseRequest_withValidHeader_returnsParsedHeaderFields() throws IOException {
-        assertEquals(6, request.getHeaderFields().size());
+        assertEquals(7, request.getHeaderFields().size());
         assertHeaderField(request, HeaderFields.Request.HOST, REQUEST_HOST_EXAMPLE);
         assertHeaderField(request, HeaderFields.Request.USER_AGENT, REQUEST_USER_AGENT_EXAMPLE);
         assertHeaderField(request, HeaderFields.Request.ACCEPT, REQUEST_ACCEPT_EXAMPLE);
@@ -141,6 +141,7 @@ public class MessageParserImplTest {
         assertHeaderField(request, HeaderFields.Request.X_FORWARDED_FOR,
                 REQUEST_X_FORWARDED_FOR_1_EXAMPLE, REQUEST_X_FORWARDED_FOR_2_EXAMPLE);
         assertHeaderField(request, HeaderFields.Request.COOKIE, "");
+        assertHeaderField(request, HeaderFields.Request.CONNECTION, "close");
     }
 
     @Test(expected = ByteLimitExceededException.class)
