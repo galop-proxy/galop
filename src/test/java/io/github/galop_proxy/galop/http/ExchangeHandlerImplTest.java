@@ -354,12 +354,6 @@ public class ExchangeHandlerImplTest {
 
         when(future.get(anyLong(), any())).thenReturn(response);
 
-        doAnswer(invocation -> {
-            final Runnable callback = (Runnable) invocation.getArguments()[1];
-            callback.run();
-            return null;
-        }).when(messageParser).parseResponse(any(), any());
-
         doThrow(Exception.class).when(messageWriter).writeResponse(response, targetInputStream, sourceOutputStream);
 
         try {

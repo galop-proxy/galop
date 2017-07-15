@@ -6,9 +6,9 @@ import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 
 import java.io.IOException;
 
-public final class FileServer extends Server {
+public final class TestServer extends Server {
 
-    public FileServer() throws IOException {
+    public TestServer() throws IOException {
 
         super(3000);
 
@@ -17,7 +17,8 @@ public final class FileServer extends Server {
         contexts.setHandlers(new Handler[]{
                 new StaticFilesContextHandler(),
                 new RequestContextHandler(),
-                new ChunkedContextHandler()
+                new ChunkedContextHandler(),
+                new StatusCodeContextHandler()
         });
 
         setHandler(contexts);
@@ -25,7 +26,7 @@ public final class FileServer extends Server {
     }
 
     public static void main(String... args) throws Exception {
-        final Server server = new FileServer();
+        final Server server = new TestServer();
         server.start();
         server.join();
     }
