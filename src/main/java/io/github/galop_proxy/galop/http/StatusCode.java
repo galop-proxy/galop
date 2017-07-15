@@ -2,6 +2,9 @@ package io.github.galop_proxy.galop.http;
 
 public enum StatusCode {
 
+    // Informational responses:
+    SWITCHING_PROTOCOLS(101, "Switching Protocols"),
+
     // Success:
     OK(200, "OK"),
 

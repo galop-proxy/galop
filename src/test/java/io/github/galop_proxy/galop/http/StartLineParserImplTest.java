@@ -155,7 +155,13 @@ public class StartLineParserImplTest {
 
     @Test(expected = UnsupportedStatusCodeException.class)
     public void parseStatusLine_withStatusCode426UpgradeRequired_throwsUnsupportedStatusCodeException() throws IOException {
-        final String statusLine = "HTTP/1.1 426 OK";
+        final String statusLine = "HTTP/1.1 426 Upgrade Required";
+        instance.parseStatusLine(() -> statusLine);
+    }
+
+    @Test(expected = UnsupportedStatusCodeException.class)
+    public void parseStatusLine_withStatusCode101SwitchingProtocols_throwsUnsupportedStatusCodeException() throws IOException {
+        final String statusLine = "HTTP/1.1 101 Switching Protocols";
         instance.parseStatusLine(() -> statusLine);
     }
 

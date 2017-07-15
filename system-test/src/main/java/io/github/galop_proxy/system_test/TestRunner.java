@@ -10,7 +10,8 @@ final class TestRunner {
             HeadRequestsTest.class,
             RequestHeadersTest.class,
             ChunkedTransferEncodingTest.class,
-            UnsupportedRequestsTest.class
+            UnsupportedRequestsTest.class,
+            UnsupportedResponsesTest.class
     };
 
     static boolean runTestsAndWait() {

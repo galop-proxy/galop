@@ -1,6 +1,14 @@
 # Changelog
 
 
+## [Unreleased]
+
+### Changed
+
+- When the server sends the HTTP status code 101 (Switching Protocols),
+  the status code 502 (Bad Gateway) is instead sent to the client.
+
+
 ## 0.6.0 - 2017-07-12
 
 ### Changed

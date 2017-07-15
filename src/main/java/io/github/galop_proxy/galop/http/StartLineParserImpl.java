@@ -81,7 +81,8 @@ final class StartLineParserImpl implements StartLineParser {
 
         final int parsedStatusCode = Integer.parseInt(statusCode);
 
-        if (parsedStatusCode == StatusCode.UPGRADE_REQUIRED.getCode()) {
+        if (parsedStatusCode == StatusCode.UPGRADE_REQUIRED.getCode()
+                || parsedStatusCode == StatusCode.SWITCHING_PROTOCOLS.getCode()) {
             throw new UnsupportedStatusCodeException(parsedStatusCode);
         }
 

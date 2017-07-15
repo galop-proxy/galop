@@ -14,7 +14,6 @@ import java.net.Socket;
 import java.util.Locale;
 import java.util.concurrent.*;
 import java.util.concurrent.Callable;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import static io.github.galop_proxy.api.commons.Preconditions.checkNotNull;
 
@@ -88,22 +87,24 @@ final class ExchangeHandlerImpl implements ExchangeHandler {
         validateParameters(source, target, endHandlingResponseCallback);
 
         final InputStream inputStream = target.getInputStream();
-        final AtomicBoolean sendingResponseStarted = new AtomicBoolean(false);
+
+        boolean sendingResponseStarted = false;
 
         try {
-            final Response response = parseResponseHeader(inputStream, () -> sendingResponseStarted.set(true));
+            final Response response = parseResponseHeader(inputStream);
+            sendingResponseStarted = true;
             messageWriter.writeResponse(response, inputStream, source.getOutputStream());
             endHandlingResponseCallback.run();
         } catch (final Exception ex) {
-            handleResponseError(ex, source, sendingResponseStarted.get());
+            handleResponseError(ex, source, sendingResponseStarted);
             throw ex;
         }
 
     }
 
-    private Response parseResponseHeader(final InputStream inputStream, final Runnable startCallback) throws Exception {
+    private Response parseResponseHeader(final InputStream inputStream) throws Exception {
         final long timeout = httpHeaderConfiguration.getResponse().getReceiveTimeout();
-        return executeWithTimeout(() -> messageParser.parseResponse(inputStream, startCallback), timeout);
+        return executeWithTimeout(() -> messageParser.parseResponse(inputStream, null), timeout);
     }
 
     private void handleResponseError(final Exception ex, final Socket source, final boolean sendingResponseStarted) {
