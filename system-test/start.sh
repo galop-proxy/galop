@@ -7,14 +7,14 @@ LOG=$(mktemp)
 printf "GALOP log file: $LOG\n"
 
 printf "Starting GALOP ...\n"
-nohup java -jar ../target/galop-0.6.0.jar ./galop.properties 2>> $LOG >> $LOG &
+nohup java -jar ../target/galop-0.6.1.jar ./galop.properties 2>> $LOG >> $LOG &
 PID=$!
 printf "GALOP started (PID: $PID).\n\n"
 
 mvn clean package
 printf "\n"
 
-java -jar target/system_test-0.6.0.jar
+java -jar target/system_test-0.6.1.jar
 RESULT=$?
 
 printf "\nStopping GALOP (PID: $PID) ...\n"
