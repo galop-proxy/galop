@@ -30,7 +30,6 @@ final class ConnectionHandlerImpl implements ConnectionHandler {
         try {
             exchangeHandler.handleRequest(source, target);
             exchangeHandler.handleResponse(source, target);
-            LOGGER.info("FINISHED!");
         } catch (final Exception ex) {
             LOGGER.debug(ex);
         } finally {
