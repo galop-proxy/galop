@@ -28,7 +28,7 @@ public class UnsupportedRequestsTest {
     }
 
     @Test
-    public void Requests_with_an_unknown_transfer_encoding_are_rejected_with_the_error_code_411() throws Exception {
+    public void Requests_with_an_unknown_transfer_encoding_are_rejected_with_the_status_code_411() throws Exception {
         final ContentResponse response = client
                 .newRequest("http://localhost:8080/")
                 .method(HttpMethod.GET)
@@ -38,7 +38,7 @@ public class UnsupportedRequestsTest {
     }
 
     @Test
-    public void Requests_with_too_large_header_fields_are_rejected_with_the_error_code_431() throws Exception {
+    public void Requests_with_too_large_header_fields_are_rejected_with_the_status_code_431() throws Exception {
         final ContentResponse response = client
                 .newRequest("http://localhost:8080/")
                 .method(HttpMethod.GET)
@@ -48,7 +48,7 @@ public class UnsupportedRequestsTest {
     }
 
     @Test
-    public void Requests_with_HTTP_version_1_0_are_rejected_with_the_error_code_505() throws Exception {
+    public void Requests_with_HTTP_version_1_0_are_rejected_with_the_status_code_505() throws Exception {
         final ContentResponse response = client
                 .newRequest("http://localhost:8080/")
                 .method(HttpMethod.GET)
@@ -58,7 +58,7 @@ public class UnsupportedRequestsTest {
     }
 
     @Test
-    public void Requests_with_HTTP_version_2_0_are_rejected_with_the_error_code_505() throws Exception {
+    public void Requests_with_HTTP_version_2_0_are_rejected_with_the_status_code_505() throws Exception {
         final ContentResponse response = client
                 .newRequest("http://localhost:8080/")
                 .method(HttpMethod.GET)
