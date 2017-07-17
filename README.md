@@ -2,9 +2,10 @@
 
 [![Release](https://img.shields.io/github/release/galop-proxy/galop.svg)](https://github.com/galop-proxy/galop/releases)
 [![License](https://img.shields.io/github/license/galop-proxy/galop.svg)](https://github.com/galop-proxy/galop/blob/master/LICENSE)
-[![Build Status](https://travis-ci.org/galop-proxy/galop.svg?branch=master)](https://travis-ci.org/galop-proxy/galop)
-[![Coverage Status](https://coveralls.io/repos/github/galop-proxy/galop/badge.svg?branch=master)](https://coveralls.io/github/galop-proxy/galop?branch=master)
-[![Dependency Status](https://www.versioneye.com/user/projects/590cf5e39e070f0038ec764e/badge.svg)](https://www.versioneye.com/user/projects/590cf5e39e070f0038ec764e)
+[![Build status: Linux](https://travis-ci.org/galop-proxy/galop.svg?branch=master)](https://travis-ci.org/galop-proxy/galop)
+[![Build status: Windows](https://ci.appveyor.com/api/projects/status/pab8i233g8ups6ei/branch/master?svg=true)](https://ci.appveyor.com/project/SebastianSchmidt/galop/branch/master)
+[![Coverage status](https://coveralls.io/repos/github/galop-proxy/galop/badge.svg?branch=master)](https://coveralls.io/github/galop-proxy/galop?branch=master)
+[![Dependency status](https://www.versioneye.com/user/projects/590cf5e39e070f0038ec764e/badge.svg)](https://www.versioneye.com/user/projects/590cf5e39e070f0038ec764e)
 [![Code quality: Codebeat](https://codebeat.co/badges/e829bef3-a2dd-4a3a-8aa8-91465fc1214b)](https://codebeat.co/projects/github-com-galop-proxy-galop-master)
 [![Code quality: Codacy](https://api.codacy.com/project/badge/Grade/2e7f37da8cfe481fa7cd928433c3fd35)](https://www.codacy.com/app/SebastianSchmidt/galop?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=galop-proxy/galop&amp;utm_campaign=Badge_Grade)
 
