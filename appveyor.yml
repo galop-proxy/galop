@@ -13,7 +13,7 @@ install:
         (new-object System.Net.WebClient).DownloadFile('http://www.apache.org/dist/maven/maven-3/3.5.0/binaries/apache-maven-3.5.0-bin.zip', 'C:\maven-bin.zip')
         [System.IO.Compression.ZipFile]::ExtractToDirectory("C:\maven-bin.zip", "C:\maven")
       }
-  - cmd: SET MAVEN_HOME=C:\maven\apache-maven-3.2.5
+  - cmd: SET MAVEN_HOME=C:\maven\apache-maven-3.5.0
   - cmd: SET PATH=%MAVEN_HOME%\bin;%JAVA_HOME%\bin;%PATH%
   - cmd: mvn --version
   - cmd: java -version
