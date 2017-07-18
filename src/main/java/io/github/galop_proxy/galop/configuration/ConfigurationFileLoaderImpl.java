@@ -34,14 +34,7 @@ final class ConfigurationFileLoaderImpl implements ConfigurationFileLoader {
         LOGGER.info("Loading configuration file: " + path.toAbsolutePath());
 
         try (final FileInputStream fileInputStream = new FileInputStream(path.toFile())) {
-
-            final Properties properties = new Properties();
-            properties.load(fileInputStream);
-
-            final Configuration configuration = configurationFactory.parse(convertToMap(properties));
-            logConfiguration(configuration);
-            return configuration;
-
+            return parseConfiguration(loadProperties(fileInputStream));
         } catch (final FileNotFoundException ex) {
             LOGGER.error("Could not find configuration file: " + path.toAbsolutePath());
             throw ex;
@@ -50,6 +43,18 @@ final class ConfigurationFileLoaderImpl implements ConfigurationFileLoader {
             throw ex;
         }
 
+    }
+
+    private Properties loadProperties(final FileInputStream fileInputStream) throws IOException {
+        final Properties properties = new Properties();
+        properties.load(fileInputStream);
+        return properties;
+    }
+
+    private Configuration parseConfiguration(final Properties properties) throws InvalidConfigurationException {
+        final Configuration configuration = configurationFactory.parse(convertToMap(properties));
+        logConfiguration(configuration);
+        return configuration;
     }
 
     private Map<String, String> convertToMap(final Properties properties) {

@@ -37,13 +37,17 @@ final class RequestHandler extends AbstractHandler {
         for (final String name : Collections.list(request.getHeaderNames())) {
 
             for (final String value : Collections.list(request.getHeaders(name))) {
-                headers.append(name).append(": ").append(value).append("\r\n");
+                headers.append(formatRequestHeaderField(name, value));
             }
 
         }
 
         return headers.toString();
 
+    }
+
+    private String formatRequestHeaderField(final String name, final String value) {
+        return name + ": " + value + "\r\n";
     }
 
     private void setHeader(final HttpServletResponse response) {
