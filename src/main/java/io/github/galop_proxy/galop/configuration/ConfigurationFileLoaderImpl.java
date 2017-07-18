@@ -34,27 +34,24 @@ final class ConfigurationFileLoaderImpl implements ConfigurationFileLoader {
         LOGGER.info("Loading configuration file: " + path.toAbsolutePath());
 
         try (final FileInputStream fileInputStream = new FileInputStream(path.toFile())) {
-            return parseConfiguration(loadProperties(fileInputStream));
-        } catch (final FileNotFoundException ex) {
-            LOGGER.error("Could not find configuration file: " + path.toAbsolutePath());
-            throw ex;
+            return parseConfiguration(fileInputStream);
         } catch (final IOException | InvalidConfigurationException | RuntimeException ex) {
-            LOGGER.error("Could not parse configuration file: " + ex.getMessage());
+            logException(path, ex);
             throw ex;
         }
 
     }
 
-    private Properties loadProperties(final FileInputStream fileInputStream) throws IOException {
+    private Configuration parseConfiguration(final FileInputStream fileInputStream)
+            throws IOException, InvalidConfigurationException {
+
         final Properties properties = new Properties();
         properties.load(fileInputStream);
-        return properties;
-    }
 
-    private Configuration parseConfiguration(final Properties properties) throws InvalidConfigurationException {
         final Configuration configuration = configurationFactory.parse(convertToMap(properties));
         logConfiguration(configuration);
         return configuration;
+
     }
 
     private Map<String, String> convertToMap(final Properties properties) {
@@ -109,6 +106,16 @@ final class ConfigurationFileLoaderImpl implements ConfigurationFileLoader {
 
     private void log(final String key, final Object value) {
         LOGGER.info(key + " = " + value);
+    }
+
+    private void logException(final Path path, final Exception ex) {
+
+        if (ex instanceof FileNotFoundException) {
+            LOGGER.error("Could not find configuration file: " + path.toAbsolutePath());
+        } else {
+            LOGGER.error("Could not parse configuration file: " + ex.getMessage());
+        }
+
     }
 
 }
