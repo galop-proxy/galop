@@ -5,10 +5,12 @@ jdk:
   - openjdk8
 cache:
   directories:
-  - $HOME/.m2
+    - $HOME/.m2
 install: true
+before_script:
+  - bash install-plugin-api.sh
 script:
-   - mvn verify -B
-   - bash system-test/start.sh
+  - mvn verify -B
+  - bash system-test/start.sh
 after_success:
   - mvn coveralls:report -B

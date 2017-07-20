@@ -18,6 +18,9 @@ install:
   - cmd: mvn --version
   - cmd: java -version
 
+before_build:
+  - ps: .\install-plugin-api.ps1
+
 build_script:
   - mvn clean verify -B
 
