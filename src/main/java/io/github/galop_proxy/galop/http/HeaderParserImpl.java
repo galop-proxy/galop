@@ -1,12 +1,27 @@
 package io.github.galop_proxy.galop.http;
 
 import io.github.galop_proxy.api.http.HeaderFields;
+import io.github.galop_proxy.galop.configuration.HttpHeaderRequestConfiguration;
+import io.github.galop_proxy.galop.configuration.HttpHeaderResponseConfiguration;
 import org.apache.commons.lang3.StringUtils;
 
+import javax.inject.Inject;
 import java.io.IOException;
 import java.util.*;
 
+import static io.github.galop_proxy.api.commons.Preconditions.checkNotNull;
+
 final class HeaderParserImpl implements HeaderParser {
+
+    private final HttpHeaderRequestConfiguration requestConfiguration;
+    private final HttpHeaderResponseConfiguration responseConfiguration;
+
+    @Inject
+    HeaderParserImpl(final HttpHeaderRequestConfiguration requestConfiguration,
+                     final HttpHeaderResponseConfiguration responseConfiguration) {
+        this.requestConfiguration = checkNotNull(requestConfiguration, "requestConfiguration");
+        this.responseConfiguration = checkNotNull(responseConfiguration, "responseConfiguration");
+    }
 
     @Override
     public Map<String, List<String>> parseRequestHeaders(final Callable<String, IOException> nextLine)
@@ -28,10 +43,30 @@ final class HeaderParserImpl implements HeaderParser {
         String line;
 
         while (!(line = nextLine.call()).isEmpty()) {
+            checkHeaderFieldsLimit(headerFields, request);
             parseHeaderField(headerFields, line, request);
         }
 
         return processConnectionHeaderFields(headerFields);
+
+    }
+
+    private void checkHeaderFieldsLimit(final Map<String, List<String>> headerFields, final boolean request)
+            throws HeaderFieldsTooLargeException {
+
+        final int fieldsLimit;
+
+        if (request) {
+            fieldsLimit = requestConfiguration.getFieldsLimit();
+        } else {
+            fieldsLimit = responseConfiguration.getFieldsLimit();
+        }
+
+        if (headerFields.size() == fieldsLimit) {
+            throw new HeaderFieldsTooLargeException(
+                      "Maximum number of allowed HTTP header fields exceeded. "
+                    + "A maximum of " + fieldsLimit + " fields are allowed.");
+        }
 
     }
 

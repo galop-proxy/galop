@@ -166,6 +166,20 @@ public class ExchangeHandlerImplTest {
 
     }
 
+    @Test(expected = HeaderFieldsTooLargeException.class)
+    public void handleRequest_withTooManyHeaderFields_sendsStatusCode431ToClient() throws Exception {
+
+        doThrow(HeaderFieldsTooLargeException.class).when(messageParser).parseRequest(same(sourceInputStream));
+
+        try {
+            handler.handleRequest(source, target);
+        } catch (final HeaderFieldsTooLargeException ex) {
+            assertHttpStatusCode(StatusCode.REQUEST_HEADER_FIELDS_TOO_LARGE);
+            throw ex;
+        }
+
+    }
+
     @Test
     public void handleRequest_withInvalidRequestHeader_sendsStatusCode400ToClient() throws Exception {
 

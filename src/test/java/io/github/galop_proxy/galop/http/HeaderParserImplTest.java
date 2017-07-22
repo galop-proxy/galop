@@ -1,6 +1,8 @@
 package io.github.galop_proxy.galop.http;
 
 import io.github.galop_proxy.api.http.HeaderFields;
+import io.github.galop_proxy.galop.configuration.HttpHeaderRequestConfiguration;
+import io.github.galop_proxy.galop.configuration.HttpHeaderResponseConfiguration;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -10,6 +12,8 @@ import java.util.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Tests the class {@link HeaderParserImpl}.
@@ -46,15 +50,26 @@ public class HeaderParserImplTest {
             "Upgrade: HTTP/2.0",
             "Lorem: Ipsum");
 
+    private HttpHeaderRequestConfiguration requestConfiguration;
+    private HttpHeaderResponseConfiguration responseConfiguration;
     private HeaderParser instance;
+
     private Map<String, List<String>> request;
     private Map<String, List<String>> response;
 
     @Before
     public void setUp() throws IOException {
-        instance = new HeaderParserImpl();
+
+        requestConfiguration = mock(HttpHeaderRequestConfiguration.class);
+        when(requestConfiguration.getFieldsLimit()).thenReturn(20);
+        responseConfiguration = mock(HttpHeaderResponseConfiguration.class);
+        when(responseConfiguration.getFieldsLimit()).thenReturn(20);
+
+        instance = new HeaderParserImpl(requestConfiguration, responseConfiguration);
+
         request = instance.parseRequestHeaders(toCallable(REQUEST));
         response = instance.parseResponseHeaders(toCallable(RESPONSE));
+
     }
 
     // parseRequestHeaders:
@@ -117,6 +132,11 @@ public class HeaderParserImplTest {
         instance.parseRequestHeaders(toCallable(": EmptyFieldName"));
     }
 
+    @Test(expected = HeaderFieldsTooLargeException.class)
+    public void parseRequestHeaders_withTooManyHeaderFields_throwsHeaderFieldsTooLargeException() throws IOException {
+        instance.parseRequestHeaders(callableWithTooManyLines());
+    }
+
     // parseResponseHeaders:
 
     @Test
@@ -177,6 +197,33 @@ public class HeaderParserImplTest {
         instance.parseResponseHeaders(toCallable(": EmptyFieldName"));
     }
 
+    @Test(expected = HeaderFieldsTooLargeException.class)
+    public void parseResponseHeaders_withTooManyHeaderFields_throwsHeaderFieldsTooLargeException() throws IOException {
+        instance.parseResponseHeaders(callableWithTooManyLines());
+    }
+
+    // Wrong use of API:
+
+    @Test(expected = NullPointerException.class)
+    public void constructor_withoutHttpHeaderRequestConfiguration_throwsNullPointerException() {
+        new HeaderParserImpl(null, responseConfiguration);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void constructor_withoutHttpHeaderResponseConfiguration_throwsNullPointerException() {
+        new HeaderParserImpl(requestConfiguration, null);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void parseRequestHeaders_withoutCallable_throwsNullPointerException() throws IOException {
+        instance.parseRequestHeaders(null);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void parseResponseHeaders_withoutCallable_throwsNullPointerException() throws IOException {
+        instance.parseResponseHeaders(null);
+    }
+
     // Helper methods:
 
     private Callable<String, IOException> toCallable(final List<String> lines) {
@@ -209,6 +256,18 @@ public class HeaderParserImplTest {
         for (int index = 0; index < expectedValue.length; index++) {
             assertEquals(expectedValue[index], headerFields.get(name).get(index));
         }
+
+    }
+
+    private Callable<String, IOException> callableWithTooManyLines() {
+
+        final List<String> tooManyLines = new ArrayList<>();
+
+        for (int i = 0; i < 21; i++) {
+            tooManyLines.add("example" + i + ": " + i);
+        }
+
+        return toCallable(tooManyLines);
 
     }
 
