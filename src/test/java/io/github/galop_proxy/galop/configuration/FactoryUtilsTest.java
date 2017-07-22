@@ -8,9 +8,7 @@ import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.Map;
 
-import static io.github.galop_proxy.galop.configuration.FactoryUtils.parseMaxSize;
-import static io.github.galop_proxy.galop.configuration.FactoryUtils.parsePortNumber;
-import static io.github.galop_proxy.galop.configuration.FactoryUtils.parseTimeout;
+import static io.github.galop_proxy.galop.configuration.FactoryUtils.*;
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -60,7 +58,7 @@ public class FactoryUtilsTest {
     }
 
     @Test(expected = InvalidConfigurationException.class)
-    public void parseTimeout_withInvalidTimeout_throwsInvalidConfigurationException() throws InvalidConfigurationException {
+    public void parseTimeout_withInvalidInteger_throwsInvalidConfigurationException() throws InvalidConfigurationException {
         properties.put("property", "invalid");
         parseTimeout(properties, "property", 456);
     }
@@ -85,7 +83,7 @@ public class FactoryUtilsTest {
     }
 
     @Test(expected = InvalidConfigurationException.class)
-    public void parseMaxSize_withInvalidMaxSize_throwsInvalidConfigurationException() throws InvalidConfigurationException {
+    public void parseMaxSize_withInvalidInteger_throwsInvalidConfigurationException() throws InvalidConfigurationException {
         properties.put("property", "invalid");
         parseMaxSize(properties, "property", 2048);
     }
@@ -94,6 +92,37 @@ public class FactoryUtilsTest {
     public void parseMaxSize_withTooLowMaxSize_throwsInvalidConfigurationException() throws InvalidConfigurationException {
         properties.put("property", "254");
         parseMaxSize(properties, "property", 2048);
+    }
+
+    // parseFieldsLimit:
+
+    @Test
+    public void parseFieldsLimit_withValidFieldsLimit_returnsFieldsLimit() throws InvalidConfigurationException {
+        properties.put("property", "64");
+        assertEquals(64, parseFieldsLimit(properties, "property", 100));
+    }
+
+    @Test
+    public void parseFieldsLimit_withoutFieldsLimit_returnsDefaultValue() throws InvalidConfigurationException {
+        assertEquals(100, parseFieldsLimit(properties, "property", 100));
+    }
+
+    @Test(expected = InvalidConfigurationException.class)
+    public void parseFieldsLimit_withInvalidInteger_throwsInvalidConfigurationException() throws InvalidConfigurationException {
+        properties.put("property", "invalid");
+        parseFieldsLimit(properties, "property", 100);
+    }
+
+    @Test(expected = InvalidConfigurationException.class)
+    public void parseFieldsLimit_withTooLowInteger_throwsInvalidConfigurationException() throws InvalidConfigurationException {
+        properties.put("property", "0");
+        parseFieldsLimit(properties, "property", 100);
+    }
+
+    @Test(expected = InvalidConfigurationException.class)
+    public void parseFieldsLimit_withTooLargeInteger_throwsInvalidConfigurationException() throws InvalidConfigurationException {
+        properties.put("property", "65537");
+        parseFieldsLimit(properties, "property", 100);
     }
 
     // Other:

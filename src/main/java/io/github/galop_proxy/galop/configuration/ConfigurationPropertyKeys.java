@@ -14,8 +14,11 @@ final class ConfigurationPropertyKeys {
     static final String HTTP_CONNECTION_TERMINATION_TIMEOUT = "http.connection.termination_timeout";
 
     static final String HTTP_HEADER_REQUEST_RECEIVE_TIMEOUT = "http.header.request.receive_timeout";
+    static final String HTTP_HEADER_REQUEST_FIELDS_LIMIT = "http.header.request.fields_limit";
     static final String HTTP_HEADER_REQUEST_MAX_SIZE = "http.header.request.max_size";
+
     static final String HTTP_HEADER_RESPONSE_RECEIVE_TIMEOUT = "http.header.response.receive_timeout";
+    static final String HTTP_HEADER_RESPONSE_FIELDS_LIMIT = "http.header.response.fields_limit";
     static final String HTTP_HEADER_RESPONSE_MAX_SIZE = "http.header.response.max_size";
 
     private ConfigurationPropertyKeys() {

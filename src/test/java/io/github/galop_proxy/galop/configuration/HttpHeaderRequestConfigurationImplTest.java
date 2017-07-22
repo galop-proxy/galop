@@ -14,12 +14,17 @@ public class HttpHeaderRequestConfigurationImplTest {
 
     @Before
     public void setUp() {
-        configuration = new HttpHeaderRequestConfigurationImpl(60000, 8192);
+        configuration = new HttpHeaderRequestConfigurationImpl(60000, 100, 8192);
     }
 
     @Test
     public void getReceiveTimeout_returnsConfiguredReceiveTimeout() {
         assertEquals(60000, configuration.getReceiveTimeout());
+    }
+
+    @Test
+    public void getFieldsLimit_returnsConfiguredFieldsLimit() {
+        assertEquals(100, configuration.getFieldsLimit());
     }
 
     @Test

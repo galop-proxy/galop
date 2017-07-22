@@ -96,11 +96,13 @@ final class ConfigurationFileLoaderImpl implements ConfigurationFileLoader {
 
     private void logHttpHeaderRequestConfiguration(final HttpHeaderRequestConfiguration configuration) {
         log(HTTP_HEADER_REQUEST_RECEIVE_TIMEOUT, configuration.getReceiveTimeout());
+        log(HTTP_HEADER_REQUEST_FIELDS_LIMIT, configuration.getFieldsLimit());
         log(HTTP_HEADER_REQUEST_MAX_SIZE, configuration.getMaxSize());
     }
 
     private void logHttpHeaderResponseConfiguration(final HttpHeaderResponseConfiguration configuration) {
         log(HTTP_HEADER_RESPONSE_RECEIVE_TIMEOUT, configuration.getReceiveTimeout());
+        log(HTTP_HEADER_RESPONSE_FIELDS_LIMIT, configuration.getFieldsLimit());
         log(HTTP_HEADER_RESPONSE_MAX_SIZE, configuration.getMaxSize());
     }
 

@@ -6,6 +6,9 @@ import java.util.Map;
 
 final class FactoryUtils {
 
+    private static final int FIELDS_LIMIT_MIN = 1;
+    private static final int FIELDS_LIMIT_MAX = 65536;
+
     static PortNumber parsePortNumber(final Map<String, String> properties, final String propertyKey)
             throws InvalidConfigurationException {
 
@@ -64,11 +67,33 @@ final class FactoryUtils {
         }
 
         if (maxSize < 255) {
-            throw new InvalidConfigurationException("Property " + propertyKey + " must be at least 255: "
-                    + maxSizeAsString);
+            throw new InvalidConfigurationException("Property " + propertyKey + " must be at least 255: " + maxSize);
         }
 
         return maxSize;
+
+    }
+
+    static int parseFieldsLimit(final Map<String, String> properties, final String propertyKey, final int defaultValue)
+            throws InvalidConfigurationException {
+
+        final String fieldsLimitAsString = properties.getOrDefault(propertyKey, Integer.toString(defaultValue));
+
+        final int fieldsLimit;
+
+        try {
+            fieldsLimit = Integer.parseInt(fieldsLimitAsString);
+        } catch (final NumberFormatException ex) {
+            throw new InvalidConfigurationException("Property " + propertyKey + " is not a valid number: "
+                    + fieldsLimitAsString);
+        }
+
+        if (fieldsLimit < FIELDS_LIMIT_MIN || fieldsLimit > FIELDS_LIMIT_MAX) {
+            throw new InvalidConfigurationException("Property " + propertyKey + " must be in range "
+                    + "[" + FIELDS_LIMIT_MIN + ".." + FIELDS_LIMIT_MAX + "]: " + fieldsLimit);
+        }
+
+        return fieldsLimit;
 
     }
 

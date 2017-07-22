@@ -6,6 +6,7 @@ import org.junit.Test;
 import java.util.HashMap;
 import java.util.Map;
 
+import static io.github.galop_proxy.galop.configuration.ConfigurationPropertyKeys.HTTP_HEADER_RESPONSE_FIELDS_LIMIT;
 import static io.github.galop_proxy.galop.configuration.ConfigurationPropertyKeys.HTTP_HEADER_RESPONSE_MAX_SIZE;
 import static io.github.galop_proxy.galop.configuration.ConfigurationPropertyKeys.HTTP_HEADER_RESPONSE_RECEIVE_TIMEOUT;
 import static org.junit.Assert.assertEquals;
@@ -24,6 +25,7 @@ public class HttpHeaderResponseConfigurationFactoryImplTest {
         factory = new HttpHeaderResponseConfigurationFactoryImpl();
         properties = new HashMap<>();
         properties.put(HTTP_HEADER_RESPONSE_RECEIVE_TIMEOUT, "120000");
+        properties.put(HTTP_HEADER_RESPONSE_FIELDS_LIMIT, "64");
         properties.put(HTTP_HEADER_RESPONSE_MAX_SIZE, "4084");
         configuration = factory.parse(properties);
     }
@@ -40,6 +42,18 @@ public class HttpHeaderResponseConfigurationFactoryImplTest {
         properties.remove(HTTP_HEADER_RESPONSE_RECEIVE_TIMEOUT);
         configuration = factory.parse(properties);
         assertEquals(ConfigurationDefaults.HTTP_HEADER_RESPONSE_RECEIVE_TIMEOUT, configuration.getReceiveTimeout());
+    }
+
+    @Test
+    public void parse_withValidFieldsLimit_returnsConfiguration() {
+        assertEquals(64, configuration.getFieldsLimit());
+    }
+
+    @Test
+    public void parse_withoutFieldsLimit_returnsDefaultValue() throws InvalidConfigurationException {
+        properties.remove(HTTP_HEADER_RESPONSE_FIELDS_LIMIT);
+        configuration = factory.parse(properties);
+        assertEquals(ConfigurationDefaults.HTTP_HEADER_REQUEST_FIELDS_LIMIT, configuration.getFieldsLimit());
     }
 
     @Test
@@ -65,6 +79,24 @@ public class HttpHeaderResponseConfigurationFactoryImplTest {
     @Test(expected = InvalidConfigurationException.class)
     public void parse_withNegativeReceiveTimeout_throwsInvalidConfigurationException() throws InvalidConfigurationException {
         properties.put(HTTP_HEADER_RESPONSE_RECEIVE_TIMEOUT, "-1");
+        factory.parse(properties);
+    }
+
+    @Test(expected = InvalidConfigurationException.class)
+    public void parse_withInvalidFieldsLimit_throwsInvalidConfigurationException() throws InvalidConfigurationException {
+        properties.put(HTTP_HEADER_RESPONSE_FIELDS_LIMIT, "invalid");
+        factory.parse(properties);
+    }
+
+    @Test(expected = InvalidConfigurationException.class)
+    public void parse_withTooLowFieldsLimit_throwsInvalidConfigurationException() throws InvalidConfigurationException {
+        properties.put(HTTP_HEADER_RESPONSE_FIELDS_LIMIT, "0");
+        factory.parse(properties);
+    }
+
+    @Test(expected = InvalidConfigurationException.class)
+    public void parse_withTooLargeFieldsLimit_throwsInvalidConfigurationException() throws InvalidConfigurationException {
+        properties.put(HTTP_HEADER_RESPONSE_FIELDS_LIMIT, "65537");
         factory.parse(properties);
     }
 
