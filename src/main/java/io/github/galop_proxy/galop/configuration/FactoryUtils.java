@@ -6,6 +6,9 @@ import java.util.Map;
 
 final class FactoryUtils {
 
+    private static final int SIZE_LIMIT_MIN = 64;
+    private static final int SIZE_LIMIT_MAX = 65536;
+
     private static final int FIELDS_LIMIT_MIN = 1;
     private static final int FIELDS_LIMIT_MAX = 65536;
 
@@ -74,26 +77,37 @@ final class FactoryUtils {
 
     }
 
+    static int parseSizeLimit(final Map<String, String> properties, final String propertyKey, final int defaultValue)
+            throws InvalidConfigurationException {
+        return parseRange(properties, propertyKey, defaultValue, SIZE_LIMIT_MIN, SIZE_LIMIT_MAX);
+    }
+
     static int parseFieldsLimit(final Map<String, String> properties, final String propertyKey, final int defaultValue)
             throws InvalidConfigurationException {
+        return parseRange(properties, propertyKey, defaultValue, FIELDS_LIMIT_MIN, FIELDS_LIMIT_MAX);
+    }
 
-        final String fieldsLimitAsString = properties.getOrDefault(propertyKey, Integer.toString(defaultValue));
+    private static int parseRange(final Map<String, String> properties, final String propertyKey, final int defaultValue,
+                                  final int minValue, final int maxValue)
+            throws InvalidConfigurationException {
 
-        final int fieldsLimit;
+        final String valueAsString = properties.getOrDefault(propertyKey, Integer.toString(defaultValue));
+
+        final int value;
 
         try {
-            fieldsLimit = Integer.parseInt(fieldsLimitAsString);
+            value = Integer.parseInt(valueAsString);
         } catch (final NumberFormatException ex) {
             throw new InvalidConfigurationException("Property " + propertyKey + " is not a valid number: "
-                    + fieldsLimitAsString);
+                    + valueAsString);
         }
 
-        if (fieldsLimit < FIELDS_LIMIT_MIN || fieldsLimit > FIELDS_LIMIT_MAX) {
+        if (value < minValue || value > maxValue) {
             throw new InvalidConfigurationException("Property " + propertyKey + " must be in range "
-                    + "[" + FIELDS_LIMIT_MIN + ".." + FIELDS_LIMIT_MAX + "]: " + fieldsLimit);
+                    + "[" + minValue + ".." + maxValue + "]: " + value);
         }
 
-        return fieldsLimit;
+        return value;
 
     }
 

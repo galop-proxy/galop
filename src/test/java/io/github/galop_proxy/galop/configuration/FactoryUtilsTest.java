@@ -94,6 +94,37 @@ public class FactoryUtilsTest {
         parseMaxSize(properties, "property", 2048);
     }
 
+    // parseSizeLimit:
+
+    @Test
+    public void parseSizeLimit_withValidSizeLimit_returnsSizeLimit() throws InvalidConfigurationException {
+        properties.put("property", "2048");
+        assertEquals(2048, parseSizeLimit(properties, "property", 8192));
+    }
+
+    @Test
+    public void parseSizeLimit_withoutSizeLimit_returnsDefaultValue() throws InvalidConfigurationException {
+        assertEquals(8192, parseSizeLimit(properties, "property", 8192));
+    }
+
+    @Test(expected = InvalidConfigurationException.class)
+    public void parseSizeLimit_withInvalidInteger_throwsInvalidConfigurationException() throws InvalidConfigurationException {
+        properties.put("property", "invalid");
+        parseSizeLimit(properties, "property", 100);
+    }
+
+    @Test(expected = InvalidConfigurationException.class)
+    public void parseSizeLimit_withTooLowInteger_throwsInvalidConfigurationException() throws InvalidConfigurationException {
+        properties.put("property", "63");
+        parseSizeLimit(properties, "property", 100);
+    }
+
+    @Test(expected = InvalidConfigurationException.class)
+    public void parseSizeLimit_withTooLargeInteger_throwsInvalidConfigurationException() throws InvalidConfigurationException {
+        properties.put("property", "65537");
+        parseSizeLimit(properties, "property", 100);
+    }
+
     // parseFieldsLimit:
 
     @Test

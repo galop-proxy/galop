@@ -39,6 +39,13 @@ public class UnsupportedRequestsTest {
     }
 
     @Test
+    public void Requests_with_too_long_request_lines_are_rejected_with_the_status_code_414() throws Exception {
+        final String longSuffix = StringUtils.repeat("a", 8192);
+        final ContentResponse response = client.GET("http://localhost:8080/?" + longSuffix);
+        assertEquals(414, response.getStatus());
+    }
+
+    @Test
     public void Requests_with_too_large_header_fields_are_rejected_with_the_status_code_431() throws Exception {
         final ContentResponse response = client
                 .newRequest("http://localhost:8080/")

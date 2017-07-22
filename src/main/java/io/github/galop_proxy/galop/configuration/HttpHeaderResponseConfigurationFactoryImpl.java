@@ -3,10 +3,9 @@ package io.github.galop_proxy.galop.configuration;
 import java.util.Map;
 
 import static io.github.galop_proxy.api.commons.Preconditions.checkNotNull;
-import static io.github.galop_proxy.galop.configuration.ConfigurationPropertyKeys.HTTP_HEADER_RESPONSE_FIELDS_LIMIT;
-import static io.github.galop_proxy.galop.configuration.ConfigurationPropertyKeys.HTTP_HEADER_RESPONSE_MAX_SIZE;
-import static io.github.galop_proxy.galop.configuration.ConfigurationPropertyKeys.HTTP_HEADER_RESPONSE_RECEIVE_TIMEOUT;
+import static io.github.galop_proxy.galop.configuration.ConfigurationPropertyKeys.*;
 import static io.github.galop_proxy.galop.configuration.FactoryUtils.parseMaxSize;
+import static io.github.galop_proxy.galop.configuration.FactoryUtils.parseSizeLimit;
 import static io.github.galop_proxy.galop.configuration.FactoryUtils.parseTimeout;
 
 final class HttpHeaderResponseConfigurationFactoryImpl implements HttpHeaderResponseConfigurationFactory {
@@ -17,16 +16,22 @@ final class HttpHeaderResponseConfigurationFactoryImpl implements HttpHeaderResp
         checkNotNull(properties, "properties");
 
         final long receiveTimeout = parseResponseReceiveTimeout(properties);
+        final int statusLineSizeLimit = parseStatusLineSizeLimit(properties);
         final int fieldsLimit = parseFieldsLimit(properties);
         final int maxSize = parseResponseMaxSize(properties);
 
-        return new HttpHeaderResponseConfigurationImpl(receiveTimeout, fieldsLimit, maxSize);
+        return new HttpHeaderResponseConfigurationImpl(receiveTimeout, statusLineSizeLimit, fieldsLimit, maxSize);
 
     }
 
     private long parseResponseReceiveTimeout(final Map<String, String> properties) throws InvalidConfigurationException {
         return parseTimeout(properties, HTTP_HEADER_RESPONSE_RECEIVE_TIMEOUT,
                 ConfigurationDefaults.HTTP_HEADER_RESPONSE_RECEIVE_TIMEOUT);
+    }
+
+    private int parseStatusLineSizeLimit(final Map<String, String> properties) throws InvalidConfigurationException {
+        return parseSizeLimit(properties, HTTP_HEADER_RESPONSE_STATUS_LINE_SIZE_LIMIT,
+                ConfigurationDefaults.HTTP_HEADER_RESPONSE_STATUS_LINE_SIZE_LIMIT);
     }
 
     private int parseFieldsLimit(final Map<String, String> properties) throws InvalidConfigurationException {
