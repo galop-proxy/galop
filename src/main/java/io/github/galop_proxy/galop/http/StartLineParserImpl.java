@@ -3,18 +3,32 @@ package io.github.galop_proxy.galop.http;
 import io.github.galop_proxy.api.http.Request;
 import io.github.galop_proxy.api.http.Response;
 import io.github.galop_proxy.api.http.Version;
+import io.github.galop_proxy.galop.configuration.HttpHeaderRequestConfiguration;
+import io.github.galop_proxy.galop.configuration.HttpHeaderResponseConfiguration;
 
+import javax.inject.Inject;
 import java.io.IOException;
 
+import static io.github.galop_proxy.api.commons.Preconditions.checkNotNull;
 import static io.github.galop_proxy.galop.http.Constants.HTTP_VERSION_PREFIX;
 import static io.github.galop_proxy.galop.http.Constants.SUPPORTED_HTTP_VERSION;
 
 final class StartLineParserImpl implements StartLineParser {
 
-    @Override
-    public Request parseRequestLine(final Callable<String, IOException> nextLine) throws IOException {
+    private final HttpHeaderRequestConfiguration requestConfiguration;
+    private final HttpHeaderResponseConfiguration responseConfiguration;
 
-        final String[] requestLine = nextLine.call().split(" ");
+    @Inject
+    StartLineParserImpl(final HttpHeaderRequestConfiguration requestConfiguration,
+                        final HttpHeaderResponseConfiguration responseConfiguration) {
+        this.requestConfiguration = checkNotNull(requestConfiguration, "requestConfiguration");
+        this.responseConfiguration = checkNotNull(responseConfiguration, "responseConfiguration");
+    }
+
+    @Override
+    public Request parseRequestLine(final LineReader lineReader) throws IOException {
+
+        final String[] requestLine = readRequestLine(lineReader);
 
         if (requestLine.length != 3) {
             throw new InvalidHttpHeaderException("Invalid request line.");
@@ -29,9 +43,9 @@ final class StartLineParserImpl implements StartLineParser {
     }
 
     @Override
-    public Response parseStatusLine(final Callable<String, IOException> nextLine) throws IOException {
+    public Response parseStatusLine(final LineReader lineReader) throws IOException {
 
-        final String[] statusLine = nextLine.call().split(" ", 3);
+        final String[] statusLine = readStatusLine(lineReader);
 
         if (statusLine.length != 3 && statusLine.length != 2) {
             throw new InvalidHttpHeaderException("Invalid status line.");
@@ -43,6 +57,16 @@ final class StartLineParserImpl implements StartLineParser {
 
         return new ResponseImpl(version, statusCode, reasonPhrase);
 
+    }
+
+    private String[] readRequestLine(final LineReader lineReader) throws IOException {
+        final int sizeLimit = requestConfiguration.getRequestLineSizeLimit();
+        return lineReader.readLine(sizeLimit).split(" ");
+    }
+
+    private String[] readStatusLine(final LineReader lineReader) throws IOException {
+        final int sizeLimit = responseConfiguration.getStatusLineSizeLimit();
+        return lineReader.readLine(sizeLimit).split(" ", 3);
     }
 
     private Version parseVersion(final String version) throws IOException {

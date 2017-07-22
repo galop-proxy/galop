@@ -12,6 +12,7 @@ public enum StatusCode {
     BAD_REQUEST(400, "Bad Request"),
     REQUEST_TIMEOUT(408, "Request Time-out"),
     LENGTH_REQUIRED(411, "Length Required"),
+    URI_TOO_LONG(414, "URI Too Long"),
     UPGRADE_REQUIRED(426, "Upgrade Required"),
     REQUEST_HEADER_FIELDS_TOO_LARGE(431, "Request Header Fields Too Large"),
 

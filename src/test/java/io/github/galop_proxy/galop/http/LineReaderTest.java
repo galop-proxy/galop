@@ -60,8 +60,8 @@ public class LineReaderTest {
 
     // Invalid lines:
 
-    @Test(expected = IOException.class)
-    public void readLine_withLineLongerThanMaxSize_throwsIOException() throws IOException {
+    @Test(expected = LineTooLargeException.class)
+    public void readLine_withLineLongerThanMaxSize_throwsLineTooLargeException() throws IOException {
         final String message = StringUtils.repeat('A', MAX_SIZE);
         final String line = message + "\r\n";
         createLineReader(line).readLine(MAX_SIZE);

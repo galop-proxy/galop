@@ -43,14 +43,12 @@ final class MessageParserImpl implements MessageParser {
         final byte[] buffer = new byte[maxHttpHeaderSize];
         final LimitedInputStream limitedInputStream = new LimitedInputStream(inputStream, maxHttpHeaderSize);
 
-        final Request request = parseRequestLine(limitedInputStream, buffer);
+        final LineReader lineReader = new LineReader(inputStream);
+
+        final Request request = startLineParser.parseRequestLine(lineReader);
         parseHeaderFields(request, limitedInputStream, buffer, true);
         return request;
 
-    }
-
-    private Request parseRequestLine(final InputStream inputStream, final byte[] buffer) throws IOException {
-        return startLineParser.parseRequestLine(() -> getNextLine(inputStream, buffer));
     }
 
     // Parse Response:
@@ -64,16 +62,13 @@ final class MessageParserImpl implements MessageParser {
         final byte[] buffer = new byte[maxHttpHeaderSize];
         final LimitedInputStream limitedInputStream = new LimitedInputStream(inputStream, maxHttpHeaderSize);
 
-        final Response response = parseStatusLine(limitedInputStream, buffer);
+        final LineReader lineReader = new LineReader(inputStream);
+
+        final Response response = startLineParser.parseStatusLine(lineReader);
         parseHeaderFields(response, limitedInputStream, buffer, false);
         return response;
 
     }
-
-    private Response parseStatusLine(final InputStream inputStream, final byte[] buffer) throws IOException {
-        return startLineParser.parseStatusLine(() -> getNextLine(inputStream, buffer));
-    }
-
     // Common methods:
 
     private int getMaxHttpHeaderSize(final boolean request) {

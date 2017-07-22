@@ -152,6 +152,20 @@ public class ExchangeHandlerImplTest {
 
     }
 
+    @Test(expected = LineTooLargeException.class)
+    public void handleRequest_withTooLargeRequestLine_sendsStatusCode414ToClient() throws Exception {
+
+        doThrow(LineTooLargeException.class).when(messageParser).parseRequest(same(sourceInputStream));
+
+        try {
+            handler.handleRequest(source, target);
+        } catch (final LineTooLargeException ex) {
+            assertHttpStatusCode(StatusCode.URI_TOO_LONG);
+            throw ex;
+        }
+
+    }
+
     @Test(expected = ByteLimitExceededException.class)
     public void handleRequest_withTooLongRequestHeader_sendsStatusCode431ToClient() throws Exception {
 

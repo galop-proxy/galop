@@ -67,7 +67,7 @@ final class LineReader {
     private byte readNextByte(final int maxSize) throws IOException {
 
         if (bufferIndex + 1 == maxSize) {
-            throw new IOException("Invalid line: max size exceeded.");
+            throw new LineTooLargeException(maxSize);
         }
 
         final int nextByte = inputStream.read();

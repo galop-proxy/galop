@@ -7,8 +7,8 @@ import java.io.IOException;
 
 interface StartLineParser {
 
-    Request parseRequestLine(Callable<String, IOException> nextLine) throws IOException;
+    Request parseRequestLine(LineReader lineReader) throws IOException;
 
-    Response parseStatusLine(Callable<String, IOException> nextLine) throws IOException;
+    Response parseStatusLine(LineReader lineReader) throws IOException;
 
 }

@@ -78,12 +78,15 @@ public class MessageParserImplTest {
 
         requestConfiguration = mock(HttpHeaderRequestConfiguration.class);
         responseConfiguration = mock(HttpHeaderResponseConfiguration.class);
+
+        when(requestConfiguration.getRequestLineSizeLimit()).thenReturn(64);
+        when(responseConfiguration.getStatusLineSizeLimit()).thenReturn(64);
         when(requestConfiguration.getFieldsLimit()).thenReturn(100);
         when(responseConfiguration.getFieldsLimit()).thenReturn(100);
         when(requestConfiguration.getMaxSize()).thenReturn(MAX_HTTP_HEADER_SIZE);
         when(responseConfiguration.getMaxSize()).thenReturn(MAX_HTTP_HEADER_SIZE);
 
-        startLineParser = new StartLineParserImpl();
+        startLineParser = new StartLineParserImpl(requestConfiguration, responseConfiguration);
         headerParser = new HeaderParserImpl(requestConfiguration, responseConfiguration);
 
         instance = new MessageParserImpl(requestConfiguration, responseConfiguration, startLineParser, headerParser);
