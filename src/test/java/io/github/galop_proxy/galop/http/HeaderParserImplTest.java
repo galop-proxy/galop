@@ -3,9 +3,11 @@ package io.github.galop_proxy.galop.http;
 import io.github.galop_proxy.api.http.HeaderFields;
 import io.github.galop_proxy.galop.configuration.HttpHeaderRequestConfiguration;
 import io.github.galop_proxy.galop.configuration.HttpHeaderResponseConfiguration;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.*;
 
@@ -62,13 +64,16 @@ public class HeaderParserImplTest {
 
         requestConfiguration = mock(HttpHeaderRequestConfiguration.class);
         when(requestConfiguration.getFieldsLimit()).thenReturn(20);
+        when(requestConfiguration.getFieldSizeLimit()).thenReturn(256);
+
         responseConfiguration = mock(HttpHeaderResponseConfiguration.class);
         when(responseConfiguration.getFieldsLimit()).thenReturn(20);
+        when(responseConfiguration.getFieldSizeLimit()).thenReturn(256);
 
         instance = new HeaderParserImpl(requestConfiguration, responseConfiguration);
 
-        request = instance.parseRequestHeaders(toCallable(REQUEST));
-        response = instance.parseResponseHeaders(toCallable(RESPONSE));
+        request = instance.parseRequestHeaders(create(REQUEST));
+        response = instance.parseResponseHeaders(create(RESPONSE));
 
     }
 
@@ -112,29 +117,34 @@ public class HeaderParserImplTest {
 
     @Test
     public void parseRequestHeaders_withoutHeaderFields_returnsOnlyConnectionHeaderField() throws IOException {
-        final Map<String, List<String>> headerFields = instance.parseRequestHeaders(toCallable(""));
+        final Map<String, List<String>> headerFields = instance.parseRequestHeaders(create(""));
         assertEquals(1, headerFields.size());
     }
 
     @Test(expected = InvalidHttpHeaderException.class)
     public void parseRequestHeaders_withWhitespaceBetweenHeaderFieldNameAndColon_throwsInvalidHttpHeaderException()
             throws IOException {
-        instance.parseRequestHeaders(toCallable("Host :invalid"));
+        instance.parseRequestHeaders(create("Host :invalid"));
     }
 
     @Test(expected = InvalidHttpHeaderException.class)
     public void parseRequestHeaders_withHeaderFieldWithoutColon_throwsInvalidHttpHeaderException() throws IOException {
-        instance.parseRequestHeaders(toCallable("WithoutColon"));
+        instance.parseRequestHeaders(create("WithoutColon"));
     }
 
     @Test(expected = InvalidHttpHeaderException.class)
     public void parseRequestHeaders_withEmptyHeaderFieldName_throwsInvalidHttpHeaderException() throws IOException {
-        instance.parseRequestHeaders(toCallable(": EmptyFieldName"));
+        instance.parseRequestHeaders(create(": EmptyFieldName"));
     }
 
     @Test(expected = HeaderFieldsTooLargeException.class)
     public void parseRequestHeaders_withTooManyHeaderFields_throwsHeaderFieldsTooLargeException() throws IOException {
-        instance.parseRequestHeaders(callableWithTooManyLines());
+        instance.parseRequestHeaders(createWithTooManyLines());
+    }
+
+    @Test(expected = HeaderFieldsTooLargeException.class)
+    public void parseRequestHeaders_withTooLargeHeaderField_throwsHeaderFieldsTooLargeException() throws IOException {
+        instance.parseRequestHeaders(create("Long: " + StringUtils.repeat("a", 256)));
     }
 
     // parseResponseHeaders:
@@ -162,13 +172,13 @@ public class HeaderParserImplTest {
 
     @Test
     public void parseResponseHeaders_withWhitespaceBetweenHeaderFieldNameAndColon_removesWhiteSpace() throws IOException {
-       final Map<String, List<String>> response = instance.parseResponseHeaders(toCallable("Server : " + RESPONSE_SERVER));
+       final Map<String, List<String>> response = instance.parseResponseHeaders(create("Server : " + RESPONSE_SERVER));
        assertHeaderField(response, HeaderFields.Response.SERVER, RESPONSE_SERVER);
     }
 
     @Test
     public void parseResponseHeaders_withoutHeaderFields_returnsOnlyConnectionHeaderField() throws IOException {
-        final Map<String, List<String>> headerFields = instance.parseResponseHeaders(toCallable(""));
+        final Map<String, List<String>> headerFields = instance.parseResponseHeaders(create(""));
         assertEquals(1, headerFields.size());
     }
 
@@ -189,17 +199,22 @@ public class HeaderParserImplTest {
 
     @Test(expected = InvalidHttpHeaderException.class)
     public void parseResponseHeaders_withHeaderFieldWithoutColon_throwsInvalidHttpHeaderException() throws IOException {
-        instance.parseResponseHeaders(toCallable("WithoutColon"));
+        instance.parseResponseHeaders(create("WithoutColon"));
     }
 
     @Test(expected = InvalidHttpHeaderException.class)
     public void parseResponseHeaders_withEmptyHeaderFieldName_throwsInvalidHttpHeaderException() throws IOException {
-        instance.parseResponseHeaders(toCallable(": EmptyFieldName"));
+        instance.parseResponseHeaders(create(": EmptyFieldName"));
     }
 
     @Test(expected = HeaderFieldsTooLargeException.class)
     public void parseResponseHeaders_withTooManyHeaderFields_throwsHeaderFieldsTooLargeException() throws IOException {
-        instance.parseResponseHeaders(callableWithTooManyLines());
+        instance.parseResponseHeaders(createWithTooManyLines());
+    }
+
+    @Test(expected = HeaderFieldsTooLargeException.class)
+    public void parseResponseHeaders_withTooLargeHeaderField_throwsHeaderFieldsTooLargeException() throws IOException {
+        instance.parseResponseHeaders(create("Long: " + StringUtils.repeat("a", 256)));
     }
 
     // Wrong use of API:
@@ -226,24 +241,34 @@ public class HeaderParserImplTest {
 
     // Helper methods:
 
-    private Callable<String, IOException> toCallable(final List<String> lines) {
+    private LineReader create(final List<String> lines) {
 
-        final Iterator<String> iterator = lines.iterator();
+        final StringBuilder concatenatedLines = new StringBuilder();
 
-        return () -> {
+        for (final String line : lines) {
+            concatenatedLines.append(line).append("\r\n");
+        }
 
-            if (iterator.hasNext()) {
-                return iterator.next();
-            } else {
-                return "";
-            }
+        concatenatedLines.append("\r\n");
 
-        };
+        return new LineReader(new ByteArrayInputStream(concatenatedLines.toString().getBytes()));
 
     }
 
-    private Callable<String, IOException> toCallable(final String line) {
-        return toCallable(Collections.singletonList(line));
+    private LineReader create(final String line) {
+        return create(Collections.singletonList(line));
+    }
+
+    private LineReader createWithTooManyLines() {
+
+        final List<String> tooManyLines = new ArrayList<>();
+
+        for (int i = 0; i < 21; i++) {
+            tooManyLines.add("example" + i + ": " + i);
+        }
+
+        return create(tooManyLines);
+
     }
 
     private void assertHeaderField(final Map<String, List<String>> headerFields, final String name,
@@ -256,18 +281,6 @@ public class HeaderParserImplTest {
         for (int index = 0; index < expectedValue.length; index++) {
             assertEquals(expectedValue[index], headerFields.get(name).get(index));
         }
-
-    }
-
-    private Callable<String, IOException> callableWithTooManyLines() {
-
-        final List<String> tooManyLines = new ArrayList<>();
-
-        for (int i = 0; i < 21; i++) {
-            tooManyLines.add("example" + i + ": " + i);
-        }
-
-        return toCallable(tooManyLines);
 
     }
 

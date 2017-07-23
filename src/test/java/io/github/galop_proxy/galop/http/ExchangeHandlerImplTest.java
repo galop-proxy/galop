@@ -12,7 +12,6 @@ import org.junit.Test;
 import java.io.*;
 import java.net.Socket;
 import java.util.concurrent.*;
-import java.util.concurrent.Callable;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;

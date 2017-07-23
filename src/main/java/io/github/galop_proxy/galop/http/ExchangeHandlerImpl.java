@@ -14,7 +14,6 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.util.Locale;
 import java.util.concurrent.*;
-import java.util.concurrent.Callable;
 
 import static io.github.galop_proxy.api.commons.Preconditions.checkNotNull;
 

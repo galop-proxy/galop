@@ -47,12 +47,11 @@ public class UnsupportedRequestsTest {
     }
 
     @Test
-    @Ignore
     public void Requests_with_too_large_header_fields_are_rejected_with_the_status_code_431() throws Exception {
         final ContentResponse response = client
                 .newRequest("http://localhost:8080/")
                 .method(HttpMethod.GET)
-                .header("long", StringUtils.repeat("long", 3000))
+                .header("long", StringUtils.repeat("a", 8196))
                 .send();
         assertEquals(431, response.getStatus());
     }

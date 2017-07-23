@@ -24,30 +24,48 @@ final class HeaderParserImpl implements HeaderParser {
     }
 
     @Override
-    public Map<String, List<String>> parseRequestHeaders(final Callable<String, IOException> nextLine)
-            throws IOException {
-        return parseHeaderFields(nextLine, true);
+    public Map<String, List<String>> parseRequestHeaders(final LineReader lineReader) throws IOException {
+        return parseHeaderFields(lineReader, true);
     }
 
     @Override
-    public Map<String, List<String>> parseResponseHeaders(final Callable<String, IOException> nextLine)
-            throws IOException {
-        return parseHeaderFields(nextLine, false);
+    public Map<String, List<String>> parseResponseHeaders(final LineReader lineReader) throws IOException {
+        return parseHeaderFields(lineReader, false);
     }
 
-    private Map<String, List<String>> parseHeaderFields(final Callable<String, IOException> nextLine, final boolean request)
+    private Map<String, List<String>> parseHeaderFields(final LineReader lineReader, final boolean request)
             throws IOException {
 
         final Map<String, List<String>> headerFields = new HashMap<>();
 
         String line;
 
-        while (!(line = nextLine.call()).isEmpty()) {
+        while (!(line = readHeaderFieldLine(lineReader, request)).isEmpty()) {
             checkHeaderFieldsLimit(headerFields, request);
             parseHeaderField(headerFields, line, request);
         }
 
         return processConnectionHeaderFields(headerFields);
+
+    }
+
+    private String readHeaderFieldLine(final LineReader lineReader, final boolean request) throws IOException {
+
+        final int fieldSizeLimit;
+
+        if (request) {
+            fieldSizeLimit = requestConfiguration.getFieldSizeLimit();
+        } else {
+            fieldSizeLimit = responseConfiguration.getFieldSizeLimit();
+        }
+
+        try {
+            return lineReader.readLine(fieldSizeLimit);
+        } catch (final LineTooLargeException ex) {
+            throw new HeaderFieldsTooLargeException(
+                    "Maximum size of HTTP header field exceeded. "
+                  + "A maximum size of " + fieldSizeLimit + " bytes is allowed.");
+        }
 
     }
 

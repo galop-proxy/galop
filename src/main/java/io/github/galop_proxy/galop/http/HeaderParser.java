@@ -6,8 +6,8 @@ import java.util.Map;
 
 interface HeaderParser {
 
-    Map<String, List<String>> parseRequestHeaders(Callable<String, IOException> nextLine) throws IOException;
+    Map<String, List<String>> parseRequestHeaders(LineReader lineReader) throws IOException;
 
-    Map<String, List<String>> parseResponseHeaders(Callable<String, IOException> nextLine) throws IOException;
+    Map<String, List<String>> parseResponseHeaders(LineReader lineReader) throws IOException;
 
 }
