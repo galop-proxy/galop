@@ -40,16 +40,16 @@ final class HeaderParserImpl implements HeaderParser {
 
         String line;
 
-        while (!(line = readHeaderFieldLine(lineReader, request)).isEmpty()) {
-            checkHeaderFieldsLimit(headerFields, request);
-            parseHeaderField(headerFields, line, request);
+        while (!(line = readFieldLine(lineReader, request)).isEmpty()) {
+            checkFieldsLimit(headerFields, request);
+            parseField(headerFields, line, request);
         }
 
-        return processConnectionHeaderFields(headerFields);
+        return processConnectionFields(headerFields);
 
     }
 
-    private String readHeaderFieldLine(final LineReader lineReader, final boolean request) throws IOException {
+    private String readFieldLine(final LineReader lineReader, final boolean request) throws IOException {
 
         final int fieldSizeLimit;
 
@@ -69,7 +69,7 @@ final class HeaderParserImpl implements HeaderParser {
 
     }
 
-    private void checkHeaderFieldsLimit(final Map<String, List<String>> headerFields, final boolean request)
+    private void checkFieldsLimit(final Map<String, List<String>> headerFields, final boolean request)
             throws HeaderFieldsTooLargeException {
 
         final int fieldsLimit;
@@ -88,19 +88,19 @@ final class HeaderParserImpl implements HeaderParser {
 
     }
 
-    private void parseHeaderField(final Map<String, List<String>> headerFields, final String line, final boolean request)
+    private void parseField(final Map<String, List<String>> headerFields, final String line, final boolean request)
             throws InvalidHttpHeaderException {
 
-        final int colonIndex = splitHeaderFieldLine(line);
+        final int colonIndex = splitFieldLine(line);
 
-        final String name = parseHeaderFieldName(line, colonIndex, request);
-        final String value = parseHeaderFieldValue(line, colonIndex);
+        final String name = parseFieldName(line, colonIndex, request);
+        final String value = parseFieldValue(line, colonIndex);
 
-        addHeaderFieldToMessage(headerFields, name, value);
+        addFieldToMessage(headerFields, name, value);
 
     }
 
-    private int splitHeaderFieldLine(final String line) throws InvalidHttpHeaderException {
+    private int splitFieldLine(final String line) throws InvalidHttpHeaderException {
 
         final int colonIndex = line.indexOf(':');
 
@@ -112,7 +112,7 @@ final class HeaderParserImpl implements HeaderParser {
 
     }
 
-    private String parseHeaderFieldName(final String line, final int colonIndex, final boolean request)
+    private String parseFieldName(final String line, final int colonIndex, final boolean request)
             throws InvalidHttpHeaderException {
 
         String name = line.substring(0, colonIndex).toLowerCase(Locale.ENGLISH);
@@ -136,7 +136,7 @@ final class HeaderParserImpl implements HeaderParser {
 
     }
 
-    private String parseHeaderFieldValue(final String line, final int colonIndex) {
+    private String parseFieldValue(final String line, final int colonIndex) {
 
         final String value;
 
@@ -150,7 +150,7 @@ final class HeaderParserImpl implements HeaderParser {
 
     }
 
-    private void addHeaderFieldToMessage(final Map<String, List<String>> headerFields, final String name, final String value) {
+    private void addFieldToMessage(final Map<String, List<String>> headerFields, final String name, final String value) {
 
         if (!headerFields.containsKey(name)) {
             final List<String> values = new ArrayList<>();
@@ -162,18 +162,19 @@ final class HeaderParserImpl implements HeaderParser {
 
     }
 
-    private Map<String, List<String>> processConnectionHeaderFields(final Map<String, List<String>> headerFields) {
+    private Map<String, List<String>> processConnectionFields(final Map<String, List<String>> headerFields) {
 
         if (headerFields.containsKey(HeaderFields.Request.CONNECTION)) {
-            final List<String> values = parseConnectionHeaderFields(headerFields);
-            removeConnectionHeaderFields(headerFields, values);
+            headerFields.keySet().removeAll(parseConnectionFieldValues(headerFields));
         }
 
-        return addConnectionHeaderField(headerFields);
+        addConnectionField(headerFields);
+
+        return headerFields;
 
     }
 
-    private List<String> parseConnectionHeaderFields(final Map<String, List<String>> headerFields) {
+    private List<String> parseConnectionFieldValues(final Map<String, List<String>> headerFields) {
 
         final List<String> values = new ArrayList<>();
 
@@ -189,22 +190,10 @@ final class HeaderParserImpl implements HeaderParser {
 
     }
 
-    private void removeConnectionHeaderFields(final Map<String, List<String>> headerFields, final List<String> values) {
-
-        for (final String value : values) {
-            headerFields.remove(value);
-        }
-
-    }
-
-    private Map<String, List<String>> addConnectionHeaderField(final Map<String, List<String>> headerFields) {
-
+    private void addConnectionField(final Map<String, List<String>> headerFields) {
         final List<String> connectionHeader = new ArrayList<>();
         connectionHeader.add("close");
         headerFields.put(HeaderFields.Request.CONNECTION, connectionHeader);
-
-        return headerFields;
-
     }
 
 }
