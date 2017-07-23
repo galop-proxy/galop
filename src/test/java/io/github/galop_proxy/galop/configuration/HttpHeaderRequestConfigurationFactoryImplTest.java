@@ -6,8 +6,7 @@ import org.junit.Test;
 import java.util.HashMap;
 import java.util.Map;
 
-import static io.github.galop_proxy.galop.configuration.ConfigurationPropertyKeys.HTTP_HEADER_REQUEST_MAX_SIZE;
-import static io.github.galop_proxy.galop.configuration.ConfigurationPropertyKeys.HTTP_HEADER_REQUEST_RECEIVE_TIMEOUT;
+import static io.github.galop_proxy.galop.configuration.ConfigurationPropertyKeys.*;
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -24,14 +23,13 @@ public class HttpHeaderRequestConfigurationFactoryImplTest {
         factory = new HttpHeaderRequestConfigurationFactoryImpl();
         properties = new HashMap<>();
         properties.put(HTTP_HEADER_REQUEST_RECEIVE_TIMEOUT, "45000");
-        properties.put(HTTP_HEADER_REQUEST_MAX_SIZE, "2048");
+        properties.put(HTTP_HEADER_REQUEST_REQUEST_LINE_SIZE_LIMIT, "4096");
+        properties.put(HTTP_HEADER_REQUEST_FIELDS_LIMIT, "64");
         configuration = factory.parse(properties);
     }
 
-    // Valid configuration:
-
     @Test
-    public void parse_withValidReceiveTimeout_returnsConfiguration() {
+    public void parse_withValidReceiveTimeout_returnsConfiguredValue() {
         assertEquals(45000, configuration.getReceiveTimeout());
     }
 
@@ -43,45 +41,28 @@ public class HttpHeaderRequestConfigurationFactoryImplTest {
     }
 
     @Test
-    public void parse_withValidMaxSize_returnsConfiguration() {
-        assertEquals(2048, configuration.getMaxSize());
+    public void parse_withValidRequestLineSizeLimit_returnsConfiguredValue() {
+        assertEquals(4096, configuration.getRequestLineSizeLimit());
     }
 
     @Test
-    public void parse_withoutMaxSize_returnsDefaultValue() throws InvalidConfigurationException {
-        properties.remove(HTTP_HEADER_REQUEST_MAX_SIZE);
+    public void parse_withoutRequestLineSizeLimit_returnsDefaultValue() throws InvalidConfigurationException {
+        properties.remove(HTTP_HEADER_REQUEST_REQUEST_LINE_SIZE_LIMIT);
         configuration = factory.parse(properties);
-        assertEquals(ConfigurationDefaults.HTTP_HEADER_REQUEST_MAX_SIZE, configuration.getMaxSize());
+        assertEquals(ConfigurationDefaults.HTTP_HEADER_REQUEST_REQUEST_LINE_SIZE_LIMIT, configuration.getRequestLineSizeLimit());
     }
 
-    // Invalid configuration:
-
-    @Test(expected = InvalidConfigurationException.class)
-    public void parse_withInvalidReceiveTimeout_throwsInvalidConfigurationException() throws InvalidConfigurationException {
-        properties.put(HTTP_HEADER_REQUEST_RECEIVE_TIMEOUT, "invalid");
-        factory.parse(properties);
+    @Test
+    public void parse_withValidFieldsLimit_returnsConfiguredValue() {
+        assertEquals(64, configuration.getFieldsLimit());
     }
 
-    @Test(expected = InvalidConfigurationException.class)
-    public void parse_withNegativeReceiveTimeout_throwsInvalidConfigurationException() throws InvalidConfigurationException {
-        properties.put(HTTP_HEADER_REQUEST_RECEIVE_TIMEOUT, "-1");
-        factory.parse(properties);
+    @Test
+    public void parse_withoutFieldsLimit_returnsDefaultValue() throws InvalidConfigurationException {
+        properties.remove(HTTP_HEADER_REQUEST_FIELDS_LIMIT);
+        configuration = factory.parse(properties);
+        assertEquals(ConfigurationDefaults.HTTP_HEADER_REQUEST_FIELDS_LIMIT, configuration.getFieldsLimit());
     }
-
-    @Test(expected = InvalidConfigurationException.class)
-    public void parse_withInvalidMaxSize_throwsInvalidConfigurationException() throws InvalidConfigurationException {
-        properties.put(HTTP_HEADER_REQUEST_MAX_SIZE, "invalid");
-        factory.parse(properties);
-    }
-
-    @Test(expected = InvalidConfigurationException.class)
-    public void parse_withMaxSizeSmallerThan255_throwsInvalidConfigurationException() throws InvalidConfigurationException {
-        properties.put(HTTP_HEADER_REQUEST_MAX_SIZE, "254");
-        factory.parse(properties);
-    }
-
-    // Other:
-
     @Test(expected = NullPointerException.class)
     public void parse_withoutProperties_throwsNullPointerException() throws InvalidConfigurationException {
         factory.parse(null);

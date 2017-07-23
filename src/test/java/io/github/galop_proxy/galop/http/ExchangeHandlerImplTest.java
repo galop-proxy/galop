@@ -12,7 +12,6 @@ import org.junit.Test;
 import java.io.*;
 import java.net.Socket;
 import java.util.concurrent.*;
-import java.util.concurrent.Callable;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -152,14 +151,28 @@ public class ExchangeHandlerImplTest {
 
     }
 
-    @Test(expected = ByteLimitExceededException.class)
-    public void handleRequest_withTooLongRequestHeader_sendsStatusCode431ToClient() throws Exception {
+    @Test(expected = LineTooLargeException.class)
+    public void handleRequest_withTooLargeRequestLine_sendsStatusCode414ToClient() throws Exception {
 
-        doThrow(ByteLimitExceededException.class).when(messageParser).parseRequest(same(sourceInputStream));
+        doThrow(LineTooLargeException.class).when(messageParser).parseRequest(same(sourceInputStream));
 
         try {
             handler.handleRequest(source, target);
-        } catch (final ByteLimitExceededException ex) {
+        } catch (final LineTooLargeException ex) {
+            assertHttpStatusCode(StatusCode.URI_TOO_LONG);
+            throw ex;
+        }
+
+    }
+
+    @Test(expected = HeaderFieldsTooLargeException.class)
+    public void handleRequest_withTooManyHeaderFields_sendsStatusCode431ToClient() throws Exception {
+
+        doThrow(HeaderFieldsTooLargeException.class).when(messageParser).parseRequest(same(sourceInputStream));
+
+        try {
+            handler.handleRequest(source, target);
+        } catch (final HeaderFieldsTooLargeException ex) {
             assertHttpStatusCode(StatusCode.REQUEST_HEADER_FIELDS_TOO_LARGE);
             throw ex;
         }

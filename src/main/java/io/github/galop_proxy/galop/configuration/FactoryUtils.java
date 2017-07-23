@@ -6,6 +6,12 @@ import java.util.Map;
 
 final class FactoryUtils {
 
+    private static final int SIZE_LIMIT_MIN = 64;
+    private static final int SIZE_LIMIT_MAX = 65536;
+
+    private static final int FIELDS_LIMIT_MIN = 1;
+    private static final int FIELDS_LIMIT_MAX = 65536;
+
     static PortNumber parsePortNumber(final Map<String, String> properties, final String propertyKey)
             throws InvalidConfigurationException {
 
@@ -49,26 +55,37 @@ final class FactoryUtils {
 
     }
 
-    static int parseMaxSize(final Map<String, String> properties, final String propertyKey, final int defaultValue)
+    static int parseSizeLimit(final Map<String, String> properties, final String propertyKey, final int defaultValue)
+            throws InvalidConfigurationException {
+        return parseRange(properties, propertyKey, defaultValue, SIZE_LIMIT_MIN, SIZE_LIMIT_MAX);
+    }
+
+    static int parseFieldsLimit(final Map<String, String> properties, final String propertyKey, final int defaultValue)
+            throws InvalidConfigurationException {
+        return parseRange(properties, propertyKey, defaultValue, FIELDS_LIMIT_MIN, FIELDS_LIMIT_MAX);
+    }
+
+    private static int parseRange(final Map<String, String> properties, final String propertyKey, final int defaultValue,
+                                  final int minValue, final int maxValue)
             throws InvalidConfigurationException {
 
-        final String maxSizeAsString = properties.getOrDefault(propertyKey, Integer.toString(defaultValue));
+        final String valueAsString = properties.getOrDefault(propertyKey, Integer.toString(defaultValue));
 
-        final int maxSize;
+        final int value;
 
         try {
-            maxSize = Integer.parseInt(maxSizeAsString);
+            value = Integer.parseInt(valueAsString);
         } catch (final NumberFormatException ex) {
             throw new InvalidConfigurationException("Property " + propertyKey + " is not a valid number: "
-                    + maxSizeAsString);
+                    + valueAsString);
         }
 
-        if (maxSize < 255) {
-            throw new InvalidConfigurationException("Property " + propertyKey + " must be at least 255: "
-                    + maxSizeAsString);
+        if (value < minValue || value > maxValue) {
+            throw new InvalidConfigurationException("Property " + propertyKey + " must be in range "
+                    + "[" + minValue + ".." + maxValue + "]: " + value);
         }
 
-        return maxSize;
+        return value;
 
     }
 

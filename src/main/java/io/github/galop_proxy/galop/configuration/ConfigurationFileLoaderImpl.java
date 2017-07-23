@@ -34,21 +34,23 @@ final class ConfigurationFileLoaderImpl implements ConfigurationFileLoader {
         LOGGER.info("Loading configuration file: " + path.toAbsolutePath());
 
         try (final FileInputStream fileInputStream = new FileInputStream(path.toFile())) {
-
-            final Properties properties = new Properties();
-            properties.load(fileInputStream);
-
-            final Configuration configuration = configurationFactory.parse(convertToMap(properties));
-            logConfiguration(configuration);
-            return configuration;
-
-        } catch (final FileNotFoundException ex) {
-            LOGGER.error("Could not find configuration file: " + path.toAbsolutePath());
-            throw ex;
+            return parseConfiguration(fileInputStream);
         } catch (final IOException | InvalidConfigurationException | RuntimeException ex) {
-            LOGGER.error("Could not parse configuration file: " + ex.getMessage());
+            logException(path, ex);
             throw ex;
         }
+
+    }
+
+    private Configuration parseConfiguration(final FileInputStream fileInputStream)
+            throws IOException, InvalidConfigurationException {
+
+        final Properties properties = new Properties();
+        properties.load(fileInputStream);
+
+        final Configuration configuration = configurationFactory.parse(convertToMap(properties));
+        logConfiguration(configuration);
+        return configuration;
 
     }
 
@@ -94,16 +96,30 @@ final class ConfigurationFileLoaderImpl implements ConfigurationFileLoader {
 
     private void logHttpHeaderRequestConfiguration(final HttpHeaderRequestConfiguration configuration) {
         log(HTTP_HEADER_REQUEST_RECEIVE_TIMEOUT, configuration.getReceiveTimeout());
-        log(HTTP_HEADER_REQUEST_MAX_SIZE, configuration.getMaxSize());
+        log(HTTP_HEADER_REQUEST_REQUEST_LINE_SIZE_LIMIT, configuration.getRequestLineSizeLimit());
+        log(HTTP_HEADER_REQUEST_FIELDS_LIMIT, configuration.getFieldsLimit());
+        log(HTTP_HEADER_REQUEST_FIELD_SIZE_LIMIT, configuration.getFieldSizeLimit());
     }
 
     private void logHttpHeaderResponseConfiguration(final HttpHeaderResponseConfiguration configuration) {
         log(HTTP_HEADER_RESPONSE_RECEIVE_TIMEOUT, configuration.getReceiveTimeout());
-        log(HTTP_HEADER_RESPONSE_MAX_SIZE, configuration.getMaxSize());
+        log(HTTP_HEADER_RESPONSE_STATUS_LINE_SIZE_LIMIT, configuration.getStatusLineSizeLimit());
+        log(HTTP_HEADER_RESPONSE_FIELDS_LIMIT, configuration.getFieldsLimit());
+        log(HTTP_HEADER_RESPONSE_FIELD_SIZE_LIMIT, configuration.getFieldSizeLimit());
     }
 
     private void log(final String key, final Object value) {
         LOGGER.info(key + " = " + value);
+    }
+
+    private void logException(final Path path, final Exception ex) {
+
+        if (ex instanceof FileNotFoundException) {
+            LOGGER.error("Could not find configuration file: " + path.toAbsolutePath());
+        } else {
+            LOGGER.error("Could not parse configuration file: " + ex.getMessage());
+        }
+
     }
 
 }

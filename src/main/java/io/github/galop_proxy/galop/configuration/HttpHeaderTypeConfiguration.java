@@ -4,6 +4,8 @@ interface HttpHeaderTypeConfiguration {
 
     long getReceiveTimeout();
 
-    int getMaxSize();
+    int getFieldsLimit();
+
+    int getFieldSizeLimit();
 
 }

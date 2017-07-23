@@ -14,7 +14,6 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.util.Locale;
 import java.util.concurrent.*;
-import java.util.concurrent.Callable;
 
 import static io.github.galop_proxy.api.commons.Preconditions.checkNotNull;
 
@@ -71,7 +70,9 @@ final class ExchangeHandlerImpl implements ExchangeHandler {
             sendHttpStatusToClient(StatusCode.LENGTH_REQUIRED, source);
         } else if (ex instanceof UnsupportedHttpVersionException) {
             sendHttpStatusToClient(StatusCode.HTTP_VERSION_NOT_SUPPORTED, source);
-        } else if (ex instanceof ByteLimitExceededException) {
+        } else if (ex instanceof LineTooLargeException) {
+            sendHttpStatusToClient(StatusCode.URI_TOO_LONG, source);
+        } else if (ex instanceof HeaderFieldsTooLargeException) {
             sendHttpStatusToClient(StatusCode.REQUEST_HEADER_FIELDS_TOO_LARGE, source);
         } else if (ex instanceof InterruptedException) {
             sendHttpStatusToClient(StatusCode.SERVICE_UNAVAILABLE, source);

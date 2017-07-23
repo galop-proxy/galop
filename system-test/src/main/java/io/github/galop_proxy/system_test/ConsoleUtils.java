@@ -18,6 +18,10 @@ final class ConsoleUtils {
         print((char) 27 + "[32m" + message + (char) 27 + "[0m");
     }
 
+    static void printlnWarning(final String message) {
+        printWarning(message + "\n");
+    }
+
     static void printWarning(final String message) {
         print((char) 27 + "[33m" + message + (char) 27 + "[0m");
     }
