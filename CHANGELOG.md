@@ -1,6 +1,26 @@
 # Changelog
 
 
+## [Unreleased]
+
+### Added
+
+- The following new properties can be used to specify the maximum allowed size
+  of the individual parts of an HTTP request or response header.
+    - `http.header.request.request_line_size_limit`
+    - `http.header.response.status_line_size_limit`
+    - `http.header.request.fields_limit`
+    - `http.header.response.fields_limit`
+    - `http.header.request.field_size_limit`
+    - `http.header.response.field_size_limit`
+
+### Changed
+
+- The properties `http.header.request.max_size` and `http.header.response.max_size`
+  have been removed. Using the newly introduced properties, the allowed size of
+  an HTTP header can be specified more precisely.
+
+
 ## 0.6.1 - 2017-07-15
 
 ### Changed
@@ -85,7 +105,7 @@
 - The requested maximum number of pending connections on the proxy socket can be
   configured.
 - The local address the proxy socket will bind to can be configured.
-  
+
 ### Changed
 
 - The maximum allowed size of an HTTP header can be configured separately for
