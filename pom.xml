@@ -6,7 +6,7 @@
 
     <groupId>io.github.galop_proxy</groupId>
     <artifactId>galop</artifactId>
-    <version>0.6.1</version>
+    <version>0.7.0</version>
     <packaging>jar</packaging>
 
     <name>GALOP</name>
