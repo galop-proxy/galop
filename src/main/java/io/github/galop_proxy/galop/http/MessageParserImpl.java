@@ -39,14 +39,10 @@ final class MessageParserImpl implements MessageParser {
 
         checkNotNull(inputStream, "inputStream");
 
-        final int maxHttpHeaderSize = getMaxHttpHeaderSize(true);
-        final byte[] buffer = new byte[maxHttpHeaderSize];
-        final LimitedInputStream limitedInputStream = new LimitedInputStream(inputStream, maxHttpHeaderSize);
-
         final LineReader lineReader = new LineReader(inputStream);
 
         final Request request = startLineParser.parseRequestLine(lineReader);
-        parseHeaderFields(request, limitedInputStream, buffer, true);
+        parseHeaderFields(request, inputStream, true);
         return request;
 
     }
@@ -58,28 +54,15 @@ final class MessageParserImpl implements MessageParser {
 
         checkNotNull(inputStream, "inputStream");
 
-        final int maxHttpHeaderSize = getMaxHttpHeaderSize(false);
-        final byte[] buffer = new byte[maxHttpHeaderSize];
-        final LimitedInputStream limitedInputStream = new LimitedInputStream(inputStream, maxHttpHeaderSize);
-
         final LineReader lineReader = new LineReader(inputStream);
 
         final Response response = startLineParser.parseStatusLine(lineReader);
-        parseHeaderFields(response, limitedInputStream, buffer, false);
+        parseHeaderFields(response, inputStream, false);
         return response;
 
     }
+
     // Common methods:
-
-    private int getMaxHttpHeaderSize(final boolean request) {
-
-        if (request) {
-            return requestConfiguration.getMaxSize();
-        } else {
-            return responseConfiguration.getMaxSize();
-        }
-
-    }
 
     private String getNextLine(final InputStream inputStream, final byte[] buffer) throws IOException {
 
@@ -116,9 +99,10 @@ final class MessageParserImpl implements MessageParser {
 
     }
 
-    private void parseHeaderFields(final Message message, final InputStream inputStream, final byte[] buffer,
-                                   final boolean request) throws IOException {
+    private void parseHeaderFields(final Message message, final InputStream inputStream, final boolean request)
+            throws IOException {
 
+        final byte[] buffer = new byte[8192];
         final Callable<String, IOException> nextLine = () -> getNextLine(inputStream, buffer);
 
         final Map<String, List<String>> headerFields;

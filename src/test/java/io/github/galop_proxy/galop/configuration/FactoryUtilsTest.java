@@ -69,31 +69,6 @@ public class FactoryUtilsTest {
         parseTimeout(properties, "property", 456);
     }
 
-    // parseMaxSize:
-
-    @Test
-    public void parseMaxSize_withValidMaxSize_returnsMaxSize() throws InvalidConfigurationException {
-        properties.put("property", "255");
-        assertEquals(255, parseMaxSize(properties, "property", 2048));
-    }
-
-    @Test
-    public void parseMaxSize_withoutMaxSize_returnsDefaultValue() throws InvalidConfigurationException {
-        assertEquals(2048, parseMaxSize(properties, "property", 2048));
-    }
-
-    @Test(expected = InvalidConfigurationException.class)
-    public void parseMaxSize_withInvalidInteger_throwsInvalidConfigurationException() throws InvalidConfigurationException {
-        properties.put("property", "invalid");
-        parseMaxSize(properties, "property", 2048);
-    }
-
-    @Test(expected = InvalidConfigurationException.class)
-    public void parseMaxSize_withTooLowMaxSize_throwsInvalidConfigurationException() throws InvalidConfigurationException {
-        properties.put("property", "254");
-        parseMaxSize(properties, "property", 2048);
-    }
-
     // parseSizeLimit:
 
     @Test

@@ -5,9 +5,8 @@ final class HttpHeaderResponseConfigurationImpl extends AbstractHttpHeaderTypeCo
 
     private final int statusLineSizeLimit;
 
-    HttpHeaderResponseConfigurationImpl(final long receiveTimeout, final int statusLineSizeLimit, final int fieldsLimit,
-                                        final int maxSize) {
-        super(receiveTimeout, fieldsLimit, maxSize);
+    HttpHeaderResponseConfigurationImpl(final long receiveTimeout, final int statusLineSizeLimit, final int fieldsLimit) {
+        super(receiveTimeout, fieldsLimit);
         this.statusLineSizeLimit = statusLineSizeLimit;
     }
 

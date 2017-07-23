@@ -44,20 +44,33 @@ final class ExecutionListener extends RunListener {
     }
 
     private void testRunSuccessful(final Result result) {
-        print("Result:");
+
         printlnSuccessful("All " + result.getRunCount()
                 + " test cases were successfully executed in "
                 + formatTime(result.getRunTime()) + ".");
+
+        printIgnoredTestCases(result);
+
     }
 
     private void testRunFailed(final Result result) {
-
-        print("Result:");
 
         if (result.getFailureCount() > 1) {
             printlnError(result.getFailureCount() + " test cases failed.");
         } else {
             printlnError("1 test case failed.");
+        }
+
+        printIgnoredTestCases(result);
+
+    }
+
+    private void printIgnoredTestCases(final Result result) {
+
+        if (result.getIgnoreCount() == 1) {
+            printlnWarning("1 test case was ignored.");
+        } else if (result.getIgnoreCount() > 1) {
+            printlnWarning(result.getIgnoreCount() + " test cases were ignored.");
         }
 
     }

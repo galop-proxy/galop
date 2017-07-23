@@ -4,7 +4,6 @@ import java.util.Map;
 
 import static io.github.galop_proxy.api.commons.Preconditions.checkNotNull;
 import static io.github.galop_proxy.galop.configuration.ConfigurationPropertyKeys.*;
-import static io.github.galop_proxy.galop.configuration.FactoryUtils.parseMaxSize;
 import static io.github.galop_proxy.galop.configuration.FactoryUtils.parseSizeLimit;
 import static io.github.galop_proxy.galop.configuration.FactoryUtils.parseTimeout;
 
@@ -18,9 +17,8 @@ final class HttpHeaderResponseConfigurationFactoryImpl implements HttpHeaderResp
         final long receiveTimeout = parseResponseReceiveTimeout(properties);
         final int statusLineSizeLimit = parseStatusLineSizeLimit(properties);
         final int fieldsLimit = parseFieldsLimit(properties);
-        final int maxSize = parseResponseMaxSize(properties);
 
-        return new HttpHeaderResponseConfigurationImpl(receiveTimeout, statusLineSizeLimit, fieldsLimit, maxSize);
+        return new HttpHeaderResponseConfigurationImpl(receiveTimeout, statusLineSizeLimit, fieldsLimit);
 
     }
 
@@ -37,11 +35,6 @@ final class HttpHeaderResponseConfigurationFactoryImpl implements HttpHeaderResp
     private int parseFieldsLimit(final Map<String, String> properties) throws InvalidConfigurationException {
         return FactoryUtils.parseFieldsLimit(properties, HTTP_HEADER_RESPONSE_FIELDS_LIMIT,
                 ConfigurationDefaults.HTTP_HEADER_RESPONSE_FIELDS_LIMIT);
-    }
-
-    private int parseResponseMaxSize(final Map<String, String> properties) throws InvalidConfigurationException {
-        return parseMaxSize(properties, HTTP_HEADER_RESPONSE_MAX_SIZE,
-                ConfigurationDefaults.HTTP_HEADER_RESPONSE_MAX_SIZE);
     }
 
 }

@@ -83,8 +83,6 @@ public class MessageParserImplTest {
         when(responseConfiguration.getStatusLineSizeLimit()).thenReturn(64);
         when(requestConfiguration.getFieldsLimit()).thenReturn(100);
         when(responseConfiguration.getFieldsLimit()).thenReturn(100);
-        when(requestConfiguration.getMaxSize()).thenReturn(MAX_HTTP_HEADER_SIZE);
-        when(responseConfiguration.getMaxSize()).thenReturn(MAX_HTTP_HEADER_SIZE);
 
         startLineParser = new StartLineParserImpl(requestConfiguration, responseConfiguration);
         headerParser = new HeaderParserImpl(requestConfiguration, responseConfiguration);
@@ -147,15 +145,6 @@ public class MessageParserImplTest {
                 REQUEST_X_FORWARDED_FOR_1_EXAMPLE, REQUEST_X_FORWARDED_FOR_2_EXAMPLE);
         assertHeaderField(request, HeaderFields.Request.COOKIE, "");
         assertHeaderField(request, HeaderFields.Request.CONNECTION, "close");
-    }
-
-    @Test(expected = ByteLimitExceededException.class)
-    public void parseRequest_withTooLongHeader_throwsByteLimitExceededException() throws IOException {
-        final String request =
-                "GET /example HTTP/1.1" + NEW_LINE +
-                        "Very long: " + Strings.repeat("a", MAX_HTTP_HEADER_SIZE) + NEW_LINE +
-                        NEW_LINE;
-        instance.parseRequest(toInputStream(request));
     }
 
     @Test(expected = InvalidHttpHeaderException.class)
@@ -248,15 +237,6 @@ public class MessageParserImplTest {
     @Test
     public void parseResponse_afterParsingHeader_doesNotReadMessageBody() throws IOException {
         assertEquals(RESPONSE_CONTENT_EXAMPLE, IOUtils.toString(responseInputStream, HEADER_CHARSET));
-    }
-
-    @Test(expected = ByteLimitExceededException.class)
-    public void parseResponse_withTooLongHeader_throwsByteLimitExceededException() throws IOException {
-        final String response =
-                "HTTP/1.1 200 OK" + NEW_LINE +
-                "Very long: " + Strings.repeat("a", MAX_HTTP_HEADER_SIZE) + NEW_LINE +
-                 NEW_LINE;
-        instance.parseResponse(toInputStream(response));
     }
 
     @Test(expected = InvalidHttpHeaderException.class)

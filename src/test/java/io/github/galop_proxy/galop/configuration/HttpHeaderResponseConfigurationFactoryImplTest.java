@@ -25,7 +25,6 @@ public class HttpHeaderResponseConfigurationFactoryImplTest {
         properties.put(HTTP_HEADER_RESPONSE_RECEIVE_TIMEOUT, "120000");
         properties.put(HTTP_HEADER_RESPONSE_STATUS_LINE_SIZE_LIMIT, "4096");
         properties.put(HTTP_HEADER_RESPONSE_FIELDS_LIMIT, "64");
-        properties.put(HTTP_HEADER_RESPONSE_MAX_SIZE, "4084");
         configuration = factory.parse(properties);
     }
 
@@ -63,18 +62,6 @@ public class HttpHeaderResponseConfigurationFactoryImplTest {
         properties.remove(HTTP_HEADER_RESPONSE_FIELDS_LIMIT);
         configuration = factory.parse(properties);
         assertEquals(ConfigurationDefaults.HTTP_HEADER_REQUEST_FIELDS_LIMIT, configuration.getFieldsLimit());
-    }
-
-    @Test
-    public void parse_withValidMaxSize_returnsConfiguredValue() {
-        assertEquals(4084, configuration.getMaxSize());
-    }
-
-    @Test
-    public void parse_withoutMaxSize_returnsDefaultValue() throws InvalidConfigurationException {
-        properties.remove(HTTP_HEADER_RESPONSE_MAX_SIZE);
-        configuration = factory.parse(properties);
-        assertEquals(ConfigurationDefaults.HTTP_HEADER_RESPONSE_MAX_SIZE, configuration.getMaxSize());
     }
 
     @Test(expected = NullPointerException.class)

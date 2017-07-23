@@ -166,20 +166,6 @@ public class ExchangeHandlerImplTest {
 
     }
 
-    @Test(expected = ByteLimitExceededException.class)
-    public void handleRequest_withTooLongRequestHeader_sendsStatusCode431ToClient() throws Exception {
-
-        doThrow(ByteLimitExceededException.class).when(messageParser).parseRequest(same(sourceInputStream));
-
-        try {
-            handler.handleRequest(source, target);
-        } catch (final ByteLimitExceededException ex) {
-            assertHttpStatusCode(StatusCode.REQUEST_HEADER_FIELDS_TOO_LARGE);
-            throw ex;
-        }
-
-    }
-
     @Test(expected = HeaderFieldsTooLargeException.class)
     public void handleRequest_withTooManyHeaderFields_sendsStatusCode431ToClient() throws Exception {
 

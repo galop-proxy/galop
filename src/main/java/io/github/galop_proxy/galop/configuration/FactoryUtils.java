@@ -55,28 +55,6 @@ final class FactoryUtils {
 
     }
 
-    static int parseMaxSize(final Map<String, String> properties, final String propertyKey, final int defaultValue)
-            throws InvalidConfigurationException {
-
-        final String maxSizeAsString = properties.getOrDefault(propertyKey, Integer.toString(defaultValue));
-
-        final int maxSize;
-
-        try {
-            maxSize = Integer.parseInt(maxSizeAsString);
-        } catch (final NumberFormatException ex) {
-            throw new InvalidConfigurationException("Property " + propertyKey + " is not a valid number: "
-                    + maxSizeAsString);
-        }
-
-        if (maxSize < 255) {
-            throw new InvalidConfigurationException("Property " + propertyKey + " must be at least 255: " + maxSize);
-        }
-
-        return maxSize;
-
-    }
-
     static int parseSizeLimit(final Map<String, String> properties, final String propertyKey, final int defaultValue)
             throws InvalidConfigurationException {
         return parseRange(properties, propertyKey, defaultValue, SIZE_LIMIT_MIN, SIZE_LIMIT_MAX);

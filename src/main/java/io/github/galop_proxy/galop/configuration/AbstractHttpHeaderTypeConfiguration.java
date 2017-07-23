@@ -4,12 +4,10 @@ abstract class AbstractHttpHeaderTypeConfiguration implements HttpHeaderTypeConf
 
     private final long receiveTimeout;
     private final int fieldsLimit;
-    private final int maxSize;
 
-    AbstractHttpHeaderTypeConfiguration(final long receiveTimeout, final int fieldsLimit, final int maxSize) {
+    AbstractHttpHeaderTypeConfiguration(final long receiveTimeout, final int fieldsLimit) {
         this.receiveTimeout = receiveTimeout;
         this.fieldsLimit = fieldsLimit;
-        this.maxSize = maxSize;
     }
 
     @Override
@@ -20,11 +18,6 @@ abstract class AbstractHttpHeaderTypeConfiguration implements HttpHeaderTypeConf
     @Override
     public int getFieldsLimit() {
         return fieldsLimit;
-    }
-
-    @Override
-    public int getMaxSize() {
-        return maxSize;
     }
 
 }
