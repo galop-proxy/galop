@@ -17,8 +17,9 @@ final class HttpHeaderRequestConfigurationFactoryImpl implements HttpHeaderReque
         final long receiveTimeout = parseReceiveTimeout(properties);
         final int requestLineSizeLimit = parseRequestLineSizeLimit(properties);
         final int fieldsLimit = parseFieldsLimit(properties);
+        final int fieldSizeLimit = parseFieldSizeLimit(properties);
 
-        return new HttpHeaderRequestConfigurationImpl(receiveTimeout, requestLineSizeLimit, fieldsLimit);
+        return new HttpHeaderRequestConfigurationImpl(receiveTimeout, requestLineSizeLimit, fieldsLimit, fieldSizeLimit);
 
     }
 
@@ -35,6 +36,11 @@ final class HttpHeaderRequestConfigurationFactoryImpl implements HttpHeaderReque
     private int parseFieldsLimit(final Map<String, String> properties) throws InvalidConfigurationException {
         return FactoryUtils.parseFieldsLimit(properties, HTTP_HEADER_REQUEST_FIELDS_LIMIT,
                 ConfigurationDefaults.HTTP_HEADER_REQUEST_FIELDS_LIMIT);
+    }
+
+    private int parseFieldSizeLimit(final Map<String, String> properties) throws InvalidConfigurationException {
+        return parseSizeLimit(properties, HTTP_HEADER_REQUEST_FIELD_SIZE_LIMIT,
+                ConfigurationDefaults.HTTP_HEADER_REQUEST_FIELD_SIZE_LIMIT);
     }
 
 }

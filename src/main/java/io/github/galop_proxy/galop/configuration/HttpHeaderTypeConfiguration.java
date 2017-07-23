@@ -6,4 +6,6 @@ interface HttpHeaderTypeConfiguration {
 
     int getFieldsLimit();
 
+    int getFieldSizeLimit();
+
 }

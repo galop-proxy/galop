@@ -5,8 +5,9 @@ final class HttpHeaderRequestConfigurationImpl extends AbstractHttpHeaderTypeCon
 
     private final int requestLineSizeLimit;
 
-    HttpHeaderRequestConfigurationImpl(final long receiveTimeout, final int requestLineSizeLimit, final int fieldsLimit) {
-        super(receiveTimeout, fieldsLimit);
+    HttpHeaderRequestConfigurationImpl(final long receiveTimeout, final int requestLineSizeLimit, final int fieldsLimit,
+                                       final int fieldSizeLimit) {
+        super(receiveTimeout, fieldsLimit, fieldSizeLimit);
         this.requestLineSizeLimit = requestLineSizeLimit;
     }
 

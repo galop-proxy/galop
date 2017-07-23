@@ -15,10 +15,12 @@ final class ConfigurationDefaults {
     static final long HTTP_HEADER_REQUEST_RECEIVE_TIMEOUT = 60000;
     static final int HTTP_HEADER_REQUEST_REQUEST_LINE_SIZE_LIMIT = 8192;
     static final int HTTP_HEADER_REQUEST_FIELDS_LIMIT = 100;
+    static final int HTTP_HEADER_REQUEST_FIELD_SIZE_LIMIT = 8192;
 
     static final long HTTP_HEADER_RESPONSE_RECEIVE_TIMEOUT = 90000;
     static final int HTTP_HEADER_RESPONSE_STATUS_LINE_SIZE_LIMIT = 8192;
     static final int HTTP_HEADER_RESPONSE_FIELDS_LIMIT = 100;
+    static final int HTTP_HEADER_RESPONSE_FIELD_SIZE_LIMIT = 8192;
 
     private ConfigurationDefaults() {
         throw new AssertionError("No instances");

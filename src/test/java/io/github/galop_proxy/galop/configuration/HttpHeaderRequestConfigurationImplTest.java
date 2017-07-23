@@ -14,7 +14,7 @@ public class HttpHeaderRequestConfigurationImplTest {
 
     @Before
     public void setUp() {
-        configuration = new HttpHeaderRequestConfigurationImpl(60000, 2048, 100);
+        configuration = new HttpHeaderRequestConfigurationImpl(60000, 2048, 100, 8196);
     }
 
     @Test
@@ -30,6 +30,11 @@ public class HttpHeaderRequestConfigurationImplTest {
     @Test
     public void getFieldsLimit_returnsConfiguredFieldsLimit() {
         assertEquals(100, configuration.getFieldsLimit());
+    }
+
+    @Test
+    public void getFieldSizeLimit_returnsConfiguredFieldSizeLimit() {
+        assertEquals(8196, configuration.getFieldSizeLimit());
     }
 
 }

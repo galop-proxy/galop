@@ -1,6 +1,5 @@
 package io.github.galop_proxy.galop.http;
 
-import com.google.common.base.Strings;
 import io.github.galop_proxy.api.http.*;
 import io.github.galop_proxy.galop.configuration.HttpHeaderRequestConfiguration;
 import io.github.galop_proxy.galop.configuration.HttpHeaderResponseConfiguration;
