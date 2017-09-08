@@ -10,3 +10,10 @@ tmp/
 # IntelliJ
 .idea/
 *.iml
+
+# Eclipse
+.settings/
+.project
+.classpath
+.metadata
+*.launch
