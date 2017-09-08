@@ -1,5 +1,7 @@
 # Generated files
 target/
+build/
+dist/
 *.class
 *.jar
 
@@ -17,3 +19,8 @@ tmp/
 .classpath
 .metadata
 *.launch
+
+# NetBeans
+nbproject/
+nbbuild/
+nbdist/
