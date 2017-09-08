@@ -3,6 +3,10 @@ target/
 *.class
 *.jar
 
+# Temporary files
+tmp/
+*.tmp
+
 # IntelliJ
 .idea/
 *.iml
