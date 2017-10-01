@@ -5,7 +5,7 @@
 
 ### Changed
 
-- Apache Log4j updated to version 2.9.0.
+- Apache Log4j updated to version 2.9.1.
 
 
 ## 0.7.0 - 2017-07-23
