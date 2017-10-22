@@ -301,49 +301,6 @@
                 </executions>
             </plugin>
             <plugin>
-                <groupId>com.google.code.maven-replacer-plugin</groupId>
-                <artifactId>replacer</artifactId>
-                <version>1.5.3</version>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>replace</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <includes>
-                        <include>${project.basedir}/README.md</include>
-                        <include>${project.basedir}/CHANGELOG.md</include>
-                    </includes>
-                    <preserveDir>false</preserveDir>
-                    <outputDir>${project.build.directory}</outputDir>
-                    <replacements>
-                        <replacement>
-                            <token>\[!\[.*\)\r\n</token>
-                            <value />
-                        </replacement>
-                        <replacement>
-                            <token>\[!\[.*\)\n</token>
-                            <value />
-                        </replacement>
-                        <replacement>
-                            <token>\*</token>
-                            <value />
-                        </replacement>
-                        <replacement>
-                            <token>```</token>
-                            <value>-------------------------------------------------------------------------------</value>
-                        </replacement>
-                        <replacement>
-                            <token>`</token>
-                            <value />
-                        </replacement>
-                    </replacements>
-                </configuration>
-            </plugin>
-            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <version>3.1.0</version>
