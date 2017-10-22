@@ -17,16 +17,14 @@
 
     <toc name="Table of Contents">
         <item name="Introduction" ref="user-guide/introduction.md"/>
-        <item name="License" ref="user-guide/license.md"/>
         <item name="Installation" ref="user-guide/installation.md"/>
         <item name="Configuration" ref="user-guide/configuration.md"/>
-        <item name="Changelog" ref="user-guide/changelog.md"/>
+        <item name="License" ref="user-guide/license.md"/>
     </toc>
 
     <cover>
         <coverTitle>${project.name} User Guide</coverTitle>
         <coverSubTitle>Version ${project.version}</coverSubTitle>
-        <!--<coverType>User Guide</coverType>-->
         <author>${project.developers[0].name}</author>
         <projectName>${project.name}</projectName>
         <companyName>${project.developers[0].name}</companyName>
