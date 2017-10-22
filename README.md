@@ -49,7 +49,7 @@ During the development, this list will be constantly updated.
 
 * [Installation](src/site/markdown/user-guide/installation.md)
 * [Configuration](src/site/markdown/user-guide/configuration.md)
-* [Changelog](src/site/markdown/user-guide/changelog.md)
+* [Changelog](CHANGELOG.md)
 
 
 ## License
