@@ -1,0 +1,33 @@
+<document xmlns="http://maven.apache.org/DOCUMENT/1.0.1"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/DOCUMENT/1.0.1 http://maven.apache.org/xsd/document-1.0.1.xsd"
+          outputName="galop-user-guide-${project.version}">
+
+    <meta>
+
+        <title>${project.name} User Guide</title>
+        <language>en-US</language>
+
+        <author>${project.developers[0].name}</author>
+        <initialCreator>${project.developers[0].name}</initialCreator>
+        <creator>${project.developers[0].name}</creator>
+        <generator>Maven PDF Plugin</generator>
+
+    </meta>
+
+    <toc name="Table of Contents">
+        <item name="Introduction" ref="user-guide/introduction.md"/>
+        <item name="Installation" ref="user-guide/installation.md"/>
+        <item name="Configuration" ref="user-guide/configuration.md"/>
+        <item name="License" ref="user-guide/license.md"/>
+    </toc>
+
+    <cover>
+        <coverTitle>${project.name} User Guide</coverTitle>
+        <coverSubTitle>Version ${project.version}</coverSubTitle>
+        <author>${project.developers[0].name}</author>
+        <projectName>${project.name}</projectName>
+        <companyName>${project.developers[0].name}</companyName>
+    </cover>
+
+</document>
