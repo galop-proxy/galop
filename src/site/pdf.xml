@@ -17,6 +17,7 @@
 
     <toc name="Table of Contents">
         <item name="Introduction" ref="user-guide/introduction.md"/>
+        <item name="License" ref="user-guide/license.md"/>
         <item name="Installation" ref="user-guide/installation.md"/>
         <item name="Configuration" ref="user-guide/configuration.md"/>
         <item name="Changelog" ref="user-guide/changelog.md"/>
