@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+
+    <xsl:attribute-set name="body.text" use-attribute-sets="base.body.style">
+        <xsl:attribute name="line-height">14pt</xsl:attribute>
+        <xsl:attribute name="text-align">justify</xsl:attribute>
+    </xsl:attribute-set>
+
+</xsl:stylesheet>

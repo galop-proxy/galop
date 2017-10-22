@@ -13,6 +13,10 @@
             <source>${project.artifactId}-${project.version}.jar</source>
         </file>
         <file>
+            <source>site/galop-user-guide-${project.version}.pdf</source>
+            <destName>user-guide-${project.version}.pdf</destName>
+        </file>
+        <file>
             <source>README.md</source>
             <destName>README.txt</destName>
         </file>
