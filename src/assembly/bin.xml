@@ -13,8 +13,7 @@
             <source>${project.artifactId}-${project.version}.jar</source>
         </file>
         <file>
-            <source>site/galop-user-guide-${project.version}.pdf</source>
-            <destName>user-guide-${project.version}.pdf</destName>
+            <source>site/galop-${project.version}-user-guide.pdf</source>
         </file>
         <file>
             <source>../LICENSE</source>

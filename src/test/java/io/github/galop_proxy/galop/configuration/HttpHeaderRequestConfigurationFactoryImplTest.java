@@ -40,6 +40,18 @@ public class HttpHeaderRequestConfigurationFactoryImplTest {
         assertEquals(ConfigurationDefaults.HTTP_HEADER_REQUEST_RECEIVE_TIMEOUT, configuration.getReceiveTimeout());
     }
 
+    @Test(expected = InvalidConfigurationException.class)
+    public void parse_withTooHighReceiveTimeout_throwsInvalidConfigurationException() throws InvalidConfigurationException {
+        properties.put(HTTP_HEADER_REQUEST_RECEIVE_TIMEOUT, "2147483648");
+        factory.parse(properties);
+    }
+
+    @Test(expected = InvalidConfigurationException.class)
+    public void parse_withNegativeReceiveTimeout_throwsInvalidConfigurationException() throws InvalidConfigurationException {
+        properties.put(HTTP_HEADER_REQUEST_RECEIVE_TIMEOUT, "-1");
+        factory.parse(properties);
+    }
+
     @Test
     public void parse_withValidRequestLineSizeLimit_returnsConfiguredValue() {
         assertEquals(4096, configuration.getRequestLineSizeLimit());

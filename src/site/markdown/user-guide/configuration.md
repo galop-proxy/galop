@@ -29,9 +29,11 @@ In addition, the following optional properties are available.
 
 - **proxy.backlog_size:**
   The requested maximum number of pending connections on the proxy socket.
-  If a connection indication arrives when the maximum number is exceeded,
-  the connection is refused. The value must be greater than 0. The default
-  value is 50.
+  If a connection indication arrives when the maximum number is exceeded, the connection is refused.
+  The value must be greater than 0.
+  The default value is 50.
+  The largest value that can be configured is 2147483647.
+  The actual maximum number is platform-dependent and may be smaller.
 
 - **proxy.bind_address:**
   The local address the proxy will bind to. If the address is set, the proxy
@@ -40,32 +42,40 @@ In addition, the following optional properties are available.
   is set. The address can be an IP address or hostname.
 
 - **target.connection_timeout:**
-  The maximum time that GALOP waits for the target server to establish a TCP
-  connection. The time must be specified in milliseconds. The default value is
-  15000 milliseconds.
+  The maximum time that GALOP waits for the target server to establish a TCP connection.
+  The time must be specified in milliseconds.
+  The default value is 15000 milliseconds.
+  If the value is set to zero, GALOP waits an unlimited time.
+  The largest value that can be configured is 2147483647 milliseconds.
 
 
 ## Connections
 
 - **http.connection.termination_timeout:**
-  When GALOP is shut down, the open connections are not closed until open HTTP
-  requests have been processed. This property can be used to configure the
-  maximum time in milliseconds, after which all connections are closed even if
-  HTTP requests are still open. The default value is 30000 milliseconds.
+  When GALOP is shut down, open connections are not closed until all open HTTP requests have been processed.
+  This property can be used to configure the maximum time in milliseconds,
+  after which all connections are closed even if HTTP requests are still open.
+  The default value is 30000 milliseconds.
+  If the value is set to zero, all open connections are immediately closed.
+  The largest value that can be configured is 2147483647 milliseconds.
 
 - **http.connection.log_interval:**
-  In this interval, the current number of open connections is logged. The
-  interval must be specified in milliseconds. The default value is 60000
-  milliseconds.
+  In this interval, the current number of open connections is logged.
+  The interval must be specified in milliseconds.
+  The default value is 60000 milliseconds.
+  The smallest value than can be configured is one millisecond.
+  The largest value that can be configured is 2147483647 milliseconds.
 
 
 ## Request headers
 
 - **http.header.request.receive_timeout:**
-  The maximum time for the client to send a complete HTTP request header to the
-  client. If the time is exceeded, the HTTP status code 408 (Request Time-out)
-  will be sent to the client. The time must be specified in milliseconds.
+  The maximum time for the client to send a complete HTTP request header to the client.
+  If the time is exceeded, the HTTP status code 408 (Request Time-out) will be sent to the client.
+  The time must be specified in milliseconds.
   The default value is 60000 milliseconds.
+  The smallest value than can be configured is zero milliseconds.
+  The largest value that can be configured is 2147483647 milliseconds.
 
 - **http.header.request.request_line_size_limit:**
   The maximum allowed size of an HTTP request line in bytes. Any HTTP request
@@ -90,10 +100,12 @@ In addition, the following optional properties are available.
 ## Response headers
 
 - **http.header.response.receive_timeout:**
-  The maximum time for the server to send a complete HTTP response header to
-  the client. If the time is exceeded, the HTTP status code
-  504 (Gateway Time-out) will be sent to the client. The time must be specified
-  in milliseconds. The default value is 90000 milliseconds.
+  The maximum time for the server to send a complete HTTP response header to the client.
+  If the time is exceeded, the HTTP status code 504 (Gateway Time-out) will be sent to the client.
+  The time must be specified in milliseconds.
+  The default value is 90000 milliseconds.
+  The smallest value than can be configured is zero milliseconds.
+  The largest value that can be configured is 2147483647 milliseconds.
 
 - **http.header.response.status_line_size_limit:**
   The maximum allowed size of an HTTP status line in bytes. Any HTTP response

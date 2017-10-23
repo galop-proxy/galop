@@ -116,6 +116,13 @@ public class TargetConfigurationFactoryImplTest {
         factory.parse(properties);
     }
 
+    @Test(expected = InvalidConfigurationException.class)
+    public void parse_withTooHighConnectionTimeout_throwsInvalidConfigurationException()
+            throws InvalidConfigurationException {
+        properties.put(TARGET_CONNECTION_TIMEOUT, "2147483648");
+        factory.parse(properties);
+    }
+
     // Other:
 
     @Test(expected = NullPointerException.class)

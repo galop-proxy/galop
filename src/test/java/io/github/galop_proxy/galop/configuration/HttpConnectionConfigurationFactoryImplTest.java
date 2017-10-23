@@ -63,8 +63,14 @@ public class HttpConnectionConfigurationFactoryImplTest {
     }
 
     @Test(expected = InvalidConfigurationException.class)
-    public void parse_withNegativeLogInterval_throwsInvalidConfigurationException() throws InvalidConfigurationException {
-        properties.put(HTTP_CONNECTION_LOG_INTERVAL, "-1");
+    public void parse_withTooLowLogInterval_throwsInvalidConfigurationException() throws InvalidConfigurationException {
+        properties.put(HTTP_CONNECTION_LOG_INTERVAL, "0");
+        factory.parse(properties);
+    }
+
+    @Test(expected = InvalidConfigurationException.class)
+    public void parse_withTooHighLogInterval_throwsInvalidConfigurationException() throws InvalidConfigurationException {
+        properties.put(HTTP_CONNECTION_LOG_INTERVAL, "2147483648");
         factory.parse(properties);
     }
 
@@ -77,6 +83,12 @@ public class HttpConnectionConfigurationFactoryImplTest {
     @Test(expected = InvalidConfigurationException.class)
     public void parse_withNegativeTerminationTimeout_throwsInvalidConfigurationException() throws InvalidConfigurationException {
         properties.put(HTTP_CONNECTION_TERMINATION_TIMEOUT, "-1");
+        factory.parse(properties);
+    }
+
+    @Test(expected = InvalidConfigurationException.class)
+    public void parse_withTooHighTerminationTimeout_throwsInvalidConfigurationException() throws InvalidConfigurationException {
+        properties.put(HTTP_CONNECTION_TERMINATION_TIMEOUT, "2147483648");
         factory.parse(properties);
     }
 
