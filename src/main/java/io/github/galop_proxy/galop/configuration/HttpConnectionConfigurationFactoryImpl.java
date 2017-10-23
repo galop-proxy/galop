@@ -25,15 +25,15 @@ final class HttpConnectionConfigurationFactoryImpl implements HttpConnectionConf
         final long interval;
 
         try {
-            interval = Long.parseLong(intervalAsString);
+            interval = (long) Integer.parseInt(intervalAsString);
         } catch (final NumberFormatException ex) {
             throw new InvalidConfigurationException("Property " + HTTP_CONNECTION_LOG_INTERVAL
                     + " is not a valid number: " + intervalAsString);
         }
 
-        if (interval < 0) {
+        if (interval < 1) {
             throw new InvalidConfigurationException("Property " + HTTP_CONNECTION_LOG_INTERVAL
-                    + " must be at least zero: " + interval);
+                    + " must be at least 1: " + interval);
         }
 
         return interval;

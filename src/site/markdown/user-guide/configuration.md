@@ -46,7 +46,7 @@ In addition, the following optional properties are available.
   The time must be specified in milliseconds.
   The default value is 15000 milliseconds.
   If the value is set to zero, GALOP waits an unlimited time.
-  The largest value that can be configured is 2147483647.
+  The largest value that can be configured is 2147483647 milliseconds.
 
 
 ## Connections
@@ -57,12 +57,14 @@ In addition, the following optional properties are available.
   after which all connections are closed even if HTTP requests are still open.
   The default value is 30000 milliseconds.
   If the value is set to zero, all open connections are immediately closed.
-  The largest value that can be configured is 2147483647.
+  The largest value that can be configured is 2147483647 milliseconds.
 
 - **http.connection.log_interval:**
-  In this interval, the current number of open connections is logged. The
-  interval must be specified in milliseconds. The default value is 60000
-  milliseconds.
+  In this interval, the current number of open connections is logged.
+  The interval must be specified in milliseconds.
+  The default value is 60000 milliseconds.
+  The smallest value than can be configured is one millisecond.
+  The largest value that can be configured is 2147483647 milliseconds.
 
 
 ## Request headers
