@@ -29,9 +29,11 @@ In addition, the following optional properties are available.
 
 - **proxy.backlog_size:**
   The requested maximum number of pending connections on the proxy socket.
-  If a connection indication arrives when the maximum number is exceeded,
-  the connection is refused. The value must be greater than 0. The default
-  value is 50.
+  If a connection indication arrives when the maximum number is exceeded, the connection is refused.
+  The value must be greater than 0.
+  The default value is 50.
+  The largest value that can be configured is 2147483647.
+  The actual maximum number is platform-dependent and may be smaller.
 
 - **proxy.bind_address:**
   The local address the proxy will bind to. If the address is set, the proxy

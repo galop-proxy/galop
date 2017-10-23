@@ -116,6 +116,12 @@ public class ProxyConfigurationFactoryImplTest {
     }
 
     @Test(expected = InvalidConfigurationException.class)
+    public void parse_withTooHighBacklogSize_throwsInvalidConfigurationException() throws InvalidConfigurationException {
+        properties.put(PROXY_BACKLOG_SIZE, "2147483648");
+        factory.parse(properties);
+    }
+
+    @Test(expected = InvalidConfigurationException.class)
     public void parse_withUnknownBindAddress_throwsInvalidConfigurationException() throws InvalidConfigurationException {
         properties.put(PROXY_BIND_ADDRESS, "unknown");
         factory.parse(properties);
