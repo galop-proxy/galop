@@ -70,10 +70,12 @@ In addition, the following optional properties are available.
 ## Request headers
 
 - **http.header.request.receive_timeout:**
-  The maximum time for the client to send a complete HTTP request header to the
-  client. If the time is exceeded, the HTTP status code 408 (Request Time-out)
-  will be sent to the client. The time must be specified in milliseconds.
+  The maximum time for the client to send a complete HTTP request header to the client.
+  If the time is exceeded, the HTTP status code 408 (Request Time-out) will be sent to the client.
+  The time must be specified in milliseconds.
   The default value is 60000 milliseconds.
+  The smallest value than can be configured is zero milliseconds.
+  The largest value that can be configured is 2147483647 milliseconds.
 
 - **http.header.request.request_line_size_limit:**
   The maximum allowed size of an HTTP request line in bytes. Any HTTP request
@@ -98,10 +100,12 @@ In addition, the following optional properties are available.
 ## Response headers
 
 - **http.header.response.receive_timeout:**
-  The maximum time for the server to send a complete HTTP response header to
-  the client. If the time is exceeded, the HTTP status code
-  504 (Gateway Time-out) will be sent to the client. The time must be specified
-  in milliseconds. The default value is 90000 milliseconds.
+  The maximum time for the server to send a complete HTTP response header to the client.
+  If the time is exceeded, the HTTP status code 504 (Gateway Time-out) will be sent to the client.
+  The time must be specified in milliseconds.
+  The default value is 90000 milliseconds.
+  The smallest value than can be configured is zero milliseconds.
+  The largest value that can be configured is 2147483647 milliseconds.
 
 - **http.header.response.status_line_size_limit:**
   The maximum allowed size of an HTTP status line in bytes. Any HTTP response
