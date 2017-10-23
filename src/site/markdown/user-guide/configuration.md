@@ -42,9 +42,11 @@ In addition, the following optional properties are available.
   is set. The address can be an IP address or hostname.
 
 - **target.connection_timeout:**
-  The maximum time that GALOP waits for the target server to establish a TCP
-  connection. The time must be specified in milliseconds. The default value is
-  15000 milliseconds.
+  The maximum time that GALOP waits for the target server to establish a TCP connection.
+  The time must be specified in milliseconds.
+  The default value is 15000 milliseconds.
+  If the value is set to zero, GALOP waits an unlimited time.
+  The largest value that can be configured is 2147483647 milliseconds.
 
 
 ## Connections
