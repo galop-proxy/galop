@@ -69,6 +69,12 @@ public class FactoryUtilsTest {
         parseTimeout(properties, "property", 456);
     }
 
+    @Test(expected = InvalidConfigurationException.class)
+    public void parseTimeout_withTooHighTimeout_throwsInvalidConfigurationException() throws InvalidConfigurationException {
+        properties.put("property", "2147483648");
+        parseTimeout(properties, "property", 456);
+    }
+
     // parseSizeLimit:
 
     @Test

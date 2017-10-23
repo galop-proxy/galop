@@ -41,7 +41,7 @@ final class FactoryUtils {
         final long timeout;
 
         try {
-            timeout = Long.parseLong(timeoutAsString);
+            timeout = (long) Integer.parseInt(timeoutAsString);
         } catch (final NumberFormatException ex) {
             throw new InvalidConfigurationException("Property " + propertyKey + " is not a valid number: "
                     + timeoutAsString);

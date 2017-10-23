@@ -80,6 +80,12 @@ public class HttpConnectionConfigurationFactoryImplTest {
         factory.parse(properties);
     }
 
+    @Test(expected = InvalidConfigurationException.class)
+    public void parse_withTooHighTerminationTimeout_throwsInvalidConfigurationException() throws InvalidConfigurationException {
+        properties.put(HTTP_CONNECTION_TERMINATION_TIMEOUT, "2147483648");
+        factory.parse(properties);
+    }
+
     // Other:
 
     @Test(expected = NullPointerException.class)
