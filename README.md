@@ -9,6 +9,7 @@
 [![Code quality: Codebeat](https://codebeat.co/badges/e829bef3-a2dd-4a3a-8aa8-91465fc1214b)](https://codebeat.co/projects/github-com-galop-proxy-galop-master)
 [![Code quality: Codacy](https://api.codacy.com/project/badge/Grade/2e7f37da8cfe481fa7cd928433c3fd35)](https://www.codacy.com/app/SebastianSchmidt/galop?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=galop-proxy/galop&amp;utm_campaign=Badge_Grade)
 [![Code quality: Better Code Hub](https://bettercodehub.com/edge/badge/galop-proxy/galop?branch=master)](https://bettercodehub.com/results/galop-proxy/galop)
+[![Code quality: Code Climate](https://api.codeclimate.com/v1/badges/8f7e42ff9be096bf59b8/maintainability)](https://codeclimate.com/github/galop-proxy/galop/maintainability)
 
 GALOP (**G**raceful **A**pp**l**icati**o**n **P**roxy) is a simple reverse proxy that accepts HTTP requests from clients and passes them to a server.
 When shutting down, the proxy processes open HTTP requests before the connections are closed.
