@@ -1,5 +1,7 @@
 <p align="center">
-    <img src="logo.png" alt="GALOP" />
+    <a href="https://github.com/galop-proxy/galop">
+        <img src="logo.png" alt="GALOP" />
+    </a>
 </p>
 
 <p align="center">
@@ -11,7 +13,7 @@
 
 <p align="center">
     <a href="https://github.com/galop-proxy/galop/releases">
-        <img src="https://img.shields.io/github/release/galop-proxy/galop.svg" alt="Release" />
+        <img src="https://img.shields.io/github/release/galop-proxy/galop.svg" alt="Latest release" />
     </a>
     <a href="https://github.com/galop-proxy/galop/blob/master/LICENSE">
         <img src="https://img.shields.io/github/license/galop-proxy/galop.svg" alt="License" />
@@ -66,3 +68,15 @@ During the development, this list will be constantly updated.
 ## License
 
 GALOP is licensed under [The MIT License](https://opensource.org/licenses/MIT).
+
+
+## Development
+
+[![Build status: Linux](https://travis-ci.org/galop-proxy/galop.svg?branch=master)](https://travis-ci.org/galop-proxy/galop)
+[![Build status: Windows](https://ci.appveyor.com/api/projects/status/pab8i233g8ups6ei/branch/master?svg=true)](https://ci.appveyor.com/project/SebastianSchmidt/galop/branch/master)
+[![Coverage status](https://coveralls.io/repos/github/galop-proxy/galop/badge.svg?branch=master)](https://coveralls.io/github/galop-proxy/galop?branch=master)
+[![Known vulnerabilities](https://snyk.io/test/github/galop-proxy/galop/badge.svg)](https://snyk.io/test/github/galop-proxy/galop)
+[![Code quality: Codebeat](https://codebeat.co/badges/e829bef3-a2dd-4a3a-8aa8-91465fc1214b)](https://codebeat.co/projects/github-com-galop-proxy-galop-master)
+[![Code quality: Codacy](https://api.codacy.com/project/badge/Grade/2e7f37da8cfe481fa7cd928433c3fd35)](https://www.codacy.com/app/SebastianSchmidt/galop?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=galop-proxy/galop&amp;utm_campaign=Badge_Grade)
+[![Code quality: Code Climate](https://api.codeclimate.com/v1/badges/8f7e42ff9be096bf59b8/maintainability)](https://codeclimate.com/github/galop-proxy/galop/maintainability)
+[![Code quality: Better Code Hub](https://bettercodehub.com/edge/badge/galop-proxy/galop?branch=master)](https://bettercodehub.com/results/galop-proxy/galop)
