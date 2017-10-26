@@ -3,13 +3,19 @@
 </p>
 
 <p align="center">
-    **Simple reverse proxy for HTTP requests.**<br />
-    **Closes connections gracefully when shutting down.**
+    <strong>
+        Simple reverse proxy for HTTP requests.<br />
+        Closes connections gracefully when shutting down.
+    </strong>
 </p>
 
 <p align="center">
-    [![Release](https://img.shields.io/github/release/galop-proxy/galop.svg)](https://github.com/galop-proxy/galop/releases)
-    [![License](https://img.shields.io/github/license/galop-proxy/galop.svg)](https://github.com/galop-proxy/galop/blob/master/LICENSE)
+    <a href="https://github.com/galop-proxy/galop/releases">
+        <img src="https://img.shields.io/github/release/galop-proxy/galop.svg" alt="Release" />
+    </a>
+    <a href="https://github.com/galop-proxy/galop/blob/master/LICENSE">
+        <img src="https://img.shields.io/github/license/galop-proxy/galop.svg" alt="License" />
+    </a>
 </p>
 
 ---
