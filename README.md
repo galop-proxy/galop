@@ -1,7 +1,5 @@
 <p align="center">
-    <a href="https://github.com/galop-proxy/galop">
-        <img src="logo.png" alt="GALOP" />
-    </a>
+    <a href="https://github.com/galop-proxy/galop"><img src="logo.png" alt="GALOP" /></a>
 </p>
 
 <p align="center">
@@ -12,12 +10,8 @@
 </p>
 
 <p align="center">
-    <a href="https://github.com/galop-proxy/galop/releases">
-        <img src="https://img.shields.io/github/release/galop-proxy/galop.svg" alt="Latest release" />
-    </a>
-    <a href="https://github.com/galop-proxy/galop/blob/master/LICENSE">
-        <img src="https://img.shields.io/github/license/galop-proxy/galop.svg" alt="License" />
-    </a>
+    <a href="https://github.com/galop-proxy/galop/releases"><img src="https://img.shields.io/github/release/galop-proxy/galop.svg" alt="Latest release" /></a>
+    <a href="https://github.com/galop-proxy/galop/blob/master/LICENSE"><img src="https://img.shields.io/github/license/galop-proxy/galop.svg" alt="License" /></a>
 </p>
 
 ---
