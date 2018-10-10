@@ -10,10 +10,10 @@ install:
   - ps: |
       Add-Type -AssemblyName System.IO.Compression.FileSystem
       if (!(Test-Path -Path "C:\maven" )) {
-        (new-object System.Net.WebClient).DownloadFile('http://www.apache.org/dist/maven/maven-3/3.5.0/binaries/apache-maven-3.5.0-bin.zip', 'C:\maven-bin.zip')
+        (new-object System.Net.WebClient).DownloadFile('http://www.apache.org/dist/maven/maven-3/3.5.4/binaries/apache-maven-3.5.4-bin.zip', 'C:\maven-bin.zip')
         [System.IO.Compression.ZipFile]::ExtractToDirectory("C:\maven-bin.zip", "C:\maven")
       }
-  - cmd: SET MAVEN_HOME=C:\maven\apache-maven-3.5.0
+  - cmd: SET MAVEN_HOME=C:\maven\apache-maven-3.5.4
   - cmd: SET PATH=%MAVEN_HOME%\bin;%JAVA_HOME%\bin;%PATH%
   - cmd: mvn --version
   - cmd: java -version
